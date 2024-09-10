@@ -27,10 +27,9 @@ class ExecuteScriptRequest(BaseModel):
     ExecuteScriptRequest
     """ # noqa: E501
     script_id: StrictStr = Field(description="Unique identifier of the script to be executed.")
-    streaming: Optional[StrictBool] = Field(default=False, description="If true, the execution results will be streamed as they're generated.")
     magic: Optional[StrictBool] = Field(default=False, description="If true, applies advanced processing to improve data extraction results.")
     url: Optional[StrictStr] = Field(default=None, description="Optional URL to override the script's default target URL.")
-    __properties: ClassVar[List[str]] = ["script_id", "streaming", "magic", "url"]
+    __properties: ClassVar[List[str]] = ["script_id", "magic", "url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,7 +83,6 @@ class ExecuteScriptRequest(BaseModel):
 
         _obj = cls.model_validate({
             "script_id": obj.get("script_id"),
-            "streaming": obj.get("streaming") if obj.get("streaming") is not None else False,
             "magic": obj.get("magic") if obj.get("magic") is not None else False,
             "url": obj.get("url")
         })

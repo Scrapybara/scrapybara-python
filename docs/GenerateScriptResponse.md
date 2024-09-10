@@ -6,13 +6,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **str** | Unique identifier for the generated script. | 
-**streaming** | **bool** |  | 
-**script_id** | **str** | Unique identifier for the generated script. | 
-**status** | **str** | The current status of script generation (e.g., &#39;in_progress&#39;, &#39;completed&#39;, &#39;error&#39;). | 
-**status_description** | **str** | Additional details about the generation status or errors. | 
-**current_script** | **str** | The current version of the generated script. | [optional] 
-**current_script_execution_result** | **str** | The result of executing the current version of the script. | [optional] 
-**reasoning** | **str** | Explanation of the reasoning behind the current script version. | [optional] 
 
 ## Example
 

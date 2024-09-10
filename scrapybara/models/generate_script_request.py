@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,10 +29,9 @@ class GenerateScriptRequest(BaseModel):
     url: StrictStr = Field(description="The target URL for the script.")
     command: StrictStr = Field(description="The action to be performed by the script.")
     steps: Optional[List[StrictStr]] = Field(default=None, description="Optional step-by-step instructions for complex actions.")
-    streaming: Optional[StrictBool] = Field(default=False, description="If true, the response will be streamed as it's generated.")
     input_schema: Optional[Dict[str, Any]] = Field(default=None, description="Optional schema defining the structure of input data.")
     output_schema: Optional[Dict[str, Any]] = Field(default=None, description="Optional schema defining the expected structure of output data.")
-    __properties: ClassVar[List[str]] = ["url", "command", "steps", "streaming", "input_schema", "output_schema"]
+    __properties: ClassVar[List[str]] = ["url", "command", "steps", "input_schema", "output_schema"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,7 +87,6 @@ class GenerateScriptRequest(BaseModel):
             "url": obj.get("url"),
             "command": obj.get("command"),
             "steps": obj.get("steps"),
-            "streaming": obj.get("streaming") if obj.get("streaming") is not None else False,
             "input_schema": obj.get("input_schema"),
             "output_schema": obj.get("output_schema")
         })

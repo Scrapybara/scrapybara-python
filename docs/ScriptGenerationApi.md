@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 Generate script
 
-Auto-generates a new script. Use 'streaming' to get real-time updates on the script generation process.
+Auto-generates a new script.
 
 ### Example
 

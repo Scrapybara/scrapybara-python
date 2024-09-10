@@ -5,10 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**status** | **str** | The current execution status (e.g., &#39;in_progress&#39;, &#39;completed&#39;, &#39;error&#39;). | 
-**status_description** | **str** | Additional details about the current execution status or errors. | 
+**status** | **str** | The execution status (e.g., &#39;completed&#39;, &#39;error&#39;). | 
+**status_description** | **str** | Additional details about the execution status or errors. | 
 **result** | **object** | The data extracted by the script. | 
-**streaming** | **bool** |  | 
 
 ## Example
 

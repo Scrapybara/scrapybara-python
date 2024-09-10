@@ -8,7 +8,6 @@ Name | Type | Description | Notes
 **url** | **str** | The target URL for the script. | 
 **command** | **str** | The action to be performed by the script. | 
 **steps** | **List[str]** | Optional step-by-step instructions for complex actions. | [optional] 
-**streaming** | **bool** | If true, the response will be streamed as it&#39;s generated. | [optional] [default to False]
 **input_schema** | **object** | Optional schema defining the structure of input data. | [optional] 
 **output_schema** | **object** | Optional schema defining the expected structure of output data. | [optional] 
 

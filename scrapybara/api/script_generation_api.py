@@ -56,7 +56,7 @@ class ScriptGenerationApi:
     ) -> GenerateScriptResponse:
         """Generate script
 
-        Auto-generates a new script. Use 'streaming' to get real-time updates on the script generation process.
+        Auto-generates a new script.
 
         :param generate_script_request: (required)
         :type generate_script_request: GenerateScriptRequest
@@ -124,7 +124,7 @@ class ScriptGenerationApi:
     ) -> ApiResponse[GenerateScriptResponse]:
         """Generate script
 
-        Auto-generates a new script. Use 'streaming' to get real-time updates on the script generation process.
+        Auto-generates a new script.
 
         :param generate_script_request: (required)
         :type generate_script_request: GenerateScriptRequest
@@ -192,7 +192,7 @@ class ScriptGenerationApi:
     ) -> RESTResponseType:
         """Generate script
 
-        Auto-generates a new script. Use 'streaming' to get real-time updates on the script generation process.
+        Auto-generates a new script.
 
         :param generate_script_request: (required)
         :type generate_script_request: GenerateScriptRequest

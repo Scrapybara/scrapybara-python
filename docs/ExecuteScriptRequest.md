@@ -6,7 +6,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **script_id** | **str** | Unique identifier of the script to be executed. | 
-**streaming** | **bool** | If true, the execution results will be streamed as they&#39;re generated. | [optional] [default to False]
 **magic** | **bool** | If true, applies advanced processing to improve data extraction results. | [optional] [default to False]
 **url** | **str** | Optional URL to override the script&#39;s default target URL. | [optional] 
 
