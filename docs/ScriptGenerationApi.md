@@ -43,14 +43,14 @@ configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
 # configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-async with scrapybara.ApiClient(configuration) as api_client:
+with scrapybara.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scrapybara.ScriptGenerationApi(api_client)
     generate_script_request = scrapybara.GenerateScriptRequest() # GenerateScriptRequest | 
 
     try:
         # Generate script
-        api_response = await api_instance.generate_script(generate_script_request)
+        api_response = api_instance.generate_script(generate_script_request)
         print("The response of ScriptGenerationApi->generate_script:\n")
         pprint(api_response)
     except Exception as e:

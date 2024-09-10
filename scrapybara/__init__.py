@@ -16,6 +16,8 @@
 
 __version__ = "1.0.0"
 
+from typing import Union, Dict, Any
+
 # import apis into sdk package
 from scrapybara.api.helpers_api import HelpersApi
 from scrapybara.api.script_execution_api import ScriptExecutionApi
@@ -61,15 +63,21 @@ class ScrapybaraClient:
         
 
     
-    def fetch_html(self, fetch_html_request: FetchHtmlRequest) -> FetchHtmlResponse:
+    def fetch_html(self, fetch_html_request: Union[Dict[str, Any], FetchHtmlRequest]) -> FetchHtmlResponse:
+        if isinstance(fetch_html_request, dict):
+            fetch_html_request = FetchHtmlRequest(**fetch_html_request)
         return self.helpersapi.fetch_html(fetch_html_request=fetch_html_request)
 
     
-    def execute_script(self, execute_script_request: ExecuteScriptRequest) -> ExecuteScriptResponse:
+    def execute_script(self, execute_script_request: Union[Dict[str, Any], ExecuteScriptRequest]) -> ExecuteScriptResponse:
+        if isinstance(execute_script_request, dict):
+            execute_script_request = ExecuteScriptRequest(**execute_script_request)
         return self.scriptexecutionapi.execute_script(execute_script_request=execute_script_request)
 
     
-    def generate_script(self, generate_script_request: GenerateScriptRequest) -> GenerateScriptResponse:
+    def generate_script(self, generate_script_request: Union[Dict[str, Any], GenerateScriptRequest]) -> GenerateScriptResponse:
+        if isinstance(generate_script_request, dict):
+            generate_script_request = GenerateScriptRequest(**generate_script_request)
         return self.scriptgenerationapi.generate_script(generate_script_request=generate_script_request)
 
     

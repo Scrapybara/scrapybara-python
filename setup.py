@@ -13,6 +13,7 @@
 
 
 from setuptools import setup, find_packages  # noqa: H301
+from pathlib import Path
 
 # To install the library, run the following
 #
@@ -20,17 +21,19 @@ from setuptools import setup, find_packages  # noqa: H301
 #
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
-NAME = "scrapybara-client"
+NAME = "scrapybara"
 VERSION = "1.0.0"
 PYTHON_REQUIRES = ">=3.7"
 REQUIRES = [
     "urllib3 >= 1.25.3, < 2.1.0",
     "python-dateutil",
-    "aiohttp >= 3.0.0",
-    "aiohttp-retry >= 2.8.3",
     "pydantic >= 2",
     "typing-extensions >= 4.7.1",
 ]
+
+# Read the contents of README.md
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name=NAME,
@@ -44,8 +47,6 @@ setup(
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
     long_description_content_type='text/markdown',
-    long_description="""\
-    Scrapybara API provides web automation, capybara-style. It allows users to generate, execute, and manage scripts.
-    """,  # noqa: E501
+    long_description=long_description,
     package_data={"scrapybara": ["py.typed"]},
 )

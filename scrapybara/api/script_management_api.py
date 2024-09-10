@@ -39,7 +39,7 @@ class ScriptManagementApi:
 
 
     @validate_call
-    async def delete_script(
+    def delete_script(
         self,
         script_id: Annotated[StrictStr, Field(description="Unique identifier of the script to be deleted.")],
         _request_timeout: Union[
@@ -96,11 +96,11 @@ class ScriptManagementApi:
             '401': None,
             '404': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        await response_data.read()
+        response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -108,7 +108,7 @@ class ScriptManagementApi:
 
 
     @validate_call
-    async def delete_script_with_http_info(
+    def delete_script_with_http_info(
         self,
         script_id: Annotated[StrictStr, Field(description="Unique identifier of the script to be deleted.")],
         _request_timeout: Union[
@@ -165,11 +165,11 @@ class ScriptManagementApi:
             '401': None,
             '404': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        await response_data.read()
+        response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -177,7 +177,7 @@ class ScriptManagementApi:
 
 
     @validate_call
-    async def delete_script_without_preload_content(
+    def delete_script_without_preload_content(
         self,
         script_id: Annotated[StrictStr, Field(description="Unique identifier of the script to be deleted.")],
         _request_timeout: Union[
@@ -234,7 +234,7 @@ class ScriptManagementApi:
             '401': None,
             '404': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
@@ -297,7 +297,7 @@ class ScriptManagementApi:
 
 
     @validate_call
-    async def get_script(
+    def get_script(
         self,
         script_id: Annotated[StrictStr, Field(description="Unique identifier of the script.")],
         _request_timeout: Union[
@@ -354,11 +354,11 @@ class ScriptManagementApi:
             '401': None,
             '404': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        await response_data.read()
+        response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -366,7 +366,7 @@ class ScriptManagementApi:
 
 
     @validate_call
-    async def get_script_with_http_info(
+    def get_script_with_http_info(
         self,
         script_id: Annotated[StrictStr, Field(description="Unique identifier of the script.")],
         _request_timeout: Union[
@@ -423,11 +423,11 @@ class ScriptManagementApi:
             '401': None,
             '404': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        await response_data.read()
+        response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -435,7 +435,7 @@ class ScriptManagementApi:
 
 
     @validate_call
-    async def get_script_without_preload_content(
+    def get_script_without_preload_content(
         self,
         script_id: Annotated[StrictStr, Field(description="Unique identifier of the script.")],
         _request_timeout: Union[
@@ -492,7 +492,7 @@ class ScriptManagementApi:
             '401': None,
             '404': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )

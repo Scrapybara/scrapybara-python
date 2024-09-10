@@ -43,14 +43,14 @@ configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
 # configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-async with scrapybara.ApiClient(configuration) as api_client:
+with scrapybara.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scrapybara.HelpersApi(api_client)
     fetch_html_request = scrapybara.FetchHtmlRequest() # FetchHtmlRequest | 
 
     try:
         # Fetch HTML
-        api_response = await api_instance.fetch_html(fetch_html_request)
+        api_response = api_instance.fetch_html(fetch_html_request)
         print("The response of HelpersApi->fetch_html:\n")
         pprint(api_response)
     except Exception as e:

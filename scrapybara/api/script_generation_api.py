@@ -38,7 +38,7 @@ class ScriptGenerationApi:
 
 
     @validate_call
-    async def generate_script(
+    def generate_script(
         self,
         generate_script_request: GenerateScriptRequest,
         _request_timeout: Union[
@@ -94,11 +94,11 @@ class ScriptGenerationApi:
             '200': "GenerateScriptResponse",
             '401': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        await response_data.read()
+        response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -106,7 +106,7 @@ class ScriptGenerationApi:
 
 
     @validate_call
-    async def generate_script_with_http_info(
+    def generate_script_with_http_info(
         self,
         generate_script_request: GenerateScriptRequest,
         _request_timeout: Union[
@@ -162,11 +162,11 @@ class ScriptGenerationApi:
             '200': "GenerateScriptResponse",
             '401': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        await response_data.read()
+        response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -174,7 +174,7 @@ class ScriptGenerationApi:
 
 
     @validate_call
-    async def generate_script_without_preload_content(
+    def generate_script_without_preload_content(
         self,
         generate_script_request: GenerateScriptRequest,
         _request_timeout: Union[
@@ -230,7 +230,7 @@ class ScriptGenerationApi:
             '200': "GenerateScriptResponse",
             '401': None,
         }
-        response_data = await self.api_client.call_api(
+        response_data = self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )

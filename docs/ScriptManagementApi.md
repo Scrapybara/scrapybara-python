@@ -42,14 +42,14 @@ configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
 # configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-async with scrapybara.ApiClient(configuration) as api_client:
+with scrapybara.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scrapybara.ScriptManagementApi(api_client)
     script_id = 'script_id_example' # str | Unique identifier of the script to be deleted.
 
     try:
         # Delete script
-        await api_instance.delete_script(script_id)
+        api_instance.delete_script(script_id)
     except Exception as e:
         print("Exception when calling ScriptManagementApi->delete_script: %s\n" % e)
 ```
@@ -121,14 +121,14 @@ configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
 # configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-async with scrapybara.ApiClient(configuration) as api_client:
+with scrapybara.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scrapybara.ScriptManagementApi(api_client)
     script_id = 'script_id_example' # str | Unique identifier of the script.
 
     try:
         # Get script
-        api_response = await api_instance.get_script(script_id)
+        api_response = api_instance.get_script(script_id)
         print("The response of ScriptManagementApi->get_script:\n")
         pprint(api_response)
     except Exception as e:
