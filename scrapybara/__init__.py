@@ -268,11 +268,8 @@ class Scrapybara:
             instance_id: ID of the instance to stop
 
         Raises:
-            ScrapybaraError: If instance doesn't exist or if stop fails
+            ScrapybaraError: If stop fails
         """
-        if instance_id not in self._instances:
-            raise ScrapybaraError(f"No instance found with ID {instance_id}")
-
         response = requests.post(
             f"{self.config.base_url}/terminate/{instance_id}",
             headers=self._headers(),
@@ -280,7 +277,8 @@ class Scrapybara:
         if response.status_code != 200:
             raise ScrapybaraError(f"Failed to stop instance: {response.text}")
 
-        del self._instances[instance_id]
+        if instance_id in self._instances:
+            del self._instances[instance_id]
 
     def status(self, instance_id: str) -> Instance:
         """
