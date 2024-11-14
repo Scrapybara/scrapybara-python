@@ -1,205 +1,13 @@
-from typing import Optional, Dict, Any, List, Tuple, Literal
-from enum import Enum
-from dataclasses import dataclass
+from typing import Optional, Dict, Any, List, Tuple
 import requests
 from datetime import datetime
 
-Action = Literal[
-    "key",
-    "type",
-    "mouse_move",
-    "left_click",
-    "left_click_drag",
-    "right_click",
-    "middle_click",
-    "double_click",
-    "screenshot",
-    "cursor_position",
-]
-
-Command = Literal["view", "create", "str_replace", "insert", "undo_edit"]
-
-Region = Literal[
-    "us-east-1",
-    "us-east-2",
-    "us-west-1",
-    "us-west-2",
-    "ap-south-1",
-    "ap-northeast-1",
-    "ap-northeast-2",
-    "ap-northeast-3",
-    "ap-southeast-1",
-    "ap-southeast-2",
-    "ca-central-1",
-    "eu-central-1",
-    "eu-west-1",
-    "eu-west-2",
-    "eu-west-3",
-    "eu-north-1",
-    "sa-east-1",
-]
-
-InstanceType = Literal["small", "medium", "large"]
-
-
-class ScrapybaraError(Exception):
-    """Base exception for Scrapybara SDK"""
-
-
-class InstanceStatus(str, Enum):
-    """
-    Enumeration of possible instance states
-
-    Attributes:
-        DEPLOYING: Instance is being created and configured
-        RUNNING: Instance is active and ready for use
-        TERMINATED: Instance has been stopped
-        ERROR: Instance encountered an error during operation
-    """
-
-    DEPLOYING = "deploying"
-    RUNNING = "running"
-    TERMINATED = "terminated"
-    ERROR = "error"
-
-
-@dataclass
-class Instance:
-    """
-    Information about a virtual desktop instance
-
-    Attributes:
-        instance_id: Unique identifier for the instance
-        public_ip: Public IP address of the instance
-        status: Current status of the instance (InstanceStatus)
-        launch_time: When the instance was started (optional)
-    """
-
-    instance_id: str
-    public_ip: str
-    status: InstanceStatus
-    launch_time: Optional[datetime] = None
-
-
-@dataclass
-class ComputerAction:
-    """
-    Computer action data
-
-    Attributes:
-        action: Type of action to perform (see Action enum)
-        coordinate: Optional (x, y) coordinates for mouse actions
-        text: Optional text for keyboard actions
-        keys: Optional keys for keyboard actions
-    """
-
-    action: str
-    coordinate: Optional[List[int]] = None
-    text: Optional[str] = None
-    keys: Optional[str] = None
-
-    def validate(self):
-        """Validate the computer action parameters"""
-        if self.action in ("mouse_move", "left_click_drag"):
-            if self.coordinate is None:
-                raise ScrapybaraError(f"coordinate is required for {self.action}")
-            if self.text is not None:
-                raise ScrapybaraError(f"text is not accepted for {self.action}")
-            if not isinstance(self.coordinate, list) or len(self.coordinate) != 2:
-                raise ScrapybaraError(f"{self.coordinate} must be a list of length 2")
-            if not all(isinstance(i, int) and i >= 0 for i in self.coordinate):
-                raise ScrapybaraError(
-                    f"{self.coordinate} must be a list of non-negative ints"
-                )
-
-        if self.action in ("key", "type"):
-            if self.text is None:
-                raise ScrapybaraError(f"text is required for {self.action}")
-            if self.coordinate is not None:
-                raise ScrapybaraError(f"coordinate is not accepted for {self.action}")
-            if not isinstance(self.text, str):
-                raise ScrapybaraError(f"{self.text} must be a string")
-
-        if self.action in (
-            "left_click",
-            "right_click",
-            "double_click",
-            "middle_click",
-            "screenshot",
-            "cursor_position",
-        ):
-            if self.text is not None:
-                raise ScrapybaraError(f"text is not accepted for {self.action}")
-            if self.coordinate is not None:
-                raise ScrapybaraError(f"coordinate is not accepted for {self.action}")
-
-
-@dataclass
-class EditCommand:
-    """
-    File editing command data
-
-    Attributes:
-        command: Type of edit operation to perform
-        path: Path to the target file
-        content: Content for create command
-        view_range: [start_line, end_line] for view command
-        old_text: Text to replace for str_replace command
-        new_text: New text for str_replace or insert commands
-        line_number: Line number for insert command
-    """
-
-    command: Command
-    path: str
-    content: Optional[str] = None
-    view_range: Optional[List[int]] = None
-    old_text: Optional[str] = None
-    new_text: Optional[str] = None
-    line_number: Optional[int] = None
-
-    def validate(self) -> None:
-        """Validate the edit command parameters"""
-        if self.command == "view":
-            if self.view_range is not None:
-                if not isinstance(self.view_range, list) or len(self.view_range) != 2:
-                    raise ScrapybaraError("view_range must be a list of length 2")
-                if not all(isinstance(i, int) and i >= 0 for i in self.view_range):
-                    raise ScrapybaraError(
-                        "view_range must be a list of non-negative integers"
-                    )
-
-        elif self.command == "create":
-            if self.content is None:
-                raise ScrapybaraError("content is required for create command")
-
-        elif self.command == "str_replace":
-            if self.old_text is None or self.new_text is None:
-                raise ScrapybaraError(
-                    "old_text and new_text are required for str_replace command"
-                )
-
-        elif self.command == "insert":
-            if self.line_number is None or self.new_text is None:
-                raise ScrapybaraError(
-                    "line_number and new_text are required for insert command"
-                )
-            if not isinstance(self.line_number, int) or self.line_number < 0:
-                raise ScrapybaraError("line_number must be a non-negative integer")
-
-
-class ScrapybaraConfig:
-    """
-    Configuration for Scrapybara instance
-
-    Args:
-        base_url: Base URL for the Scrapybara service (default: http://localhost:8000)
-    """
-
-    def __init__(
-        self,
-        base_url: str = "https://starfish-app-e63cz.ondigitalocean.app",
-    ):
-        self.base_url = base_url.rstrip("/")
+from .models.types import Action, Command, Region, InstanceType, InstanceStatus
+from .models.instance import Instance
+from .models.config import ScrapybaraConfig
+from .models.computer_action import ComputerAction
+from .models.edit_command import EditCommand
+from .models.exceptions import ScrapybaraError
 
 
 class Scrapybara:
@@ -237,9 +45,52 @@ class Scrapybara:
             ScrapybaraError: If instance doesn't exist or if status check fails
         """
         if instance_id not in self._instances:
-            instance = self.status(instance_id)
+            instance = self.get(instance_id)
             self._instances[instance_id] = f"http://{instance.public_ip}:8000"
         return self._instances[instance_id]
+
+    def get(self, instance_id: str) -> Instance:
+        """
+        Get instance status
+
+        Args:
+            instance_id: ID of the instance to check
+
+        Returns:
+            Instance object containing current instance details
+
+        Raises:
+            ScrapybaraError: If status check fails
+        """
+        response = requests.get(
+            f"{self.config.base_url}/status/{instance_id}",
+            headers=self._headers(),
+        )
+        if response.status_code != 200:
+            raise ScrapybaraError(f"Failed to get instance status: {response.text}")
+
+        data = response.json()
+        instance_state = InstanceStatus(data["instance_state"])
+
+        if instance_state == InstanceStatus.RUNNING:
+            instance_url = f"http://{data['public_ip']}:8000"
+            status_response = requests.get(f"{instance_url}/status")
+            if (
+                status_response.status_code != 200
+                or status_response.json().get("status") != "ok"
+            ):
+                instance_state = InstanceStatus.DEPLOYING
+
+        return Instance(
+            instance_id=instance_id,
+            public_ip=data["public_ip"],
+            status=instance_state,
+            launch_time=(
+                datetime.fromisoformat(data["launch_time"])
+                if data.get("launch_time")
+                else None
+            ),
+        )
 
     def start(
         self, instance_type: InstanceType = "small", region: Region = "us-west-2"
@@ -297,49 +148,6 @@ class Scrapybara:
         if instance_id in self._instances:
             del self._instances[instance_id]
 
-    def status(self, instance_id: str) -> Instance:
-        """
-        Get instance status
-
-        Args:
-            instance_id: ID of the instance to check
-
-        Returns:
-            Instance object containing current instance details
-
-        Raises:
-            ScrapybaraError: If status check fails
-        """
-        response = requests.get(
-            f"{self.config.base_url}/status/{instance_id}",
-            headers=self._headers(),
-        )
-        if response.status_code != 200:
-            raise ScrapybaraError(f"Failed to get instance status: {response.text}")
-
-        data = response.json()
-        instance_state = InstanceStatus(data["instance_state"])
-
-        if instance_state == InstanceStatus.RUNNING:
-            instance_url = f"http://{data['public_ip']}:8000"
-            status_response = requests.get(f"{instance_url}/status")
-            if (
-                status_response.status_code != 200
-                or status_response.json().get("status") != "ok"
-            ):
-                instance_state = InstanceStatus.DEPLOYING
-
-        return Instance(
-            instance_id=instance_id,
-            public_ip=data["public_ip"],
-            status=instance_state,
-            launch_time=(
-                datetime.fromisoformat(data["launch_time"])
-                if data.get("launch_time")
-                else None
-            ),
-        )
-
     def screenshot(self, instance_id: str) -> str:
         """
         Take a screenshot of the virtual desktop
@@ -387,7 +195,7 @@ class Scrapybara:
             coordinate=list(coordinate) if coordinate else None,
             text=text,
         )
-        computer_action.validate()
+        computer_action.model_validate()
 
         response = requests.post(
             f"{instance_url}/computer", json=computer_action.__dict__
@@ -468,7 +276,7 @@ class Scrapybara:
             new_text=new_text,
             line_number=line_number,
         )
-        edit_command.validate()
+        edit_command.model_validate()
 
         response = requests.post(f"{instance_url}/edit", json=edit_command.__dict__)
         if response.status_code != 200:

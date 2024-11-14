@@ -1,36 +1,13 @@
-from typing import Any, Literal, Optional, List
+from typing import Literal, Optional, List
 from anthropic.types.beta import (
     BetaToolComputerUse20241022Param,
     BetaToolTextEditor20241022Param,
     BetaToolBash20241022Param,
-    BetaToolUnionParam,
 )
 import asyncio
 
-from .base import BaseAnthropicTool, CLIResult, ToolError, ToolFailure, ToolResult
+from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 from .. import Scrapybara
-
-
-class ToolCollection:
-    """A collection of anthropic-defined tools."""
-
-    def __init__(self, *tools: BaseAnthropicTool):
-        self.tools = tools
-        self.tool_map = {tool.to_params()["name"]: tool for tool in tools}
-
-    def to_params(
-        self,
-    ) -> list[BetaToolUnionParam]:
-        return [tool.to_params() for tool in self.tools]
-
-    async def run(self, *, name: str, tool_input: dict[str, Any]) -> ToolResult:
-        tool = self.tool_map.get(name)
-        if not tool:
-            return ToolFailure(error=f"Tool {name} is invalid")
-        try:
-            return await tool(**tool_input)
-        except ToolError as e:
-            return ToolFailure(error=e.message)
 
 
 class ComputerTool(BaseAnthropicTool):
