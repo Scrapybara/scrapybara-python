@@ -74,11 +74,14 @@ class Scrapybara:
 
         if instance_state == InstanceStatus.RUNNING:
             instance_url = f"http://{data['public_ip']}:8000"
-            status_response = requests.get(f"{instance_url}/status")
-            if (
-                status_response.status_code != 200
-                or status_response.json().get("status") != "ok"
-            ):
+            try:
+                status_response = requests.get(f"{instance_url}/status", timeout=5)
+                if (
+                    status_response.status_code != 200
+                    or status_response.json().get("status") != "ok"
+                ):
+                    instance_state = InstanceStatus.DEPLOYING
+            except (requests.exceptions.RequestException, ValueError):
                 instance_state = InstanceStatus.DEPLOYING
 
         return Instance(
