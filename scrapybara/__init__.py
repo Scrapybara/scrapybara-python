@@ -1,13 +1,8 @@
 from typing import Optional, Dict, Any, List, Tuple, Literal
 from enum import Enum
-import base64
 from dataclasses import dataclass
 import requests
 from datetime import datetime
-import asyncio
-import shlex
-from pathlib import Path
-from uuid import uuid4
 
 Action = Literal[
     "key",
@@ -23,6 +18,28 @@ Action = Literal[
 ]
 
 Command = Literal["view", "create", "str_replace", "insert", "undo_edit"]
+
+Region = Literal[
+    "us-east-1",
+    "us-east-2",
+    "us-west-1",
+    "us-west-2",
+    "ap-south-1",
+    "ap-northeast-1",
+    "ap-northeast-2",
+    "ap-northeast-3",
+    "ap-southeast-1",
+    "ap-southeast-2",
+    "ca-central-1",
+    "eu-central-1",
+    "eu-west-1",
+    "eu-west-2",
+    "eu-west-3",
+    "eu-north-1",
+    "sa-east-1",
+]
+
+InstanceType = Literal["small", "medium", "large"]
 
 
 class ScrapybaraError(Exception):
@@ -176,19 +193,13 @@ class ScrapybaraConfig:
 
     Args:
         base_url: Base URL for the Scrapybara service (default: http://localhost:8000)
-        instance_type: AWS instance type (default: t4g.micro)
-        region: AWS region (default: us-west-2)
     """
 
     def __init__(
         self,
         base_url: str = "https://starfish-app-e63cz.ondigitalocean.app",
-        instance_type: str = "t4g.micro",
-        region: str = "us-west-2",
     ):
         self.base_url = base_url.rstrip("/")
-        self.instance_type = instance_type
-        self.region = region
 
 
 class Scrapybara:
@@ -230,9 +241,15 @@ class Scrapybara:
             self._instances[instance_id] = f"http://{instance.public_ip}:8000"
         return self._instances[instance_id]
 
-    def start(self) -> Instance:
+    def start(
+        self, instance_type: InstanceType = "small", region: Region = "us-west-2"
+    ) -> Instance:
         """
         Start a new virtual desktop instance
+
+        Args:
+            instance_type: Size of the instance (small, medium, large)
+            region: Region to deploy the instance in
 
         Returns:
             Instance object containing instance details
@@ -244,8 +261,8 @@ class Scrapybara:
             f"{self.config.base_url}/deploy",
             headers=self._headers(),
             json={
-                "instance_type": self.config.instance_type,
-                "region": self.config.region,
+                "instance_type": instance_type,
+                "region": region,
             },
         )
         if response.status_code != 200:
@@ -301,10 +318,21 @@ class Scrapybara:
             raise ScrapybaraError(f"Failed to get instance status: {response.text}")
 
         data = response.json()
+        instance_state = InstanceStatus(data["instance_state"])
+
+        if instance_state == InstanceStatus.RUNNING:
+            instance_url = f"http://{data['public_ip']}:8000"
+            status_response = requests.get(f"{instance_url}/status")
+            if (
+                status_response.status_code != 200
+                or status_response.json().get("status") != "ok"
+            ):
+                instance_state = InstanceStatus.DEPLOYING
+
         return Instance(
             instance_id=instance_id,
             public_ip=data["public_ip"],
-            status=InstanceStatus(data["instance_state"]),
+            status=instance_state,
             launch_time=(
                 datetime.fromisoformat(data["launch_time"])
                 if data.get("launch_time")

@@ -1,8 +1,8 @@
 import pytest
 import pytest_asyncio
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
-from scrapybara import Scrapybara, ScrapybaraConfig
+from scrapybara import Scrapybara
 from scrapybara.anthropic import ComputerTool, EditTool, BashTool
 from scrapybara.anthropic.base import CLIResult, ToolError
 
