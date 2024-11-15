@@ -89,7 +89,7 @@ class Scrapybara:
             public_ip=data["public_ip"],
             status=instance_state,
             launch_time=(
-                datetime.fromisoformat(data["launch_time"])
+                datetime.fromisoformat(data["launch_time"].replace('Z', '+00:00'))
                 if data.get("launch_time")
                 else None
             ),
