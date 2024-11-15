@@ -1,4 +1,4 @@
-from typing import Literal, Optional, List
+from typing import Literal, Optional, List, TypedDict
 from anthropic.types.beta import (
     BetaToolComputerUse20241022Param,
     BetaToolTextEditor20241022Param,
@@ -9,6 +9,10 @@ import asyncio
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 from .. import Scrapybara
 
+class ComputerToolOptions(TypedDict):
+    display_height_px: int
+    display_width_px: int
+    display_number: int | None
 
 class ComputerTool(BaseAnthropicTool):
     """
@@ -18,16 +22,28 @@ class ComputerTool(BaseAnthropicTool):
 
     api_type: Literal["computer_20241022"] = "computer_20241022"
     name: Literal["computer"] = "computer"
+    width: int = 1024
+    height: int = 768
+    display_num: int | None = 1
 
     def __init__(self, scrapybara: Scrapybara, instance_id: str):
         self.scrapybara = scrapybara
         self.instance_id = instance_id
         super().__init__()
+    
+    @property
+    def options(self) -> ComputerToolOptions:
+        return {
+            "display_width_px": self.width,
+            "display_height_px": self.height,
+            "display_number": self.display_num,
+        }
 
     def to_params(self) -> BetaToolComputerUse20241022Param:
         return {
             "name": self.name,
             "type": self.api_type,
+            **self.options,
         }
 
     async def __call__(
