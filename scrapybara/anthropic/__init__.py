@@ -65,7 +65,13 @@ class ComputerTool(BaseAnthropicTool):
                     text=text,
                 ),
             )
-            return CLIResult(output=str(result))
+            # Parse the result dictionary
+            return CLIResult(
+                output=result.get('output', ''),
+                error=result.get('error'),
+                base64_image=result.get('base64_image'),
+                system=result.get('system')
+            )
         except Exception as e:
             raise ToolError(str(e)) from None
 
@@ -117,7 +123,12 @@ class EditTool(BaseAnthropicTool):
                     line_number=insert_line,
                 ),
             )
-            return CLIResult(output=str(result))
+            return CLIResult(
+                output=result.get('output', ''),
+                error=result.get('error'),
+                base64_image=result.get('base64_image'),
+                system=result.get('system')
+            )
         except Exception as e:
             raise ToolError(str(e)) from None
 
@@ -157,6 +168,11 @@ class BashTool(BaseAnthropicTool):
                     instance_id=self.instance_id, command=command, restart=restart
                 ),
             )
-            return CLIResult(output=str(result))
+            return CLIResult(
+                output=result.get('output', ''),
+                error=result.get('error'),
+                base64_image=result.get('base64_image'),
+                system=result.get('system')
+            )
         except Exception as e:
             raise ToolError(str(e)) from None
