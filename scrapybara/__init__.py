@@ -198,7 +198,6 @@ class Scrapybara:
             coordinate=list(coordinate) if coordinate else None,
             text=text,
         )
-        computer_action.model_validate()
 
         response = requests.post(
             f"{instance_url}/computer", json=computer_action.__dict__
@@ -279,7 +278,6 @@ class Scrapybara:
             new_text=new_text,
             line_number=line_number,
         )
-        edit_command.model_validate()
 
         response = requests.post(f"{instance_url}/edit", json=edit_command.__dict__)
         if response.status_code != 200:
