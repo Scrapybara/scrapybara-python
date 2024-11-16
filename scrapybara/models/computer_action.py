@@ -1,25 +1,16 @@
 from typing import Optional, List
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, model_validator
 
 from .types import Action
 from .exceptions import ScrapybaraError
 
 
 class ComputerAction(BaseModel):
-    """
-    Computer action data
-
-    Attributes:
-        action: Type of action to perform (see Action enum)
-        coordinate: Optional (x, y) coordinates for mouse actions
-        text: Optional text for keyboard actions
-        keys: Optional keys for keyboard actions
-    """
+    """Computer action request model"""
 
     action: Action
     coordinate: Optional[List[int]] = None
     text: Optional[str] = None
-    keys: Optional[str] = None
 
     @model_validator(mode="after")
     def validate_action_params(self) -> "ComputerAction":

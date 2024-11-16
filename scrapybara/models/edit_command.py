@@ -7,25 +7,25 @@ from .exceptions import ScrapybaraError
 
 class EditCommand(BaseModel):
     """
-    File editing command data
+    File editing command request model
 
     Attributes:
         command: Type of edit operation to perform
         path: Path to the target file
-        content: Content for create command
+        file_text: Content for create command
         view_range: [start_line, end_line] for view command
-        old_text: Text to replace for str_replace command
-        new_text: New text for str_replace or insert commands
-        line_number: Line number for insert command
+        old_str: Text to replace for str_replace command
+        new_str: New text for str_replace or insert commands
+        insert_line: Line number for insert command
     """
 
     command: Command
     path: str
-    content: Optional[str] = None
+    file_text: Optional[str] = None
     view_range: Optional[List[int]] = None
-    old_text: Optional[str] = None
-    new_text: Optional[str] = None
-    line_number: Optional[int] = None
+    old_str: Optional[str] = None
+    new_str: Optional[str] = None
+    insert_line: Optional[int] = None
 
     @model_validator(mode="after")
     def validate_command_params(self) -> "EditCommand":
@@ -40,21 +40,21 @@ class EditCommand(BaseModel):
                     )
 
         elif self.command == "create":
-            if self.content is None:
-                raise ScrapybaraError("content is required for create command")
+            if self.file_text is None:
+                raise ScrapybaraError("file_text is required for create command")
 
         elif self.command == "str_replace":
-            if self.old_text is None or self.new_text is None:
+            if self.old_str is None or self.new_str is None:
                 raise ScrapybaraError(
-                    "old_text and new_text are required for str_replace command"
+                    "old_str and new_str are required for str_replace command"
                 )
 
         elif self.command == "insert":
-            if self.line_number is None or self.new_text is None:
+            if self.insert_line is None or self.new_str is None:
                 raise ScrapybaraError(
-                    "line_number and new_text are required for insert command"
+                    "insert_line and new_str are required for insert command"
                 )
-            if not isinstance(self.line_number, int) or self.line_number < 0:
-                raise ScrapybaraError("line_number must be a non-negative integer")
+            if not isinstance(self.insert_line, int) or self.insert_line < 0:
+                raise ScrapybaraError("insert_line must be a non-negative integer")
 
         return self

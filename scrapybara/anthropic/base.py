@@ -19,7 +19,6 @@ class BaseAnthropicTool(metaclass=ABCMeta):
     ) -> BetaToolUnionParam:
         raise NotImplementedError
 
-
 @dataclass(kw_only=True, frozen=True)
 class ToolResult:
     """Represents the result of a tool execution."""
@@ -67,3 +66,4 @@ class ToolError(Exception):
 
     def __init__(self, message):
         self.message = message
+

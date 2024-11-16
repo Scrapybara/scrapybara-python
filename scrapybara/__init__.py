@@ -243,11 +243,11 @@ class Scrapybara:
         instance_id: str,
         command: Command,
         path: str,
-        content: Optional[str] = None,
+        file_text: Optional[str] = None,
         view_range: Optional[List[int]] = None,
-        old_text: Optional[str] = None,
-        new_text: Optional[str] = None,
-        line_number: Optional[int] = None,
+        old_str: Optional[str] = None,
+        new_str: Optional[str] = None,
+        insert_line: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         File editing operations
@@ -262,21 +262,21 @@ class Scrapybara:
             instance_id: ID of the instance to edit files on
             command: The edit command to execute
             path: Absolute path to the file
-            content: File content for create command
+            file_text: File content for create command
             view_range: [start_line, end_line] for view command
-            old_text: Text to replace for str_replace command
-            new_text: New text for str_replace or insert commands
-            line_number: Line number for insert command
+            old_str: Text to replace for str_replace command
+            new_str: New text for str_replace or insert commands
+            insert_line: Line number for insert command
         """
         instance_url = self._get_instance_url(instance_id)
         edit_command = EditCommand(
             command=command,
             path=path,
-            content=content,
+            file_text=file_text,
             view_range=view_range,
-            old_text=old_text,
-            new_text=new_text,
-            line_number=line_number,
+            old_str=old_str,
+            new_str=new_str,
+            insert_line=insert_line,
         )
 
         response = requests.post(f"{instance_url}/edit", json=edit_command.__dict__)

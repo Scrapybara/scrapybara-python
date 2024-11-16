@@ -116,11 +116,11 @@ class EditTool(BaseAnthropicTool):
                     instance_id=self.instance_id,
                     command=command,
                     path=path,
-                    content=file_text,
+                    file_text=file_text,
                     view_range=view_range,
-                    old_text=old_str,
-                    new_text=new_str,
-                    line_number=insert_line,
+                    old_str=old_str,
+                    new_str=new_str,
+                    insert_line=insert_line,
                 ),
             )
             return CLIResult(
