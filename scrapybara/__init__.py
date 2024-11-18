@@ -141,7 +141,7 @@ class Scrapybara:
             if instance.status == InstanceStatus.RUNNING:
                 return instance
             
-            print(f"Instance not ready, retrying in {retry_delay} seconds... (Attempt {attempt + 1}/{max_retries})")
+            # print(f"Instance not ready, retrying in {retry_delay} seconds... (Attempt {attempt + 1}/{max_retries})")
             time.sleep(retry_delay)
         
         return instance
