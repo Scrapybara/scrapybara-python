@@ -50,22 +50,6 @@ class Scrapybara:
             self._instances[instance_id] = f"http://{instance.public_ip}:8000"
         return self._instances[instance_id]
 
-    def get_stream_url(self, instance_id: str) -> str:
-        """
-        Get NoVNC stream URL for the instance
-
-        Args:
-            instance_id: ID of the instance to get stream URL for
-
-        Returns:
-            NoVNC stream URL
-
-        Raises:
-            ScrapybaraError: If instance doesn't exist or if status check fails
-        """
-        instance = self.get(instance_id)
-        return f"http://{instance.public_ip}:6091"
-
     def get(self, instance_id: str) -> Instance:
         """
         Get instance status
@@ -106,7 +90,7 @@ class Scrapybara:
             public_ip=data["public_ip"],
             status=instance_state,
             launch_time=(
-                datetime.fromisoformat(data["launch_time"].replace('Z', '+00:00'))
+                datetime.fromisoformat(data["launch_time"].replace("Z", "+00:00"))
                 if data.get("launch_time")
                 else None
             ),
@@ -156,10 +140,10 @@ class Scrapybara:
             instance = self.get(instance.instance_id)
             if instance.status == InstanceStatus.RUNNING:
                 return instance
-            
+
             # print(f"Instance not ready, retrying in {retry_delay} seconds... (Attempt {attempt + 1}/{max_retries})")
             time.sleep(retry_delay)
-        
+
         return instance
         # raise ScrapybaraError("Instance failed to become ready within timeout period")
 
@@ -315,3 +299,19 @@ class Scrapybara:
         if response.status_code != 200:
             raise ScrapybaraError(f"Failed to execute edit command: {response.text}")
         return response.json()
+
+    def get_stream_url(self, instance_id: str) -> str:
+        """
+        Get NoVNC stream URL for the instance
+
+        Args:
+            instance_id: ID of the instance to get stream URL for
+
+        Returns:
+            NoVNC stream URL
+
+        Raises:
+            ScrapybaraError: If instance doesn't exist or if status check fails
+        """
+        instance = self.get(instance_id)
+        return f"http://{instance.public_ip}:6091"
