@@ -50,6 +50,22 @@ class Scrapybara:
             self._instances[instance_id] = f"http://{instance.public_ip}:8000"
         return self._instances[instance_id]
 
+    def get_stream_url(self, instance_id: str) -> str:
+        """
+        Get NoVNC stream URL for the instance
+
+        Args:
+            instance_id: ID of the instance to get stream URL for
+
+        Returns:
+            NoVNC stream URL
+
+        Raises:
+            ScrapybaraError: If instance doesn't exist or if status check fails
+        """
+        instance = self.get(instance_id)
+        return f"http://{instance.public_ip}:6091"
+
     def get(self, instance_id: str) -> Instance:
         """
         Get instance status
