@@ -1,6 +1,7 @@
 from typing import Optional, Dict, Any, List, Tuple
 import requests
 from datetime import datetime
+import time
 
 from .models.types import Action, Command, Region, InstanceType, InstanceStatus
 from .models.instance import Instance
@@ -99,7 +100,7 @@ class Scrapybara:
         self, instance_type: InstanceType = "small", region: Region = "us-west-2"
     ) -> Instance:
         """
-        Start a new virtual desktop instance
+        Start a new virtual desktop instance and wait for it to be fully ready
 
         Args:
             instance_type: Size of the instance (small, medium, large)
@@ -109,8 +110,9 @@ class Scrapybara:
             Instance object containing instance details
 
         Raises:
-            ScrapybaraError: If start fails
+            ScrapybaraError: If start fails or instance doesn't become ready within timeout
         """
+        # Initial instance deployment
         response = requests.post(
             f"{self.config.base_url}/deploy",
             headers=self._headers(),
@@ -129,7 +131,21 @@ class Scrapybara:
             status=InstanceStatus(data["status"]),
         )
         self._instances[instance.instance_id] = f"http://{instance.public_ip}:8000"
+
+        # Wait for both EC2 and Docker to be ready
+        max_retries = 15
+        retry_delay = 5
+
+        for attempt in range(max_retries):
+            instance = self.get(instance.instance_id)
+            if instance.status == InstanceStatus.RUNNING:
+                return instance
+            
+            print(f"Instance not ready, retrying in {retry_delay} seconds... (Attempt {attempt + 1}/{max_retries})")
+            time.sleep(retry_delay)
+        
         return instance
+        # raise ScrapybaraError("Instance failed to become ready within timeout period")
 
     def stop(self, instance_id: str) -> None:
         """
