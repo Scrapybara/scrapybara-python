@@ -314,4 +314,4 @@ class Scrapybara:
             ScrapybaraError: If instance doesn't exist or if status check fails
         """
         instance = self.get(instance_id)
-        return f"https://{instance.public_ip}:6091"
+        return f"http://{instance.public_ip}:6091"
