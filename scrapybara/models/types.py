@@ -19,24 +19,15 @@ Command = Literal["view", "create", "str_replace", "insert", "undo_edit"]
 Region = Literal[
     "us-east-1",
     "us-east-2",
-    # ... rest of regions ...
+    "us-west-1",
+    "us-west-2",
 ]
 
 InstanceType = Literal["small", "medium", "large"]
 
-
-class InstanceStatus(str, Enum):
-    """
-    Enumeration of possible instance states
-
-    Attributes:
-        DEPLOYING: Instance is being created and configured
-        RUNNING: Instance is active and ready for use
-        TERMINATED: Instance has been stopped
-        ERROR: Instance encountered an error during operation
-    """
-
-    DEPLOYING = "deploying"
-    RUNNING = "running"
-    TERMINATED = "terminated"
-    ERROR = "error"
+InstanceStatus = Literal[
+    "deploying",
+    "running",
+    "terminated",
+    "error",
+]

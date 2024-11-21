@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "scrapybara"
-version = "0.1.13"
+version = "0.2.0"
 description = "Official Python client for Scrapybara"
 authors = ["Scrapybara <hello@scrapybara.com>"]
 readme = "README.md"
