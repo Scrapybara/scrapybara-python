@@ -11,11 +11,13 @@ import requests
 
 class Instance(BaseModel):
     """
-    Information about a virtual desktop instance
+    Virtual desktop instance
 
     Attributes:
         id: Unique identifier for the instance
-        launch_time: When the instance was started (optional)
+        launch_time: When the instance was started
+        region: Region where the instance is located
+        instance_type: Type of instance
         _api_key: Authentication key for API requests (private)
         _base_url: Base URL for API requests (private)
     """
@@ -26,6 +28,7 @@ class Instance(BaseModel):
     instance_type: InstanceType
     _api_key: str = PrivateAttr()
     _base_url: str = PrivateAttr()
+    _browser: Optional["Instance.Browser"] = PrivateAttr(default=None)
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -154,3 +157,44 @@ class Instance(BaseModel):
         if response.status_code != 200:
             raise ScrapybaraError(f"Failed to get instance status: {response.text}")
         return response.json()["instance_state"]
+
+    class Browser:
+        """Browser API for the virtual desktop instance"""
+
+        def __init__(self, instance: "Instance"):
+            self.instance = instance
+
+        def start(self) -> str:
+            """Start a browser session"""
+            response = requests.post(
+                f"{self.instance._base_url}/instance/{self.instance.id}/browser/start",
+                headers=self.instance._headers(),
+            )
+            if response.status_code != 200:
+                raise ScrapybaraError(f"Failed to start browser: {response.text}")
+            return response.json()["cdp_endpoint"]
+
+        def get_cdp_url(self) -> str:
+            """Get the CDP URL for the browser session"""
+            response = requests.get(
+                f"{self.instance._base_url}/instance/{self.instance.id}/browser/cdp_url",
+                headers=self.instance._headers(),
+            )
+            if response.status_code != 200:
+                raise ScrapybaraError(f"Failed to get CDP URL: {response.text}")
+            return response.json()["cdp_endpoint"]
+
+        def stop(self) -> None:
+            """Stop the browser session"""
+            response = requests.post(
+                f"{self.instance._base_url}/instance/{self.instance.id}/browser/stop",
+                headers=self.instance._headers(),
+            )
+            if response.status_code != 200:
+                raise ScrapybaraError(f"Failed to stop browser: {response.text}")
+
+    @property
+    def browser(self) -> Browser:
+        if self._browser is None:
+            self._browser = self.Browser(self)
+        return self._browser
