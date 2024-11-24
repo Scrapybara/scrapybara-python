@@ -20,12 +20,11 @@ client = Scrapybara(api_key="your-api-key")
 instance = client.start()
 
 # Interact with the instance
-client.get(instance.instance_id)
-client.computer(instance.instance_id, "mouse_move", [100, 200])
-client.screenshot(instance.instance_id)
+instance.computer.mouse_move(100, 200)
+instance.screenshot()
 
 # Stop the instance
-client.stop(instance.instance_id)
+instance.stop()
 ```
 
 ### With Anthropic Computer Use
@@ -36,9 +35,9 @@ from scrapybara.anthropic import ComputerTool, EditTool, BashTool
 # From https://github.com/anthropics/anthropic-quickstarts/blob/main/computer-use-demo
 
 tool_collection = ToolCollection(
-    ComputerTool(client, instance.instance_id),
-    EditTool(client, instance.instance_id),
-    BashTool(client, instance.instance_id),
+    ComputerTool(instance),
+    EditTool(instance),
+    BashTool(instance),
 )
 
 raw_response = client.beta.messages.with_raw_response.create(
