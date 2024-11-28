@@ -1,4 +1,4 @@
-from .types import Action, Command, Region, InstanceType, InstanceStatus
+from .types import Action, Command, InstanceType, InstanceStatus
 from .instance import Instance
 from .config import ScrapybaraConfig
 from .computer_action import ComputerAction
@@ -8,7 +8,6 @@ from .exceptions import ScrapybaraError
 __all__ = [
     "Action",
     "Command",
-    "Region",
     "InstanceType",
     "InstanceStatus",
     "Instance",

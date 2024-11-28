@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any, List, Tuple
 from pydantic import BaseModel, PrivateAttr
 
-from .types import Action, Command, InstanceStatus, InstanceType, Region
+from .types import Action, Command, InstanceStatus, InstanceType
 from .computer_action import ComputerAction
 from .edit_command import EditCommand
 from .exceptions import ScrapybaraError
@@ -16,7 +16,6 @@ class Instance(BaseModel):
     Attributes:
         id: Unique identifier for the instance
         launch_time: When the instance was started
-        region: Region where the instance is located
         instance_type: Type of instance
         _api_key: Authentication key for API requests (private)
         _base_url: Base URL for API requests (private)
@@ -24,7 +23,6 @@ class Instance(BaseModel):
 
     id: str
     launch_time: datetime
-    region: Region
     instance_type: InstanceType
     _api_key: str = PrivateAttr()
     _base_url: str = PrivateAttr()

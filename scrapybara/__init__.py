@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 import time
 
-from .models.types import Region, InstanceType
+from .models.types import InstanceType
 from .models.instance import Instance
 from .models.config import ScrapybaraConfig
 from .models.exceptions import ScrapybaraError
@@ -56,21 +56,17 @@ class Scrapybara:
             launch_time=(
                 datetime.fromisoformat(data["launch_time"].replace("Z", "+00:00"))
             ),
-            region=data["region"],
             instance_type=data["instance_type"],
             _api_key=self.api_key,
             _base_url=self.config.base_url,
         )
 
-    def start(
-        self, instance_type: InstanceType = "small", region: Region = "us-west-2"
-    ) -> Instance:
+    def start(self, instance_type: InstanceType = "small") -> Instance:
         """
         Start a new virtual desktop instance and wait for it to be fully ready
 
         Args:
             instance_type: Size of the instance (small, medium, large)
-            region: Region to deploy the instance in
 
         Returns:
             Instance object containing instance details
@@ -84,7 +80,6 @@ class Scrapybara:
             headers=self._headers(),
             json={
                 "instance_type": instance_type,
-                "region": region,
             },
         )
         if response.status_code != 200:
@@ -96,7 +91,6 @@ class Scrapybara:
             launch_time=(
                 datetime.fromisoformat(data["launch_time"].replace("Z", "+00:00"))
             ),
-            region=data["region"],
             instance_type=data["instance_type"],
             _api_key=self.api_key,
             _base_url=self.config.base_url,
