@@ -100,7 +100,6 @@ class Scrapybara:
         max_retries = 15
         retry_delay = 5
 
-        time.sleep(1)
         for attempt in range(max_retries):
             status = instance.get_status()
             if status == "running":
