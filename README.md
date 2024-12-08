@@ -1,54 +1,19 @@
-# Scrapybara Python Client
+# Scrapybara Python Library
 
-Official Python client for Scrapybara ₍ᐢ•(ܫ)•ᐢ₎
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fscrapybara%2Fscrapybara-python)
+[![pypi](https://img.shields.io/pypi/v/scrapybara)](https://pypi.python.org/pypi/scrapybara)
+
+The Scrapybara Python library provides convenient access to the Scrapybara API from Python.
 
 ## Installation
 
-```bash
+```sh
 pip install scrapybara
 ```
 
-## Usage
+## Reference
 
-```python
-from scrapybara import Scrapybara
-
-# Initialize the client
-client = Scrapybara(api_key="your-api-key")
-
-# Start a new instance and get its ID
-instance = client.start()
-
-# Interact with the instance
-instance.computer.mouse_move(100, 200)
-instance.screenshot()
-
-# Stop the instance
-instance.stop()
-```
-
-### With Anthropic Computer Use
-
-```python
-from scrapybara.anthropic import ComputerTool, EditTool, BashTool
-
-# From https://github.com/anthropics/anthropic-quickstarts/blob/main/computer-use-demo
-
-tool_collection = ToolCollection(
-    ComputerTool(instance),
-    EditTool(instance),
-    BashTool(instance),
-)
-
-raw_response = client.beta.messages.with_raw_response.create(
-    max_tokens=max_tokens,
-    messages=messages,
-    model=model,
-    system=[system],
-    tools=tool_collection.to_params(),
-    betas=betas,
-)
-```
+A full reference for this library is available [here](./reference.md).
 
 ## Requirements
 
@@ -61,6 +26,120 @@ raw_response = client.beta.messages.with_raw_response.create(
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Usage
+
+Instantiate and use the client with the following:
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.start()
+```
+
+## Async Client
+
+The SDK also exports an `async` client so that you can make non-blocking calls to our API.
+
+```python
+import asyncio
+
+from scrapybara import AsyncScrapybara
+
+client = AsyncScrapybara(
+    api_key="YOUR_API_KEY",
+)
+
+
+async def main() -> None:
+    await client.start()
+
+
+asyncio.run(main())
+```
+
+## Exception Handling
+
+When the API returns a non-success status code (4xx or 5xx response), a subclass of the following error
+will be thrown.
+
+```python
+from scrapybara.core.api_error import ApiError
+
+try:
+    client.start(...)
+except ApiError as e:
+    print(e.status_code)
+    print(e.body)
+```
+
+## Advanced
+
+### Retries
+
+The SDK is instrumented with automatic retries with exponential backoff. A request will be retried as long
+as the request is deemed retriable and the number of retry attempts has not grown larger than the configured
+retry limit (default: 2).
+
+A request is deemed retriable when any of the following HTTP status codes is returned:
+
+- [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) (Timeout)
+- [429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) (Too Many Requests)
+- [5XX](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500) (Internal Server Errors)
+
+Use the `max_retries` request option to configure this behavior.
+
+```python
+client.start(..., request_options={
+    "max_retries": 1
+})
+```
+
+### Timeouts
+
+The SDK defaults to a 60 second timeout. You can configure this with a timeout option at the client or request level.
+
+```python
+
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    ...,
+    timeout=20.0,
+)
+
+
+# Override timeout for a specific method
+client.start(..., request_options={
+    "timeout_in_seconds": 1
+})
+```
+
+### Custom Client
+
+You can override the `httpx` client to customize it for your use-case. Some common use-cases include support for proxies
+and transports.
+```python
+import httpx
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    ...,
+    httpx_client=httpx.Client(
+        proxies="http://my.test.proxy.example.com",
+        transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+    ),
+)
+```
+
 ## Contributing
 
-Contributions are welcome! Feel free to submit an issue.
+While we value open-source contributions to this SDK, this library is generated programmatically.
+Additions made directly to this library would have to be moved over to our generation code,
+otherwise they would be overwritten upon the next generated release. Feel free to open a PR as
+a proof of concept, but know that we will not be able to merge it as-is. We suggest opening
+an issue first to discuss with us!
+
+On the other hand, contributions to the README are always very welcome!
