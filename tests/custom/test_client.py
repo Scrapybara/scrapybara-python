@@ -1,7 +1,10 @@
-import pytest
+from scrapybara import Scrapybara
 
 
-# Get started with writing tests with pytest at https://docs.pytest.org
-@pytest.mark.skip(reason="Unimplemented")
 def test_client() -> None:
-    assert True == True
+    client = Scrapybara(api_key="scrapy-8bb02c63-1339-4aeb-bae2-b6beea0485cb")
+    instance = client.start()
+    assert instance.id is not None
+    screenshot_response = instance.screenshot()
+    assert screenshot_response.base_64_image is not None
+    instance.stop()
