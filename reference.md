@@ -1361,7 +1361,6 @@ client = Scrapybara(
 client.notebook.create(
     instance_id="instance_id",
     name="name",
-    kernel_name="kernel_name",
 )
 
 ```
@@ -1394,7 +1393,7 @@ client.notebook.create(
 <dl>
 <dd>
 
-**kernel_name:** `str` 
+**kernel_name:** `typing.Optional[str]` 
     
 </dd>
 </dl>

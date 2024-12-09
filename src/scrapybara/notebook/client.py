@@ -80,7 +80,12 @@ class NotebookClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def create(
-        self, instance_id: str, *, name: str, kernel_name: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        instance_id: str,
+        *,
+        name: str,
+        kernel_name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Notebook:
         """
         Parameters
@@ -89,7 +94,7 @@ class NotebookClient:
 
         name : str
 
-        kernel_name : str
+        kernel_name : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -109,7 +114,6 @@ class NotebookClient:
         client.notebook.create(
             instance_id="instance_id",
             name="name",
-            kernel_name="kernel_name",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -564,7 +568,12 @@ class AsyncNotebookClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def create(
-        self, instance_id: str, *, name: str, kernel_name: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        instance_id: str,
+        *,
+        name: str,
+        kernel_name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Notebook:
         """
         Parameters
@@ -573,7 +582,7 @@ class AsyncNotebookClient:
 
         name : str
 
-        kernel_name : str
+        kernel_name : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -598,7 +607,6 @@ class AsyncNotebookClient:
             await client.notebook.create(
                 instance_id="instance_id",
                 name="name",
-                kernel_name="kernel_name",
             )
 
 
