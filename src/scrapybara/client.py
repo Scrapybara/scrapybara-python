@@ -700,7 +700,7 @@ class Scrapybara:
         *,
         instance_type: Optional[
             Union[DeploymentConfigInstanceType, Literal["small", "medium", "large"]]
-        ] = BASE_OMIT,
+        ] = "medium",
         timeout_hours: Optional[float] = BASE_OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Instance:
@@ -755,7 +755,7 @@ class AsyncScrapybara:
         *,
         instance_type: Optional[
             Union[DeploymentConfigInstanceType, Literal["small", "medium", "large"]]
-        ] = BASE_OMIT,
+        ] = "medium",
         timeout_hours: Optional[float] = BASE_OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncInstance:
