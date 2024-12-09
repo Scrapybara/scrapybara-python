@@ -3,4 +3,3 @@
 src/scrapybara/client.py
 src/scrapybara/anthropic/
 tests/custom/test_client.py
-.github/workflows/ci.yml
