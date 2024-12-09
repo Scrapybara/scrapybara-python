@@ -35,6 +35,8 @@ jobs:
 
       - name: Test
         run: poetry run pytest -rP .
+        env:
+          SCRAPYBARA_API_KEY: ${{ secrets.SCRAPYBARA_API_KEY }}
 
   publish:
     needs: [compile, test]
@@ -55,7 +57,5 @@ jobs:
       - name: Publish to pypi
         run: |
           poetry config repositories.remote https://upload.pypi.org/legacy/
-          poetry --no-interaction -v publish --build --repository remote --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD"
-        env:
-          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+          poetry --no-interaction -v publish --build --repository remote
