@@ -2,3 +2,4 @@
 
 src/scrapybara/client.py
 tests/custom/test_client.py
+.github/workflows/ci.yml
