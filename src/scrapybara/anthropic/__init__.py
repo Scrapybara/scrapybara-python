@@ -1,4 +1,4 @@
-from typing import Literal, Optional, List, TypedDict
+from typing import Literal, Optional, List, TypedDict, Any
 from anthropic.types.beta import (
     BetaToolComputerUse20241022Param,
     BetaToolTextEditor20241022Param,
@@ -14,7 +14,7 @@ from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 class ComputerToolOptions(TypedDict):
     display_height_px: int
     display_width_px: int
-    display_number: int | None
+    display_number: Optional[int]
 
 
 class ComputerTool(BaseAnthropicTool):
@@ -27,7 +27,7 @@ class ComputerTool(BaseAnthropicTool):
     name: Literal["computer"] = "computer"
     width: int = 1024
     height: int = 768
-    display_num: int | None = 1
+    display_num: Optional[int] = 1
 
     def __init__(self, instance: Instance):
         self.instance = instance
@@ -45,17 +45,16 @@ class ComputerTool(BaseAnthropicTool):
         return {
             "name": self.name,
             "type": self.api_type,
-            **self.options,
+            "display_width_px": self.width,
+            "display_height_px": self.height,
+            "display_number": self.display_num,
         }
 
-    async def __call__(
-        self,
-        *,
-        action: str,
-        coordinate: Optional[List[int]] = None,
-        text: Optional[str] = None,
-        **kwargs,
-    ) -> ToolResult:
+    async def __call__(self, **kwargs: Any) -> ToolResult:
+        action = kwargs.pop("action")
+        coordinate = kwargs.pop("coordinate", None)
+        text = kwargs.pop("text", None)
+
         try:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
@@ -66,12 +65,11 @@ class ComputerTool(BaseAnthropicTool):
                     text=text,
                 ),
             )
-            # Parse the result dictionary
             return CLIResult(
-                output=result.get("output", ""),
-                error=result.get("error"),
-                base64_image=result.get("base64_image"),
-                system=result.get("system"),
+                output=result.get("output") if result else "",
+                error=result.get("error") if result else None,
+                base64_image=result.get("base64_image") if result else None,
+                system=result.get("system") if result else None,
             )
         except Exception as e:
             raise ToolError(str(e)) from None
@@ -96,18 +94,14 @@ class EditTool(BaseAnthropicTool):
             "type": self.api_type,
         }
 
-    async def __call__(
-        self,
-        *,
-        command: str,
-        path: str,
-        file_text: Optional[str] = None,
-        view_range: Optional[List[int]] = None,
-        old_str: Optional[str] = None,
-        new_str: Optional[str] = None,
-        insert_line: Optional[int] = None,
-        **kwargs,
-    ) -> ToolResult:
+    async def __call__(self, **kwargs: Any) -> ToolResult:
+        command = kwargs.pop("command")
+        path = kwargs.pop("path")
+        file_text = kwargs.pop("file_text", None)
+        view_range = kwargs.pop("view_range", None)
+        old_str = kwargs.pop("old_str", None)
+        new_str = kwargs.pop("new_str", None)
+        insert_line = kwargs.pop("insert_line", None)
         try:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
@@ -123,10 +117,10 @@ class EditTool(BaseAnthropicTool):
                 ),
             )
             return CLIResult(
-                output=result.get("output", ""),
-                error=result.get("error"),
-                base64_image=result.get("base64_image"),
-                system=result.get("system"),
+                output=result.get("output") if result else "",
+                error=result.get("error") if result else None,
+                base64_image=result.get("base64_image") if result else None,
+                system=result.get("system") if result else None,
             )
         except Exception as e:
             raise ToolError(str(e)) from None
@@ -151,13 +145,9 @@ class BashTool(BaseAnthropicTool):
             "type": self.api_type,
         }
 
-    async def __call__(
-        self,
-        *,
-        command: str,
-        restart: bool = False,
-        **kwargs,
-    ) -> ToolResult:
+    async def __call__(self, **kwargs: Any) -> ToolResult:
+        command = kwargs.pop("command")
+        restart = kwargs.pop("restart", False)
         try:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
@@ -165,10 +155,10 @@ class BashTool(BaseAnthropicTool):
                 lambda: self.instance.bash(command=command, restart=restart),
             )
             return CLIResult(
-                output=result.get("output", ""),
-                error=result.get("error"),
-                base64_image=result.get("base64_image"),
-                system=result.get("system"),
+                output=result.get("output") if result else "",
+                error=result.get("error") if result else None,
+                base64_image=result.get("base64_image") if result else None,
+                system=result.get("system") if result else None,
             )
         except Exception as e:
             raise ToolError(str(e)) from None

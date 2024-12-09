@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass, fields, replace
-from typing import Any
+from typing import Any, Optional
 
 from anthropic.types.beta import BetaToolUnionParam
 
@@ -24,10 +24,10 @@ class BaseAnthropicTool(metaclass=ABCMeta):
 class ToolResult:
     """Represents the result of a tool execution."""
 
-    output: str | None = None
-    error: str | None = None
-    base64_image: str | None = None
-    system: str | None = None
+    output: Optional[str] = None
+    error: Optional[str] = None
+    base64_image: Optional[str] = None
+    system: Optional[str] = None
 
     def __bool__(self):
         return any(getattr(self, field.name) for field in fields(self))
