@@ -1,1 +1,5 @@
 # Specify files that shouldn't be modified by Fern
+
+src/scrapybara/client.py
+tests/custom/test_client.py
+.github/workflows/ci.yml
