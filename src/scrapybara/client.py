@@ -22,13 +22,12 @@ from .types import (
     StopBrowserResponse,
     StopInstanceResponse,
 )
-from .base_client import BaseClient, AsyncBaseClient, OMIT as BASE_OMIT
+
+OMIT = typing.cast(typing.Any, ...)
+
+from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
 import httpx
-from .file.client import OMIT as FILE_OMIT
-from .notebook.client import OMIT as NOTEBOOK_OMIT
-from .code.client import OMIT as CODE_OMIT
-from .instance.client import OMIT as INSTANCE_OMIT
 
 
 class Browser:
@@ -108,7 +107,7 @@ class File:
         self,
         *,
         path: str,
-        encoding: Optional[str] = FILE_OMIT,
+        encoding: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> FileReadResponse:
         return self._client.file.read(
@@ -123,7 +122,7 @@ class File:
         *,
         path: str,
         content: str,
-        encoding: Optional[str] = FILE_OMIT,
+        encoding: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Dict[str, Optional[Any]]:
         return self._client.file.write(
@@ -165,7 +164,7 @@ class AsyncFile:
         self,
         *,
         path: str,
-        encoding: Optional[str] = FILE_OMIT,
+        encoding: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> FileReadResponse:
         return await self._client.file.read(
@@ -180,7 +179,7 @@ class AsyncFile:
         *,
         path: str,
         content: str,
-        encoding: Optional[str] = FILE_OMIT,
+        encoding: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Dict[str, Optional[Any]]:
         return await self._client.file.write(
@@ -332,7 +331,7 @@ class Notebook:
         notebook_id: str,
         cell_id: str,
         *,
-        timeout: Optional[int] = NOTEBOOK_OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> NotebookCell:
         return self._client.notebook.execute_cell(
@@ -347,7 +346,7 @@ class Notebook:
         self,
         notebook_id: str,
         *,
-        timeout: Optional[int] = NOTEBOOK_OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> List[NotebookCell]:
         return self._client.notebook.execute(
@@ -421,7 +420,7 @@ class AsyncNotebook:
         notebook_id: str,
         cell_id: str,
         *,
-        timeout: Optional[int] = NOTEBOOK_OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> NotebookCell:
         return await self._client.notebook.execute_cell(
@@ -436,7 +435,7 @@ class AsyncNotebook:
         self,
         notebook_id: str,
         *,
-        timeout: Optional[int] = NOTEBOOK_OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> List[NotebookCell]:
         return await self._client.notebook.execute(
@@ -456,8 +455,8 @@ class Code:
         self,
         *,
         code: str,
-        kernel_name: Optional[str] = CODE_OMIT,
-        timeout: Optional[int] = CODE_OMIT,
+        kernel_name: Optional[str] = OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.code.execute(
@@ -478,8 +477,8 @@ class AsyncCode:
         self,
         *,
         code: str,
-        kernel_name: Optional[str] = CODE_OMIT,
-        timeout: Optional[int] = CODE_OMIT,
+        kernel_name: Optional[str] = OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.code.execute(
@@ -529,8 +528,8 @@ class Instance:
         self,
         *,
         action: Action,
-        coordinate: Optional[Sequence[int]] = INSTANCE_OMIT,
-        text: Optional[str] = INSTANCE_OMIT,
+        coordinate: Optional[Sequence[int]] = OMIT,
+        text: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.computer(
@@ -544,8 +543,8 @@ class Instance:
     def bash(
         self,
         *,
-        command: Optional[str] = INSTANCE_OMIT,
-        restart: Optional[bool] = INSTANCE_OMIT,
+        command: Optional[str] = OMIT,
+        restart: Optional[bool] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.bash(
@@ -557,11 +556,11 @@ class Instance:
         *,
         command: Command,
         path: str,
-        file_text: Optional[str] = INSTANCE_OMIT,
-        view_range: Optional[Sequence[int]] = INSTANCE_OMIT,
-        old_str: Optional[str] = INSTANCE_OMIT,
-        new_str: Optional[str] = INSTANCE_OMIT,
-        insert_line: Optional[int] = INSTANCE_OMIT,
+        file_text: Optional[str] = OMIT,
+        view_range: Optional[Sequence[int]] = OMIT,
+        old_str: Optional[str] = OMIT,
+        new_str: Optional[str] = OMIT,
+        insert_line: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.edit(
@@ -620,8 +619,8 @@ class AsyncInstance:
         self,
         *,
         action: Action,
-        coordinate: Optional[Sequence[int]] = INSTANCE_OMIT,
-        text: Optional[str] = INSTANCE_OMIT,
+        coordinate: Optional[Sequence[int]] = OMIT,
+        text: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.computer(
@@ -635,8 +634,8 @@ class AsyncInstance:
     async def bash(
         self,
         *,
-        command: Optional[str] = INSTANCE_OMIT,
-        restart: Optional[bool] = INSTANCE_OMIT,
+        command: Optional[str] = OMIT,
+        restart: Optional[bool] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.bash(
@@ -648,11 +647,11 @@ class AsyncInstance:
         *,
         command: Command,
         path: str,
-        file_text: Optional[str] = INSTANCE_OMIT,
-        view_range: Optional[Sequence[int]] = INSTANCE_OMIT,
-        old_str: Optional[str] = INSTANCE_OMIT,
-        new_str: Optional[str] = INSTANCE_OMIT,
-        insert_line: Optional[int] = INSTANCE_OMIT,
+        file_text: Optional[str] = OMIT,
+        view_range: Optional[Sequence[int]] = OMIT,
+        old_str: Optional[str] = OMIT,
+        new_str: Optional[str] = OMIT,
+        insert_line: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.edit(
@@ -700,8 +699,8 @@ class Scrapybara:
         *,
         instance_type: Optional[
             Union[DeploymentConfigInstanceType, Literal["small", "medium", "large"]]
-        ] = "medium",
-        timeout_hours: Optional[float] = BASE_OMIT,
+        ] = OMIT,
+        timeout_hours: Optional[float] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Instance:
         response = self._base_client.start(
@@ -755,8 +754,8 @@ class AsyncScrapybara:
         *,
         instance_type: Optional[
             Union[DeploymentConfigInstanceType, Literal["small", "medium", "large"]]
-        ] = "medium",
-        timeout_hours: Optional[float] = BASE_OMIT,
+        ] = OMIT,
+        timeout_hours: Optional[float] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncInstance:
         response = await self._base_client.start(
