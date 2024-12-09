@@ -20,7 +20,7 @@ class BaseAnthropicTool(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-@dataclass(kw_only=True, frozen=True)
+@dataclass(frozen=True)
 class ToolResult:
     """Represents the result of a tool execution."""
 
@@ -34,8 +34,8 @@ class ToolResult:
 
     def __add__(self, other: "ToolResult"):
         def combine_fields(
-            field: str | None, other_field: str | None, concatenate: bool = True
-        ):
+            field: Optional[str], other_field: Optional[str], concatenate: bool = True
+        ) -> Optional[str]:
             if field and other_field:
                 if concatenate:
                     return field + other_field
