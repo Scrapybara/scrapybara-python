@@ -45,7 +45,7 @@ class InstanceClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.instance.screenshot(
             instance_id="instance_id",
@@ -101,7 +101,7 @@ class InstanceClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.instance.get_stream_url(
             instance_id="instance_id",
@@ -169,7 +169,7 @@ class InstanceClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.instance.computer(
             instance_id="instance_id",
@@ -244,7 +244,7 @@ class InstanceClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.instance.bash(
             instance_id="instance_id",
@@ -332,7 +332,7 @@ class InstanceClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.instance.edit(
             instance_id="instance_id",
@@ -403,7 +403,7 @@ class InstanceClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.instance.stop(
             instance_id="instance_id",
@@ -466,7 +466,7 @@ class AsyncInstanceClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -530,7 +530,7 @@ class AsyncInstanceClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -606,7 +606,7 @@ class AsyncInstanceClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -689,7 +689,7 @@ class AsyncInstanceClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -785,7 +785,7 @@ class AsyncInstanceClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -864,7 +864,7 @@ class AsyncInstanceClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 

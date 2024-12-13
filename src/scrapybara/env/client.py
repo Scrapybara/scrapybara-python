@@ -40,7 +40,7 @@ class EnvClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.env.get(
             instance_id="instance_id",
@@ -102,7 +102,7 @@ class EnvClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.env.set(
             instance_id="instance_id",
@@ -168,7 +168,7 @@ class EnvClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.env.delete(
             instance_id="instance_id",
@@ -237,7 +237,7 @@ class AsyncEnvClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -307,7 +307,7 @@ class AsyncEnvClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -381,7 +381,7 @@ class AsyncEnvClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 

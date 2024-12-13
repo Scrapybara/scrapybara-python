@@ -34,7 +34,7 @@ Instantiate and use the client with the following:
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.start()
 ```
@@ -49,7 +49,7 @@ import asyncio
 from scrapybara import AsyncScrapybara
 
 client = AsyncScrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 
 

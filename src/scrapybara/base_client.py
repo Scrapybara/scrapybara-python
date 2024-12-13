@@ -50,7 +50,7 @@ class BaseClient:
 
 
 
-    api_key : typing.Optional[str]
+    x_api_key : typing.Optional[str]
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
@@ -65,7 +65,7 @@ class BaseClient:
     from scrapybara import Scrapybara
 
     client = Scrapybara(
-        api_key="YOUR_API_KEY",
+        x_api_key="YOUR_X_API_KEY",
     )
     """
 
@@ -74,19 +74,19 @@ class BaseClient:
         *,
         base_url: typing.Optional[str] = None,
         environment: ScrapybaraEnvironment = ScrapybaraEnvironment.PRODUCTION,
-        api_key: typing.Optional[str] = os.getenv("SCRAPYBARA_API_KEY"),
+        x_api_key: typing.Optional[str] = os.getenv("SCRAPYBARA_API_KEY"),
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
         httpx_client: typing.Optional[httpx.Client] = None,
     ):
         _defaulted_timeout = timeout if timeout is not None else 60 if httpx_client is None else None
-        if api_key is None:
+        if x_api_key is None:
             raise ApiError(
-                body="The client must be instantiated be either passing in api_key or setting SCRAPYBARA_API_KEY"
+                body="The client must be instantiated be either passing in x_api_key or setting SCRAPYBARA_API_KEY"
             )
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
-            api_key=api_key,
+            x_api_key=x_api_key,
             httpx_client=httpx_client
             if httpx_client is not None
             else httpx.Client(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
@@ -128,7 +128,7 @@ class BaseClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.start()
         """
@@ -188,7 +188,7 @@ class BaseClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.get(
             instance_id="instance_id",
@@ -242,7 +242,7 @@ class AsyncBaseClient:
 
 
 
-    api_key : typing.Optional[str]
+    x_api_key : typing.Optional[str]
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
@@ -257,7 +257,7 @@ class AsyncBaseClient:
     from scrapybara import AsyncScrapybara
 
     client = AsyncScrapybara(
-        api_key="YOUR_API_KEY",
+        x_api_key="YOUR_X_API_KEY",
     )
     """
 
@@ -266,19 +266,19 @@ class AsyncBaseClient:
         *,
         base_url: typing.Optional[str] = None,
         environment: ScrapybaraEnvironment = ScrapybaraEnvironment.PRODUCTION,
-        api_key: typing.Optional[str] = os.getenv("SCRAPYBARA_API_KEY"),
+        x_api_key: typing.Optional[str] = os.getenv("SCRAPYBARA_API_KEY"),
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
         httpx_client: typing.Optional[httpx.AsyncClient] = None,
     ):
         _defaulted_timeout = timeout if timeout is not None else 60 if httpx_client is None else None
-        if api_key is None:
+        if x_api_key is None:
             raise ApiError(
-                body="The client must be instantiated be either passing in api_key or setting SCRAPYBARA_API_KEY"
+                body="The client must be instantiated be either passing in x_api_key or setting SCRAPYBARA_API_KEY"
             )
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
-            api_key=api_key,
+            x_api_key=x_api_key,
             httpx_client=httpx_client
             if httpx_client is not None
             else httpx.AsyncClient(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
@@ -322,7 +322,7 @@ class AsyncBaseClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -392,7 +392,7 @@ class AsyncBaseClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 

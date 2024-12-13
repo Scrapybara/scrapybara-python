@@ -51,7 +51,7 @@ class FileClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.file.read(
             instance_id="instance_id",
@@ -124,7 +124,7 @@ class FileClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.file.write(
             instance_id="instance_id",
@@ -195,7 +195,7 @@ class FileClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.file.upload(
             instance_id="instance_id",
@@ -263,7 +263,7 @@ class FileClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.file.download(
             instance_id="instance_id",
@@ -339,7 +339,7 @@ class AsyncFileClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -420,7 +420,7 @@ class AsyncFileClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -499,7 +499,7 @@ class AsyncFileClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -575,7 +575,7 @@ class AsyncFileClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 

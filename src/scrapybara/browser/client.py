@@ -41,7 +41,7 @@ class BrowserClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.browser.start(
             instance_id="instance_id",
@@ -97,7 +97,7 @@ class BrowserClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.browser.get_cdp_url(
             instance_id="instance_id",
@@ -157,7 +157,7 @@ class BrowserClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.browser.authenticate(
             instance_id="instance_id",
@@ -215,7 +215,7 @@ class BrowserClient:
         from scrapybara import Scrapybara
 
         client = Scrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
         client.browser.stop(
             instance_id="instance_id",
@@ -278,7 +278,7 @@ class AsyncBrowserClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -342,7 +342,7 @@ class AsyncBrowserClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -410,7 +410,7 @@ class AsyncBrowserClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 
@@ -478,7 +478,7 @@ class AsyncBrowserClient:
         from scrapybara import AsyncScrapybara
 
         client = AsyncScrapybara(
-            api_key="YOUR_API_KEY",
+            x_api_key="YOUR_X_API_KEY",
         )
 
 

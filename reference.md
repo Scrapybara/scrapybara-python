@@ -15,7 +15,7 @@
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.start()
 
@@ -77,7 +77,7 @@ client.start()
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.get(
     instance_id="instance_id",
@@ -134,7 +134,7 @@ client.get(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.instance.screenshot(
     instance_id="instance_id",
@@ -190,7 +190,7 @@ client.instance.screenshot(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.instance.get_stream_url(
     instance_id="instance_id",
@@ -246,7 +246,7 @@ client.instance.get_stream_url(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.instance.computer(
     instance_id="instance_id",
@@ -327,7 +327,7 @@ client.instance.computer(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.instance.bash(
     instance_id="instance_id",
@@ -399,7 +399,7 @@ client.instance.bash(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.instance.edit(
     instance_id="instance_id",
@@ -513,7 +513,7 @@ client.instance.edit(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.instance.stop(
     instance_id="instance_id",
@@ -570,7 +570,7 @@ client.instance.stop(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.browser.start(
     instance_id="instance_id",
@@ -626,7 +626,7 @@ client.browser.start(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.browser.get_cdp_url(
     instance_id="instance_id",
@@ -696,7 +696,7 @@ Authenticate browser with Anon for all available apps
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.browser.authenticate(
     instance_id="instance_id",
@@ -761,7 +761,7 @@ client.browser.authenticate(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.browser.stop(
     instance_id="instance_id",
@@ -818,7 +818,7 @@ client.browser.stop(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.file.read(
     instance_id="instance_id",
@@ -891,7 +891,7 @@ client.file.read(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.file.write(
     instance_id="instance_id",
@@ -973,7 +973,7 @@ client.file.write(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.file.upload(
     instance_id="instance_id",
@@ -1047,7 +1047,7 @@ client.file.upload(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.file.download(
     instance_id="instance_id",
@@ -1113,7 +1113,7 @@ client.file.download(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.env.get(
     instance_id="instance_id",
@@ -1169,7 +1169,7 @@ client.env.get(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.env.set(
     instance_id="instance_id",
@@ -1234,7 +1234,7 @@ client.env.set(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.env.delete(
     instance_id="instance_id",
@@ -1300,7 +1300,7 @@ client.env.delete(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.list_kernels(
     instance_id="instance_id",
@@ -1356,7 +1356,7 @@ client.notebook.list_kernels(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.create(
     instance_id="instance_id",
@@ -1429,7 +1429,7 @@ client.notebook.create(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.get(
     instance_id="instance_id",
@@ -1494,7 +1494,7 @@ client.notebook.get(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.delete(
     instance_id="instance_id",
@@ -1559,7 +1559,7 @@ client.notebook.delete(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.add_cell(
     instance_id="instance_id",
@@ -1650,7 +1650,7 @@ client.notebook.add_cell(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.execute_cell(
     instance_id="instance_id",
@@ -1732,7 +1732,7 @@ client.notebook.execute_cell(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.notebook.execute(
     instance_id="instance_id",
@@ -1806,7 +1806,7 @@ client.notebook.execute(
 from scrapybara import Scrapybara
 
 client = Scrapybara(
-    api_key="YOUR_API_KEY",
+    x_api_key="YOUR_X_API_KEY",
 )
 client.code.execute(
     instance_id="instance_id",

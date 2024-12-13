@@ -7,8 +7,8 @@ from .http_client import AsyncHttpClient
 
 
 class BaseClientWrapper:
-    def __init__(self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None):
-        self.api_key = api_key
+    def __init__(self, *, x_api_key: str, base_url: str, timeout: typing.Optional[float] = None):
+        self.x_api_key = x_api_key
         self._base_url = base_url
         self._timeout = timeout
 
@@ -16,9 +16,9 @@ class BaseClientWrapper:
         headers: typing.Dict[str, str] = {
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "scrapybara",
-            "X-Fern-SDK-Version": "2.0.0",
+            "X-Fern-SDK-Version": "2.0.1",
         }
-        headers["x-api-key"] = self.api_key
+        headers["x-api-key"] = self.x_api_key
         return headers
 
     def get_base_url(self) -> str:
@@ -30,9 +30,9 @@ class BaseClientWrapper:
 
 class SyncClientWrapper(BaseClientWrapper):
     def __init__(
-        self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None, httpx_client: httpx.Client
+        self, *, x_api_key: str, base_url: str, timeout: typing.Optional[float] = None, httpx_client: httpx.Client
     ):
-        super().__init__(api_key=api_key, base_url=base_url, timeout=timeout)
+        super().__init__(x_api_key=x_api_key, base_url=base_url, timeout=timeout)
         self.httpx_client = HttpClient(
             httpx_client=httpx_client,
             base_headers=self.get_headers,
@@ -43,9 +43,9 @@ class SyncClientWrapper(BaseClientWrapper):
 
 class AsyncClientWrapper(BaseClientWrapper):
     def __init__(
-        self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None, httpx_client: httpx.AsyncClient
+        self, *, x_api_key: str, base_url: str, timeout: typing.Optional[float] = None, httpx_client: httpx.AsyncClient
     ):
-        super().__init__(api_key=api_key, base_url=base_url, timeout=timeout)
+        super().__init__(x_api_key=x_api_key, base_url=base_url, timeout=timeout)
         self.httpx_client = AsyncHttpClient(
             httpx_client=httpx_client,
             base_headers=self.get_headers,
