@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional, Any, Dict, List, Sequence, Union, Literal
 import typing
+import httpx
+import os
 
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
@@ -22,12 +24,10 @@ from .types import (
     StopBrowserResponse,
     StopInstanceResponse,
 )
-
-OMIT = typing.cast(typing.Any, ...)
-
 from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
-import httpx
+
+OMIT = typing.cast(typing.Any, ...)
 
 
 class Browser:
@@ -680,7 +680,7 @@ class Scrapybara:
         *,
         base_url: Optional[str] = None,
         environment: ScrapybaraEnvironment = ScrapybaraEnvironment.PRODUCTION,
-        api_key: Optional[str] = None,
+        api_key: Optional[str] = os.getenv("SCRAPYBARA_API_KEY"),
         timeout: Optional[float] = None,
         follow_redirects: Optional[bool] = True,
         httpx_client: Optional[httpx.Client] = None,
@@ -735,7 +735,7 @@ class AsyncScrapybara:
         *,
         base_url: Optional[str] = None,
         environment: ScrapybaraEnvironment = ScrapybaraEnvironment.PRODUCTION,
-        api_key: Optional[str] = None,
+        api_key: Optional[str] = os.getenv("SCRAPYBARA_API_KEY"),
         timeout: Optional[float] = None,
         follow_redirects: Optional[bool] = True,
         httpx_client: Optional[httpx.AsyncClient] = None,
