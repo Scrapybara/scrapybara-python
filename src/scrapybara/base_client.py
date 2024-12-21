@@ -7,11 +7,12 @@ import httpx
 from .core.api_error import ApiError
 from .core.client_wrapper import SyncClientWrapper
 from .instance.client import InstanceClient
+from .agent.client import AgentClient
 from .browser.client import BrowserClient
+from .code.client import CodeClient
+from .notebook.client import NotebookClient
 from .file.client import FileClient
 from .env.client import EnvClient
-from .notebook.client import NotebookClient
-from .code.client import CodeClient
 from .types.deployment_config_instance_type import DeploymentConfigInstanceType
 from .core.request_options import RequestOptions
 from .types.get_instance_response import GetInstanceResponse
@@ -22,11 +23,12 @@ from json.decoder import JSONDecodeError
 from .core.jsonable_encoder import jsonable_encoder
 from .core.client_wrapper import AsyncClientWrapper
 from .instance.client import AsyncInstanceClient
+from .agent.client import AsyncAgentClient
 from .browser.client import AsyncBrowserClient
+from .code.client import AsyncCodeClient
+from .notebook.client import AsyncNotebookClient
 from .file.client import AsyncFileClient
 from .env.client import AsyncEnvClient
-from .notebook.client import AsyncNotebookClient
-from .code.client import AsyncCodeClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -95,11 +97,12 @@ class BaseClient:
             timeout=_defaulted_timeout,
         )
         self.instance = InstanceClient(client_wrapper=self._client_wrapper)
+        self.agent = AgentClient(client_wrapper=self._client_wrapper)
         self.browser = BrowserClient(client_wrapper=self._client_wrapper)
+        self.code = CodeClient(client_wrapper=self._client_wrapper)
+        self.notebook = NotebookClient(client_wrapper=self._client_wrapper)
         self.file = FileClient(client_wrapper=self._client_wrapper)
         self.env = EnvClient(client_wrapper=self._client_wrapper)
-        self.notebook = NotebookClient(client_wrapper=self._client_wrapper)
-        self.code = CodeClient(client_wrapper=self._client_wrapper)
 
     def start(
         self,
@@ -287,11 +290,12 @@ class AsyncBaseClient:
             timeout=_defaulted_timeout,
         )
         self.instance = AsyncInstanceClient(client_wrapper=self._client_wrapper)
+        self.agent = AsyncAgentClient(client_wrapper=self._client_wrapper)
         self.browser = AsyncBrowserClient(client_wrapper=self._client_wrapper)
+        self.code = AsyncCodeClient(client_wrapper=self._client_wrapper)
+        self.notebook = AsyncNotebookClient(client_wrapper=self._client_wrapper)
         self.file = AsyncFileClient(client_wrapper=self._client_wrapper)
         self.env = AsyncEnvClient(client_wrapper=self._client_wrapper)
-        self.notebook = AsyncNotebookClient(client_wrapper=self._client_wrapper)
-        self.code = AsyncCodeClient(client_wrapper=self._client_wrapper)
 
     async def start(
         self,

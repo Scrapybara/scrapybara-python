@@ -553,6 +553,177 @@ client.instance.stop(
 </dl>
 </details>
 
+## Agent
+<details><summary><code>client.agent.<a href="src/scrapybara/agent/client.py">act</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.agent.act(
+    instance_id="instance_id",
+    cmd="cmd",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cmd:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_screenshot:** `typing.Optional[bool]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**model:** `typing.Optional[typing.Literal["claude"]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.<a href="src/scrapybara/agent/client.py">scrape</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.agent.scrape(
+    instance_id="instance_id",
+    cmd="cmd",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cmd:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**schema:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_screenshot:** `typing.Optional[bool]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**model:** `typing.Optional[typing.Literal["claude"]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Browser
 <details><summary><code>client.browser.<a href="src/scrapybara/browser/client.py">start</a>(...)</code></summary>
 <dl>
@@ -801,8 +972,8 @@ client.browser.stop(
 </dl>
 </details>
 
-## File
-<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">read</a>(...)</code></summary>
+## Code
+<details><summary><code>client.code.<a href="src/scrapybara/code/client.py">execute</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -820,9 +991,9 @@ from scrapybara import Scrapybara
 client = Scrapybara(
     api_key="YOUR_API_KEY",
 )
-client.file.read(
+client.code.execute(
     instance_id="instance_id",
-    path="path",
+    code="code",
 )
 
 ```
@@ -847,7 +1018,7 @@ client.file.read(
 <dl>
 <dd>
 
-**path:** `str` 
+**code:** `str` 
     
 </dd>
 </dl>
@@ -855,7 +1026,7 @@ client.file.read(
 <dl>
 <dd>
 
-**encoding:** `typing.Optional[str]` 
+**kernel_name:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -863,407 +1034,7 @@ client.file.read(
 <dl>
 <dd>
 
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">write</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from scrapybara import Scrapybara
-
-client = Scrapybara(
-    api_key="YOUR_API_KEY",
-)
-client.file.write(
-    instance_id="instance_id",
-    path="path",
-    content="content",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**instance_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**path:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**content:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**encoding:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">upload</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from scrapybara import Scrapybara
-
-client = Scrapybara(
-    api_key="YOUR_API_KEY",
-)
-client.file.upload(
-    instance_id="instance_id",
-    path="path",
-    content="content",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**instance_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**path:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**content:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">download</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from scrapybara import Scrapybara
-
-client = Scrapybara(
-    api_key="YOUR_API_KEY",
-)
-client.file.download(
-    instance_id="instance_id",
-    path="path",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**instance_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**path:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Env
-<details><summary><code>client.env.<a href="src/scrapybara/env/client.py">get</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from scrapybara import Scrapybara
-
-client = Scrapybara(
-    api_key="YOUR_API_KEY",
-)
-client.env.get(
-    instance_id="instance_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**instance_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.env.<a href="src/scrapybara/env/client.py">set</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from scrapybara import Scrapybara
-
-client = Scrapybara(
-    api_key="YOUR_API_KEY",
-)
-client.env.set(
-    instance_id="instance_id",
-    variables={"key": "value"},
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**instance_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**variables:** `typing.Dict[str, str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.env.<a href="src/scrapybara/env/client.py">delete</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from scrapybara import Scrapybara
-
-client = Scrapybara(
-    api_key="YOUR_API_KEY",
-)
-client.env.delete(
-    instance_id="instance_id",
-    keys=["keys"],
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**instance_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**keys:** `typing.Sequence[str]` 
+**timeout:** `typing.Optional[int]` 
     
 </dd>
 </dl>
@@ -1789,8 +1560,8 @@ client.notebook.execute(
 </dl>
 </details>
 
-## Code
-<details><summary><code>client.code.<a href="src/scrapybara/code/client.py">execute</a>(...)</code></summary>
+## File
+<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">read</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1808,9 +1579,9 @@ from scrapybara import Scrapybara
 client = Scrapybara(
     api_key="YOUR_API_KEY",
 )
-client.code.execute(
+client.file.read(
     instance_id="instance_id",
-    code="code",
+    path="path",
 )
 
 ```
@@ -1835,7 +1606,7 @@ client.code.execute(
 <dl>
 <dd>
 
-**code:** `str` 
+**path:** `str` 
     
 </dd>
 </dl>
@@ -1843,7 +1614,7 @@ client.code.execute(
 <dl>
 <dd>
 
-**kernel_name:** `typing.Optional[str]` 
+**encoding:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -1851,7 +1622,407 @@ client.code.execute(
 <dl>
 <dd>
 
-**timeout:** `typing.Optional[int]` 
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">write</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.file.write(
+    instance_id="instance_id",
+    path="path",
+    content="content",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**path:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**content:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**encoding:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">upload</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.file.upload(
+    instance_id="instance_id",
+    path="path",
+    content="content",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**path:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**content:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.file.<a href="src/scrapybara/file/client.py">download</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.file.download(
+    instance_id="instance_id",
+    path="path",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**path:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Env
+<details><summary><code>client.env.<a href="src/scrapybara/env/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.env.get(
+    instance_id="instance_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.env.<a href="src/scrapybara/env/client.py">set</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.env.set(
+    instance_id="instance_id",
+    variables={"key": "value"},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variables:** `typing.Dict[str, str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.env.<a href="src/scrapybara/env/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.env.delete(
+    instance_id="instance_id",
+    keys=["keys"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**keys:** `typing.Sequence[str]` 
     
 </dd>
 </dl>
