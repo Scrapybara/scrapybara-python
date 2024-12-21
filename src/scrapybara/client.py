@@ -7,6 +7,7 @@ import os
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .types import (
+    ActResponse,
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
     CellType,
@@ -20,6 +21,7 @@ from .types import (
     KernelInfo,
     Notebook as NotebookType,
     NotebookCell,
+    ScrapeResponse,
     StartBrowserResponse,
     StopBrowserResponse,
     StopInstanceResponse,
@@ -28,6 +30,86 @@ from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
 
 OMIT = typing.cast(typing.Any, ...)
+
+
+class Agent:
+    def __init__(self, instance_id: str, client: BaseClient):
+        self.instance_id = instance_id
+        self._client = client
+
+    def act(
+        self,
+        *,
+        cmd: str,
+        include_screenshot: Optional[bool] = OMIT,
+        model: Optional[Literal["claude"]] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ActResponse:
+        return self._client.agent.act(
+            self.instance_id,
+            cmd=cmd,
+            include_screenshot=include_screenshot,
+            model=model,
+            request_options=request_options,
+        )
+
+    def scrape(
+        self,
+        *,
+        cmd: str,
+        schema: Optional[Dict[str, Optional[Any]]] = OMIT,
+        include_screenshot: Optional[bool] = OMIT,
+        model: Optional[Literal["claude"]] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ScrapeResponse:
+        return self._client.agent.scrape(
+            self.instance_id,
+            cmd=cmd,
+            schema=schema,
+            include_screenshot=include_screenshot,
+            model=model,
+            request_options=request_options,
+        )
+
+
+class AsyncAgent:
+    def __init__(self, instance_id: str, client: AsyncBaseClient):
+        self.instance_id = instance_id
+        self._client = client
+
+    async def act(
+        self,
+        *,
+        cmd: str,
+        include_screenshot: Optional[bool] = OMIT,
+        model: Optional[Literal["claude"]] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ActResponse:
+        return await self._client.agent.act(
+            self.instance_id,
+            cmd=cmd,
+            include_screenshot=include_screenshot,
+            model=model,
+            request_options=request_options,
+        )
+
+    async def scrape(
+        self,
+        *,
+        cmd: str,
+        schema: Optional[Dict[str, Optional[Any]]] = OMIT,
+        include_screenshot: Optional[bool] = OMIT,
+        model: Optional[Literal["claude"]] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ScrapeResponse:
+        return await self._client.agent.scrape(
+            self.instance_id,
+            cmd=cmd,
+            schema=schema,
+            include_screenshot=include_screenshot,
+            model=model,
+            request_options=request_options,
+        )
 
 
 class Browser:
@@ -98,173 +180,47 @@ class AsyncBrowser:
         )
 
 
-class File:
+class Code:
     def __init__(self, instance_id: str, client: BaseClient):
         self.instance_id = instance_id
         self._client = client
 
-    def read(
+    def execute(
         self,
         *,
-        path: str,
-        encoding: Optional[str] = OMIT,
+        code: str,
+        kernel_name: Optional[str] = OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
-    ) -> FileReadResponse:
-        return self._client.file.read(
+    ) -> Optional[Any]:
+        return self._client.code.execute(
             self.instance_id,
-            path=path,
-            encoding=encoding,
+            code=code,
+            kernel_name=kernel_name,
+            timeout=timeout,
             request_options=request_options,
         )
 
-    def write(
-        self,
-        *,
-        path: str,
-        content: str,
-        encoding: Optional[str] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return self._client.file.write(
-            self.instance_id,
-            path=path,
-            content=content,
-            encoding=encoding,
-            request_options=request_options,
-        )
 
-    def upload(
-        self,
-        *,
-        path: str,
-        content: str,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return self._client.file.upload(
-            self.instance_id,
-            path=path,
-            content=content,
-            request_options=request_options,
-        )
-
-    def download(
-        self, *, path: str, request_options: Optional[RequestOptions] = None
-    ) -> FileDownloadResponse:
-        return self._client.file.download(
-            self.instance_id, path=path, request_options=request_options
-        )
-
-
-class AsyncFile:
+class AsyncCode:
     def __init__(self, instance_id: str, client: AsyncBaseClient):
         self.instance_id = instance_id
         self._client = client
 
-    async def read(
+    async def execute(
         self,
         *,
-        path: str,
-        encoding: Optional[str] = OMIT,
+        code: str,
+        kernel_name: Optional[str] = OMIT,
+        timeout: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
-    ) -> FileReadResponse:
-        return await self._client.file.read(
+    ) -> Optional[Any]:
+        return await self._client.code.execute(
             self.instance_id,
-            path=path,
-            encoding=encoding,
+            code=code,
+            kernel_name=kernel_name,
+            timeout=timeout,
             request_options=request_options,
-        )
-
-    async def write(
-        self,
-        *,
-        path: str,
-        content: str,
-        encoding: Optional[str] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return await self._client.file.write(
-            self.instance_id,
-            path=path,
-            content=content,
-            encoding=encoding,
-            request_options=request_options,
-        )
-
-    async def upload(
-        self,
-        *,
-        path: str,
-        content: str,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return await self._client.file.upload(
-            self.instance_id,
-            path=path,
-            content=content,
-            request_options=request_options,
-        )
-
-    async def download(
-        self, *, path: str, request_options: Optional[RequestOptions] = None
-    ) -> FileDownloadResponse:
-        return await self._client.file.download(
-            self.instance_id, path=path, request_options=request_options
-        )
-
-
-class Env:
-    def __init__(self, instance_id: str, client: BaseClient):
-        self.instance_id = instance_id
-        self._client = client
-
-    def set(
-        self,
-        *,
-        variables: Dict[str, str],
-        request_options: Optional[RequestOptions] = None,
-    ) -> EnvResponse:
-        return self._client.env.set(
-            self.instance_id, variables=variables, request_options=request_options
-        )
-
-    def get(self, request_options: Optional[RequestOptions] = None) -> EnvGetResponse:
-        return self._client.env.get(self.instance_id, request_options=request_options)
-
-    def delete(
-        self, *, keys: Sequence[str], request_options: Optional[RequestOptions] = None
-    ) -> EnvResponse:
-        return self._client.env.delete(
-            self.instance_id, keys=keys, request_options=request_options
-        )
-
-
-class AsyncEnv:
-    def __init__(self, instance_id: str, client: AsyncBaseClient):
-        self.instance_id = instance_id
-        self._client = client
-
-    async def set(
-        self,
-        *,
-        variables: Dict[str, str],
-        request_options: Optional[RequestOptions] = None,
-    ) -> EnvResponse:
-        return await self._client.env.set(
-            self.instance_id, variables=variables, request_options=request_options
-        )
-
-    async def get(
-        self, request_options: Optional[RequestOptions] = None
-    ) -> EnvGetResponse:
-        return await self._client.env.get(
-            self.instance_id, request_options=request_options
-        )
-
-    async def delete(
-        self, *, keys: Sequence[str], request_options: Optional[RequestOptions] = None
-    ) -> EnvResponse:
-        return await self._client.env.delete(
-            self.instance_id, keys=keys, request_options=request_options
         )
 
 
@@ -446,47 +402,173 @@ class AsyncNotebook:
         )
 
 
-class Code:
+class File:
     def __init__(self, instance_id: str, client: BaseClient):
         self.instance_id = instance_id
         self._client = client
 
-    def execute(
+    def read(
         self,
         *,
-        code: str,
-        kernel_name: Optional[str] = OMIT,
-        timeout: Optional[int] = OMIT,
+        path: str,
+        encoding: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
-    ) -> Optional[Any]:
-        return self._client.code.execute(
+    ) -> FileReadResponse:
+        return self._client.file.read(
             self.instance_id,
-            code=code,
-            kernel_name=kernel_name,
-            timeout=timeout,
+            path=path,
+            encoding=encoding,
             request_options=request_options,
         )
 
+    def write(
+        self,
+        *,
+        path: str,
+        content: str,
+        encoding: Optional[str] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Dict[str, Optional[Any]]:
+        return self._client.file.write(
+            self.instance_id,
+            path=path,
+            content=content,
+            encoding=encoding,
+            request_options=request_options,
+        )
 
-class AsyncCode:
+    def upload(
+        self,
+        *,
+        path: str,
+        content: str,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Dict[str, Optional[Any]]:
+        return self._client.file.upload(
+            self.instance_id,
+            path=path,
+            content=content,
+            request_options=request_options,
+        )
+
+    def download(
+        self, *, path: str, request_options: Optional[RequestOptions] = None
+    ) -> FileDownloadResponse:
+        return self._client.file.download(
+            self.instance_id, path=path, request_options=request_options
+        )
+
+
+class AsyncFile:
     def __init__(self, instance_id: str, client: AsyncBaseClient):
         self.instance_id = instance_id
         self._client = client
 
-    async def execute(
+    async def read(
         self,
         *,
-        code: str,
-        kernel_name: Optional[str] = OMIT,
-        timeout: Optional[int] = OMIT,
+        path: str,
+        encoding: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
-    ) -> Optional[Any]:
-        return await self._client.code.execute(
+    ) -> FileReadResponse:
+        return await self._client.file.read(
             self.instance_id,
-            code=code,
-            kernel_name=kernel_name,
-            timeout=timeout,
+            path=path,
+            encoding=encoding,
             request_options=request_options,
+        )
+
+    async def write(
+        self,
+        *,
+        path: str,
+        content: str,
+        encoding: Optional[str] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Dict[str, Optional[Any]]:
+        return await self._client.file.write(
+            self.instance_id,
+            path=path,
+            content=content,
+            encoding=encoding,
+            request_options=request_options,
+        )
+
+    async def upload(
+        self,
+        *,
+        path: str,
+        content: str,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Dict[str, Optional[Any]]:
+        return await self._client.file.upload(
+            self.instance_id,
+            path=path,
+            content=content,
+            request_options=request_options,
+        )
+
+    async def download(
+        self, *, path: str, request_options: Optional[RequestOptions] = None
+    ) -> FileDownloadResponse:
+        return await self._client.file.download(
+            self.instance_id, path=path, request_options=request_options
+        )
+
+
+class Env:
+    def __init__(self, instance_id: str, client: BaseClient):
+        self.instance_id = instance_id
+        self._client = client
+
+    def set(
+        self,
+        *,
+        variables: Dict[str, str],
+        request_options: Optional[RequestOptions] = None,
+    ) -> EnvResponse:
+        return self._client.env.set(
+            self.instance_id, variables=variables, request_options=request_options
+        )
+
+    def get(self, request_options: Optional[RequestOptions] = None) -> EnvGetResponse:
+        return self._client.env.get(self.instance_id, request_options=request_options)
+
+    def delete(
+        self, *, keys: Sequence[str], request_options: Optional[RequestOptions] = None
+    ) -> EnvResponse:
+        return self._client.env.delete(
+            self.instance_id, keys=keys, request_options=request_options
+        )
+
+
+class AsyncEnv:
+    def __init__(self, instance_id: str, client: AsyncBaseClient):
+        self.instance_id = instance_id
+        self._client = client
+
+    async def set(
+        self,
+        *,
+        variables: Dict[str, str],
+        request_options: Optional[RequestOptions] = None,
+    ) -> EnvResponse:
+        return await self._client.env.set(
+            self.instance_id, variables=variables, request_options=request_options
+        )
+
+    async def get(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> EnvGetResponse:
+        return await self._client.env.get(
+            self.instance_id, request_options=request_options
+        )
+
+    async def delete(
+        self, *, keys: Sequence[str], request_options: Optional[RequestOptions] = None
+    ) -> EnvResponse:
+        return await self._client.env.delete(
+            self.instance_id, keys=keys, request_options=request_options
         )
 
 
@@ -504,11 +586,12 @@ class Instance:
         self.instance_type = instance_type
         self.status = status
         self._client = client
+        self.agent = Agent(self.id, self._client)
         self.browser = Browser(self.id, self._client)
+        self.code = Code(self.id, self._client)
+        self.notebook = Notebook(self.id, self._client)
         self.file = File(self.id, self._client)
         self.env = Env(self.id, self._client)
-        self.notebook = Notebook(self.id, self._client)
-        self.code = Code(self.id, self._client)
 
     def screenshot(
         self, request_options: Optional[RequestOptions] = None
@@ -595,11 +678,12 @@ class AsyncInstance:
         self.instance_type = instance_type
         self.status = status
         self._client = client
+        self.agent = AsyncAgent(self.id, self._client)
         self.browser = AsyncBrowser(self.id, self._client)
+        self.code = AsyncCode(self.id, self._client)
+        self.notebook = AsyncNotebook(self.id, self._client)
         self.file = AsyncFile(self.id, self._client)
         self.env = AsyncEnv(self.id, self._client)
-        self.notebook = AsyncNotebook(self.id, self._client)
-        self.code = AsyncCode(self.id, self._client)
 
     async def screenshot(
         self, request_options: Optional[RequestOptions] = None
