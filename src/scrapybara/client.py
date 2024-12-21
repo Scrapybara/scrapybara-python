@@ -4,6 +4,8 @@ import typing
 import httpx
 import os
 
+import typing
+from pydantic import BaseModel, ValidationError
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .types import (
@@ -30,6 +32,8 @@ from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
 
 OMIT = typing.cast(typing.Any, ...)
+
+PydanticModelT = typing.TypeVar("PydanticModelT", bound=BaseModel)
 
 
 class Agent:
@@ -71,6 +75,33 @@ class Agent:
             request_options=request_options,
         )
 
+    def scrape_to_pydantic(
+        self,
+        *,
+        cmd: typing.Optional[str] = OMIT,
+        schema: PydanticModelT,
+        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> PydanticModelT:
+        cmd = cmd if cmd else (str(schema.__doc__) if schema.__doc__ else None)
+        if cmd is None:
+            raise ValueError(
+                "No command provided, please provide a 'cmd' parameter or docstring in schema class."
+            )
+
+        response = self._client.agent.scrape(
+            self.instance_id,
+            cmd=cmd,
+            schema=schema.model_json_schema(),
+            model=model,
+            request_options=request_options,
+        )
+
+        try:
+            return schema.model_validate(response.data)
+        except ValidationError as e:
+            raise ValidationError(f"Validation error at client side: {e}") from e
+
 
 class AsyncAgent:
     def __init__(self, instance_id: str, client: AsyncBaseClient):
@@ -110,6 +141,33 @@ class AsyncAgent:
             model=model,
             request_options=request_options,
         )
+
+    async def scrape_to_pydantic(
+        self,
+        *,
+        cmd: typing.Optional[str] = OMIT,
+        schema: PydanticModelT,
+        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> PydanticModelT:
+        cmd = cmd if cmd else (str(schema.__doc__) if schema.__doc__ else None)
+        if cmd is None:
+            raise ValueError(
+                "No command provided, please provide a 'cmd' parameter or docstring in schema class."
+            )
+
+        response = await self._client.agent.scrape(
+            self.instance_id,
+            cmd=cmd,
+            schema=schema.model_json_schema(),
+            model=model,
+            request_options=request_options,
+        )
+
+        try:
+            return schema.model_validate(response.data)
+        except ValidationError as e:
+            raise ValidationError(f"Validation error at client side: {e}") from e
 
 
 class Browser:
