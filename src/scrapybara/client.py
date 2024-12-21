@@ -75,7 +75,7 @@ class Agent:
             request_options=request_options,
         )
 
-    def query(
+    def scrape_to_pydantic(
         self,
         *,
         cmd: typing.Optional[str] = OMIT,
@@ -142,7 +142,7 @@ class AsyncAgent:
             request_options=request_options,
         )
 
-    async def query(
+    async def scrape_to_pydantic(
         self,
         *,
         cmd: typing.Optional[str] = OMIT,
