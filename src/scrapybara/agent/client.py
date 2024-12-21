@@ -225,9 +225,9 @@ class AgentClient:
         cmd = (
             cmd
             if cmd
-            else (str(schema.__doc__) if schema.__doc__ else "No command provided")
+            else (str(schema.__doc__) if schema.__doc__ else None)
         )
-        if cmd == "No command provided":
+        if cmd is None:
             raise ValueError(
                 "No command provided, please provide a 'cmd' parameter or docstring in schema class."
             )
@@ -467,9 +467,9 @@ class AsyncAgentClient:
         cmd = (
             cmd
             if cmd
-            else (str(schema.__doc__) if schema.__doc__ else "No command provided")
+            else (str(schema.__doc__) if schema.__doc__ else None)
         )
-        if cmd == "No command provided":
+        if cmd is None:
             raise ValueError(
                 "No command provided, please provide a 'cmd' parameter or docstring in schema class."
             )
