@@ -1,4 +1,4 @@
-from typing import Literal, Optional, List, TypedDict, Any
+from typing import Literal, Optional, TypedDict, Any
 from anthropic.types.beta import (
     BetaToolComputerUse20241022Param,
     BetaToolTextEditor20241022Param,
