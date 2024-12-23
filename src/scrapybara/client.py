@@ -78,8 +78,8 @@ class Agent:
     def scrape_to_pydantic(
         self,
         *,
-        cmd: typing.Optional[str] = OMIT,
         schema: PydanticModelT,
+        cmd: typing.Optional[str] = OMIT,
         model: typing.Optional[typing.Literal["claude"]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> PydanticModelT:
@@ -145,8 +145,8 @@ class AsyncAgent:
     async def scrape_to_pydantic(
         self,
         *,
-        cmd: typing.Optional[str] = OMIT,
         schema: PydanticModelT,
+        cmd: typing.Optional[str] = OMIT,
         model: typing.Optional[typing.Literal["claude"]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> PydanticModelT:
