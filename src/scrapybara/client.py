@@ -6,6 +6,7 @@ import os
 
 import typing
 from pydantic import BaseModel, ValidationError
+from scrapybara.agent.types.model import Model
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .types import (
@@ -18,6 +19,7 @@ from .types import (
     EnvResponse,
     FileDownloadResponse,
     FileReadResponse,
+    GetInstanceResponse,
     InstanceGetStreamUrlResponse,
     InstanceScreenshotResponse,
     KernelInfo,
@@ -46,7 +48,7 @@ class Agent:
         *,
         cmd: str,
         include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Literal["claude"]] = OMIT,
+        model: Optional[Model] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> ActResponse:
         return self._client.agent.act(
@@ -63,7 +65,7 @@ class Agent:
         cmd: str,
         schema: Optional[Dict[str, Optional[Any]]] = OMIT,
         include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Literal["claude"]] = OMIT,
+        model: Optional[Model] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> ScrapeResponse:
         return self._client.agent.scrape(
@@ -78,17 +80,11 @@ class Agent:
     def scrape_to_pydantic(
         self,
         *,
-        cmd: typing.Optional[str] = OMIT,
+        cmd: str,
         schema: PydanticModelT,
-        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        model: typing.Optional[Model] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> PydanticModelT:
-        cmd = cmd if cmd else (str(schema.__doc__) if schema.__doc__ else None)
-        if cmd is None:
-            raise ValueError(
-                "No command provided, please provide a 'cmd' parameter or docstring in schema class."
-            )
-
         response = self._client.agent.scrape(
             self.instance_id,
             cmd=cmd,
@@ -113,7 +109,7 @@ class AsyncAgent:
         *,
         cmd: str,
         include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Literal["claude"]] = OMIT,
+        model: Optional[Model] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> ActResponse:
         return await self._client.agent.act(
@@ -130,7 +126,7 @@ class AsyncAgent:
         cmd: str,
         schema: Optional[Dict[str, Optional[Any]]] = OMIT,
         include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Literal["claude"]] = OMIT,
+        model: Optional[Model] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> ScrapeResponse:
         return await self._client.agent.scrape(
@@ -145,17 +141,11 @@ class AsyncAgent:
     async def scrape_to_pydantic(
         self,
         *,
-        cmd: typing.Optional[str] = OMIT,
+        cmd: str,
         schema: PydanticModelT,
-        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        model: typing.Optional[Model] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> PydanticModelT:
-        cmd = cmd if cmd else (str(schema.__doc__) if schema.__doc__ else None)
-        if cmd is None:
-            raise ValueError(
-                "No command provided, please provide a 'cmd' parameter or docstring in schema class."
-            )
-
         response = await self._client.agent.scrape(
             self.instance_id,
             cmd=cmd,
@@ -721,6 +711,23 @@ class Instance:
     ) -> StopInstanceResponse:
         return self._client.instance.stop(self.id, request_options=request_options)
 
+    def pause(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        return self._client.instance.pause(self.id, request_options=request_options)
+
+    def resume(
+        self,
+        *,
+        timeout_hours: Optional[float] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> GetInstanceResponse:
+        return self._client.instance.resume(
+            self.id,
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+
 
 class AsyncInstance:
     def __init__(
@@ -813,6 +820,25 @@ class AsyncInstance:
     ) -> StopInstanceResponse:
         return await self._client.instance.stop(
             self.id, request_options=request_options
+        )
+
+    async def pause(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        return await self._client.instance.pause(
+            self.id, request_options=request_options
+        )
+
+    async def resume(
+        self,
+        *,
+        timeout_hours: Optional[float] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> GetInstanceResponse:
+        return await self._client.instance.resume(
+            self.id,
+            timeout_hours=timeout_hours,
+            request_options=request_options,
         )
 
 
