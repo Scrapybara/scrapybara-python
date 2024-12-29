@@ -28,6 +28,7 @@ from .types import (
 )
 from .errors import UnprocessableEntityError
 from . import agent, browser, code, env, file, instance, notebook
+from .agent import Model
 from .client import AsyncScrapybara, Scrapybara
 from .environment import ScrapybaraEnvironment
 from .instance import Action, Command
@@ -52,6 +53,7 @@ __all__ = [
     "InstanceGetStreamUrlResponse",
     "InstanceScreenshotResponse",
     "KernelInfo",
+    "Model",
     "Notebook",
     "NotebookCell",
     "ScrapeResponse",

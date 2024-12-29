@@ -2,6 +2,7 @@
 
 import typing
 from ..core.client_wrapper import SyncClientWrapper
+from .types.model import Model
 from ..core.request_options import RequestOptions
 from ..types.act_response import ActResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -27,7 +28,7 @@ class AgentClient:
         *,
         cmd: str,
         include_screenshot: typing.Optional[bool] = OMIT,
-        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        model: typing.Optional[Model] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ActResponse:
         """
@@ -39,7 +40,7 @@ class AgentClient:
 
         include_screenshot : typing.Optional[bool]
 
-        model : typing.Optional[typing.Literal["claude"]]
+        model : typing.Optional[Model]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -106,7 +107,7 @@ class AgentClient:
         cmd: str,
         schema: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         include_screenshot: typing.Optional[bool] = OMIT,
-        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        model: typing.Optional[Model] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ScrapeResponse:
         """
@@ -120,7 +121,7 @@ class AgentClient:
 
         include_screenshot : typing.Optional[bool]
 
-        model : typing.Optional[typing.Literal["claude"]]
+        model : typing.Optional[Model]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -192,7 +193,7 @@ class AsyncAgentClient:
         *,
         cmd: str,
         include_screenshot: typing.Optional[bool] = OMIT,
-        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        model: typing.Optional[Model] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ActResponse:
         """
@@ -204,7 +205,7 @@ class AsyncAgentClient:
 
         include_screenshot : typing.Optional[bool]
 
-        model : typing.Optional[typing.Literal["claude"]]
+        model : typing.Optional[Model]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -279,7 +280,7 @@ class AsyncAgentClient:
         cmd: str,
         schema: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         include_screenshot: typing.Optional[bool] = OMIT,
-        model: typing.Optional[typing.Literal["claude"]] = OMIT,
+        model: typing.Optional[Model] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ScrapeResponse:
         """
@@ -293,7 +294,7 @@ class AsyncAgentClient:
 
         include_screenshot : typing.Optional[bool]
 
-        model : typing.Optional[typing.Literal["claude"]]
+        model : typing.Optional[Model]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

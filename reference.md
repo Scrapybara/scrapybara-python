@@ -553,6 +553,126 @@ client.instance.stop(
 </dl>
 </details>
 
+<details><summary><code>client.instance.<a href="src/scrapybara/instance/client.py">pause</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.instance.pause(
+    instance_id="instance_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.instance.<a href="src/scrapybara/instance/client.py">resume</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.instance.resume(
+    instance_id="instance_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**timeout_hours:** `typing.Optional[float]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Agent
 <details><summary><code>client.agent.<a href="src/scrapybara/agent/client.py">act</a>(...)</code></summary>
 <dl>
@@ -615,7 +735,7 @@ client.agent.act(
 <dl>
 <dd>
 
-**model:** `typing.Optional[typing.Literal["claude"]]` 
+**model:** `typing.Optional[Model]` 
     
 </dd>
 </dl>
@@ -704,7 +824,7 @@ client.agent.scrape(
 <dl>
 <dd>
 
-**model:** `typing.Optional[typing.Literal["claude"]]` 
+**model:** `typing.Optional[Model]` 
     
 </dd>
 </dl>

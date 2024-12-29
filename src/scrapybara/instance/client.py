@@ -14,6 +14,7 @@ from ..types.instance_get_stream_url_response import InstanceGetStreamUrlRespons
 from .types.action import Action
 from .types.command import Command
 from ..types.stop_instance_response import StopInstanceResponse
+from ..types.get_instance_response import GetInstanceResponse
 from ..core.client_wrapper import AsyncClientWrapper
 
 # this is used as the default value for optional parameters
@@ -420,6 +421,127 @@ class InstanceClient:
                     StopInstanceResponse,
                     parse_obj_as(
                         type_=StopInstanceResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def pause(
+        self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        StopInstanceResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.instance.pause(
+            instance_id="instance_id",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/pause",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    StopInstanceResponse,
+                    parse_obj_as(
+                        type_=StopInstanceResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def resume(
+        self,
+        instance_id: str,
+        *,
+        timeout_hours: typing.Optional[float] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GetInstanceResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        timeout_hours : typing.Optional[float]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GetInstanceResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.instance.resume(
+            instance_id="instance_id",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/resume",
+            method="POST",
+            params={
+                "timeout_hours": timeout_hours,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    GetInstanceResponse,
+                    parse_obj_as(
+                        type_=GetInstanceResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -887,6 +1009,143 @@ class AsyncInstanceClient:
                     StopInstanceResponse,
                     parse_obj_as(
                         type_=StopInstanceResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def pause(
+        self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        StopInstanceResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.instance.pause(
+                instance_id="instance_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/pause",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    StopInstanceResponse,
+                    parse_obj_as(
+                        type_=StopInstanceResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def resume(
+        self,
+        instance_id: str,
+        *,
+        timeout_hours: typing.Optional[float] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GetInstanceResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        timeout_hours : typing.Optional[float]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GetInstanceResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.instance.resume(
+                instance_id="instance_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/resume",
+            method="POST",
+            params={
+                "timeout_hours": timeout_hours,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    GetInstanceResponse,
+                    parse_obj_as(
+                        type_=GetInstanceResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
