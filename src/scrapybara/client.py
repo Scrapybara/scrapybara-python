@@ -944,7 +944,7 @@ class Scrapybara:
         request_options: Optional[RequestOptions] = None,
     ) -> List[AuthStateResponse]:
         response = self._base_client.get_auth_states(request_options=request_options)
-        return [AuthStateResponse(**state) for state in response]
+        return [AuthStateResponse(id=state.id, name=state.name) for state in response]
 
 
 class AsyncScrapybara:
@@ -1030,4 +1030,4 @@ class AsyncScrapybara:
         response = await self._base_client.get_auth_states(
             request_options=request_options
         )
-        return [AuthStateResponse(**state) for state in response]
+        return [AuthStateResponse(id=state.id, name=state.name) for state in response]
