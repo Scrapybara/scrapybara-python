@@ -2,6 +2,7 @@
 
 from .types import (
     ActResponse,
+    AuthStateResponse,
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
     CellType,
@@ -18,6 +19,7 @@ from .types import (
     KernelInfo,
     Notebook,
     NotebookCell,
+    SaveBrowserAuthResponse,
     ScrapeResponse,
     StartBrowserResponse,
     Status,
@@ -38,6 +40,7 @@ __all__ = [
     "ActResponse",
     "Action",
     "AsyncScrapybara",
+    "AuthStateResponse",
     "BrowserAuthenticateResponse",
     "BrowserGetCdpUrlResponse",
     "CellType",
@@ -56,6 +59,7 @@ __all__ = [
     "Model",
     "Notebook",
     "NotebookCell",
+    "SaveBrowserAuthResponse",
     "ScrapeResponse",
     "Scrapybara",
     "ScrapybaraEnvironment",

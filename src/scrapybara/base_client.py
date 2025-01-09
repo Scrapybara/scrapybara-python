@@ -21,6 +21,7 @@ from .errors.unprocessable_entity_error import UnprocessableEntityError
 from .types.http_validation_error import HttpValidationError
 from json.decoder import JSONDecodeError
 from .core.jsonable_encoder import jsonable_encoder
+from .types.auth_state_response import AuthStateResponse
 from .core.client_wrapper import AsyncClientWrapper
 from .instance.client import AsyncInstanceClient
 from .agent.client import AsyncAgentClient
@@ -220,6 +221,90 @@ class BaseClient:
                             object_=_response.json(),
                         ),
                     )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_instances(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[GetInstanceResponse]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[GetInstanceResponse]
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.get_instances()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/instances",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[GetInstanceResponse],
+                    parse_obj_as(
+                        type_=typing.List[GetInstanceResponse],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_auth_states(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[AuthStateResponse]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[AuthStateResponse]
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.get_auth_states()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/auth_states",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[AuthStateResponse],
+                    parse_obj_as(
+                        type_=typing.List[AuthStateResponse],  # type: ignore
+                        object_=_response.json(),
+                    ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
@@ -431,6 +516,106 @@ class AsyncBaseClient:
                             object_=_response.json(),
                         ),
                     )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_instances(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[GetInstanceResponse]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[GetInstanceResponse]
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.get_instances()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/instances",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[GetInstanceResponse],
+                    parse_obj_as(
+                        type_=typing.List[GetInstanceResponse],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_auth_states(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[AuthStateResponse]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[AuthStateResponse]
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.get_auth_states()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/auth_states",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[AuthStateResponse],
+                    parse_obj_as(
+                        type_=typing.List[AuthStateResponse],  # type: ignore
+                        object_=_response.json(),
+                    ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:

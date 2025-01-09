@@ -117,6 +117,98 @@ client.get(
 </dl>
 </details>
 
+<details><summary><code>client.<a href="src/scrapybara/base_client.py">get_instances</a>()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.get_instances()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.<a href="src/scrapybara/base_client.py">get_auth_states</a>()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.get_auth_states()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Instance
 <details><summary><code>client.instance.<a href="src/scrapybara/instance/client.py">screenshot</a>(...)</code></summary>
 <dl>
@@ -957,23 +1049,9 @@ client.browser.get_cdp_url(
 </dl>
 </details>
 
-<details><summary><code>client.browser.<a href="src/scrapybara/browser/client.py">authenticate</a>(...)</code></summary>
+<details><summary><code>client.browser.<a href="src/scrapybara/browser/client.py">save_auth</a>(...)</code></summary>
 <dl>
 <dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Authenticate browser with Anon for all available apps
-</dd>
-</dl>
-</dd>
-</dl>
 
 #### 🔌 Usage
 
@@ -989,9 +1067,8 @@ from scrapybara import Scrapybara
 client = Scrapybara(
     api_key="YOUR_API_KEY",
 )
-client.browser.authenticate(
+client.browser.save_auth(
     instance_id="instance_id",
-    context_id="context_id",
 )
 
 ```
@@ -1016,7 +1093,72 @@ client.browser.authenticate(
 <dl>
 <dd>
 
-**context_id:** `str` 
+**name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.browser.<a href="src/scrapybara/browser/client.py">authenticate</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.browser.authenticate(
+    instance_id="instance_id",
+    auth_state_id="auth_state_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**auth_state_id:** `str` 
     
 </dd>
 </dl>

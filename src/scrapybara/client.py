@@ -4,13 +4,13 @@ import typing
 import httpx
 import os
 
-import typing
 from pydantic import BaseModel, ValidationError
 from scrapybara.agent.types.model import Model
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .types import (
     ActResponse,
+    AuthStateResponse,
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
     CellType,
@@ -25,6 +25,7 @@ from .types import (
     KernelInfo,
     Notebook as NotebookType,
     NotebookCell,
+    SaveBrowserAuthResponse,
     ScrapeResponse,
     StartBrowserResponse,
     StopBrowserResponse,
@@ -179,11 +180,23 @@ class Browser:
             self.instance_id, request_options=request_options
         )
 
+    def save_auth(
+        self,
+        *,
+        name: Optional[str] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> SaveBrowserAuthResponse:
+        return self._client.browser.save_auth(
+            self.instance_id, name=name, request_options=request_options
+        )
+
     def authenticate(
-        self, *, context_id: str, request_options: Optional[RequestOptions] = None
+        self, *, auth_state_id: str, request_options: Optional[RequestOptions] = None
     ) -> BrowserAuthenticateResponse:
         return self._client.browser.authenticate(
-            self.instance_id, context_id=context_id, request_options=request_options
+            self.instance_id,
+            auth_state_id=auth_state_id,
+            request_options=request_options,
         )
 
     def stop(
@@ -213,11 +226,23 @@ class AsyncBrowser:
             self.instance_id, request_options=request_options
         )
 
+    async def save_auth(
+        self,
+        *,
+        name: Optional[str] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> SaveBrowserAuthResponse:
+        return await self._client.browser.save_auth(
+            self.instance_id, name=name, request_options=request_options
+        )
+
     async def authenticate(
-        self, *, context_id: str, request_options: Optional[RequestOptions] = None
+        self, *, auth_state_id: str, request_options: Optional[RequestOptions] = None
     ) -> BrowserAuthenticateResponse:
         return await self._client.browser.authenticate(
-            self.instance_id, context_id=context_id, request_options=request_options
+            self.instance_id,
+            auth_state_id=auth_state_id,
+            request_options=request_options,
         )
 
     async def stop(
@@ -896,6 +921,31 @@ class Scrapybara:
             self._base_client,
         )
 
+    def get_instances(
+        self,
+        *,
+        request_options: Optional[RequestOptions] = None,
+    ) -> List[Instance]:
+        response = self._base_client.get_instances(request_options=request_options)
+        return [
+            Instance(
+                instance.id,
+                instance.launch_time,
+                instance.instance_type,
+                instance.status,
+                self._base_client,
+            )
+            for instance in response
+        ]
+
+    def get_auth_states(
+        self,
+        *,
+        request_options: Optional[RequestOptions] = None,
+    ) -> List[AuthStateResponse]:
+        response = self._base_client.get_auth_states(request_options=request_options)
+        return [AuthStateResponse(id=state.id, name=state.name) for state in response]
+
 
 class AsyncScrapybara:
     def __init__(
@@ -952,3 +1002,32 @@ class AsyncScrapybara:
             response.status,
             self._base_client,
         )
+
+    async def get_instances(
+        self,
+        *,
+        request_options: Optional[RequestOptions] = None,
+    ) -> List[AsyncInstance]:
+        response = await self._base_client.get_instances(
+            request_options=request_options
+        )
+        return [
+            AsyncInstance(
+                instance.id,
+                instance.launch_time,
+                instance.instance_type,
+                instance.status,
+                self._base_client,
+            )
+            for instance in response
+        ]
+
+    async def get_auth_states(
+        self,
+        *,
+        request_options: Optional[RequestOptions] = None,
+    ) -> List[AuthStateResponse]:
+        response = await self._base_client.get_auth_states(
+            request_options=request_options
+        )
+        return [AuthStateResponse(id=state.id, name=state.name) for state in response]
