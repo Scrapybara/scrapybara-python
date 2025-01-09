@@ -8,6 +8,12 @@ def test_client() -> None:
     client = Scrapybara()
     instance = client.start()
     assert instance.id is not None
+    instances = client.get_instances()
+    assert len(instances) > 0
     screenshot_response = instance.screenshot()
     assert screenshot_response.base_64_image is not None
+    instance.browser.start()
+    cdp_url = instance.browser.get_cdp_url()
+    assert cdp_url is not None
+    instance.browser.stop()
     instance.stop()
