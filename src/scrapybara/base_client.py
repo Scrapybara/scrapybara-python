@@ -7,7 +7,6 @@ import httpx
 from .core.api_error import ApiError
 from .core.client_wrapper import SyncClientWrapper
 from .instance.client import InstanceClient
-from .agent.client import AgentClient
 from .browser.client import BrowserClient
 from .code.client import CodeClient
 from .notebook.client import NotebookClient
@@ -24,7 +23,6 @@ from .core.jsonable_encoder import jsonable_encoder
 from .types.auth_state_response import AuthStateResponse
 from .core.client_wrapper import AsyncClientWrapper
 from .instance.client import AsyncInstanceClient
-from .agent.client import AsyncAgentClient
 from .browser.client import AsyncBrowserClient
 from .code.client import AsyncCodeClient
 from .notebook.client import AsyncNotebookClient
@@ -98,7 +96,6 @@ class BaseClient:
             timeout=_defaulted_timeout,
         )
         self.instance = InstanceClient(client_wrapper=self._client_wrapper)
-        self.agent = AgentClient(client_wrapper=self._client_wrapper)
         self.browser = BrowserClient(client_wrapper=self._client_wrapper)
         self.code = CodeClient(client_wrapper=self._client_wrapper)
         self.notebook = NotebookClient(client_wrapper=self._client_wrapper)
@@ -375,7 +372,6 @@ class AsyncBaseClient:
             timeout=_defaulted_timeout,
         )
         self.instance = AsyncInstanceClient(client_wrapper=self._client_wrapper)
-        self.agent = AsyncAgentClient(client_wrapper=self._client_wrapper)
         self.browser = AsyncBrowserClient(client_wrapper=self._client_wrapper)
         self.code = AsyncCodeClient(client_wrapper=self._client_wrapper)
         self.notebook = AsyncNotebookClient(client_wrapper=self._client_wrapper)
