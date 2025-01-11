@@ -5,12 +5,26 @@ from anthropic.types.beta import (
     BetaToolBash20241022Param,
 )
 import asyncio
+from pydantic import Field
 
 from ..client import Instance
-
+from ..types.act import Model
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 
 
+# New: universal act API
+class Anthropic(Model):
+    provider: Literal["anthropic"] = Field(default="anthropic", frozen=True)
+
+    def __init__(
+        self,
+        name: Optional[str] = "claude-3-5-sonnet-20241022",
+        api_key: Optional[str] = None,
+    ) -> None:
+        super().__init__(name=name, api_key=api_key)
+
+
+# Legacy: Anthropic SDK-compatible tools
 class ComputerToolOptions(TypedDict):
     display_height_px: int
     display_width_px: int
@@ -162,3 +176,25 @@ class BashTool(BaseAnthropicTool):
             )
         except Exception as e:
             raise ToolError(str(e)) from None
+
+
+class ToolCollection:
+    """A collection of anthropic-defined tools."""
+
+    def __init__(self, *tools):
+        self.tools = tools
+        self.tool_map = {tool.to_params()["name"]: tool for tool in tools}
+
+    def to_params(self) -> list:
+        return [tool.to_params() for tool in self.tools]
+
+    async def run(self, *, name: str, tool_input: dict[str, Any]) -> ToolResult:
+        tool = self.tool_map.get(name)
+        if not tool:
+            return None
+        try:
+            r = await tool(**tool_input)
+            return r
+        except Exception as e:
+            print(f"Error running tool {name}: {e}")
+            return None
