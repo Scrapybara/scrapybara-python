@@ -1,9 +1,17 @@
-from typing import Any
+from typing import Any, Dict, Optional
 from playwright.sync_api import sync_playwright
+from pydantic import BaseModel
 
-
-from ..types.act import Tool
 from ..client import Instance
+
+
+class Tool(BaseModel):
+    name: str
+    description: Optional[str] = None
+    parameters: Optional[Dict[str, Any]] = None
+
+    def __call__(self, **kwargs: Any) -> Any:
+        raise NotImplementedError("Tool.__call__ must be implemented by subclasses")
 
 
 class ComputerTool(Tool):
