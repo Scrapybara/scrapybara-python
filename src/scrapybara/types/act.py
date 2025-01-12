@@ -92,7 +92,15 @@ class Step(BaseModel):
     text: str
     tool_calls: Optional[List[ToolCallPart]] = None
     tool_results: Optional[List[ToolResultPart]] = None
-    finish_reason: Optional[str] = Literal[
-        "stop", "length", "content-filter", "tool-calls", "error", "other", "unknown"
-    ]
+    finish_reason: Optional[
+        Literal[
+            "stop",
+            "length",
+            "content-filter",
+            "tool-calls",
+            "error",
+            "other",
+            "unknown",
+        ]
+    ] = None
     usage: Optional[TokenUsage] = None

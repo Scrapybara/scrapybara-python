@@ -21,7 +21,7 @@ class Anthropic(Model):
         name: Optional[str] = "claude-3-5-sonnet-20241022",
         api_key: Optional[str] = None,
     ) -> None:
-        super().__init__(name=name, api_key=api_key)
+        super().__init__(provider="anthropic", name=name, api_key=api_key)
 
 
 # Legacy: Anthropic SDK-compatible tools
@@ -191,10 +191,10 @@ class ToolCollection:
     async def run(self, *, name: str, tool_input: dict[str, Any]) -> ToolResult:
         tool = self.tool_map.get(name)
         if not tool:
-            return None
+            return ToolResult(error=f"Tool {name} not found")
         try:
             r = await tool(**tool_input)
-            return r
+            return r if r else ToolResult()
         except Exception as e:
             print(f"Error running tool {name}: {e}")
-            return None
+            return ToolResult(error=str(e))

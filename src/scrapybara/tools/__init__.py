@@ -180,7 +180,7 @@ class BrowserTool(Tool):
                     return True
 
                 elif command == "screenshot":
-                    return page.screenshot(type="png", encoding="base64")
+                    return page.screenshot(type="png")
 
                 elif command == "get_text":
                     element = page.wait_for_selector(selector, timeout=timeout)

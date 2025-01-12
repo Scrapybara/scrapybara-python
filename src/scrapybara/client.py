@@ -12,10 +12,12 @@ from typing import (
     AsyncGenerator,
 )
 import typing
-import httpx
 import os
 import asyncio
 
+import httpx
+
+from scrapybara.core.http_client import AsyncHttpClient, HttpClient
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .core.api_error import ApiError
@@ -785,7 +787,7 @@ class Scrapybara:
         )
 
     @property
-    def httpx_client(self) -> httpx.Client:
+    def httpx_client(self) -> HttpClient:
         return self._base_client._client_wrapper.httpx_client
 
     def start(
@@ -877,7 +879,9 @@ class Scrapybara:
         Returns:
             List of all messages from the conversation
         """
-        new_messages = [messages]
+        result_messages: List[Message] = []
+        if messages:
+            result_messages.extend(messages)
         for step in self.act_stream(
             tools=tools,
             model=model,
@@ -889,19 +893,14 @@ class Scrapybara:
             on_step=on_step,
             request_options=request_options,
         ):
-            new_messages.extend(
-                [
-                    AssistantMessage(
-                        content=[TextPart(text=step.text)] + (step.tool_calls or [])
-                    ),
-                    (
-                        ToolMessage(content=step.tool_results)
-                        if step.tool_results
-                        else None
-                    ),
-                ]
+            assistant_msg = AssistantMessage(
+                content=[TextPart(text=step.text)] + (step.tool_calls or [])
             )
-        return new_messages
+            result_messages.append(assistant_msg)
+            if step.tool_results:
+                tool_msg = ToolMessage(content=step.tool_results)
+                result_messages.append(tool_msg)
+        return result_messages
 
     def act_stream(
         self,
@@ -933,22 +932,22 @@ class Scrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
+        current_messages: List[Message] = []
         if messages is None:
             if prompt is None:
                 raise ValueError("prompt or messages must be provided")
-            messages: List[Message] = [
-                UserMessage(content=[TextPart(text=prompt)]),
-            ]
+            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
         else:
-            if prompt is not None:
-                raise ValueError("prompt and messages cannot be used together")
+            current_messages = list(messages)
+
+        current_tools = [] if tools is None else list(tools)
 
         while True:
             request = ActRequest(
                 model=model,
                 system=system,
-                messages=messages,
-                tools=tools,
+                messages=current_messages,
+                tools=current_tools,
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
@@ -965,7 +964,7 @@ class Scrapybara:
                 raise ApiError(status_code=response.status_code, body=response.json())
 
             act_response = ActResponse.model_validate(response.json())
-            messages.append(act_response.message)
+            current_messages.append(act_response.message)
 
             # Extract text from assistant message
             text = "\n".join(
@@ -995,7 +994,7 @@ class Scrapybara:
             if has_tool_calls:
                 tool_results: List[ToolResultPart] = []
                 for part in tool_calls:
-                    tool = next(t for t in tools if t.name == part.tool_name)
+                    tool = next(t for t in current_tools if t.name == part.tool_name)
                     try:
                         result = tool(**part.args)
                         tool_results.append(
@@ -1016,7 +1015,7 @@ class Scrapybara:
                         )
                 step.tool_results = tool_results
                 tool_message = ToolMessage(content=tool_results)
-                messages.append(tool_message)
+                current_messages.append(tool_message)
 
             if on_step:
                 on_step(step)
@@ -1047,7 +1046,7 @@ class AsyncScrapybara:
         )
 
     @property
-    def httpx_client(self) -> httpx.AsyncClient:
+    def httpx_client(self) -> AsyncHttpClient:
         return self._base_client._client_wrapper.httpx_client
 
     async def start(
@@ -1145,8 +1144,10 @@ class AsyncScrapybara:
         Returns:
             List of all messages from the conversation
         """
-        new_messages = [messages]
-        for step in self.act_stream(
+        result_messages: List[Message] = []
+        if messages:
+            result_messages.extend(messages)
+        async for step in self.act_stream(
             tools=tools,
             model=model,
             system=system,
@@ -1157,19 +1158,14 @@ class AsyncScrapybara:
             on_step=on_step,
             request_options=request_options,
         ):
-            new_messages.extend(
-                [
-                    AssistantMessage(
-                        content=[TextPart(text=step.text)] + (step.tool_calls or [])
-                    ),
-                    (
-                        ToolMessage(content=step.tool_results)
-                        if step.tool_results
-                        else None
-                    ),
-                ]
+            assistant_msg = AssistantMessage(
+                content=[TextPart(text=step.text)] + (step.tool_calls or [])
             )
-        return new_messages
+            result_messages.append(assistant_msg)
+            if step.tool_results:
+                tool_msg = ToolMessage(content=step.tool_results)
+                result_messages.append(tool_msg)
+        return result_messages
 
     async def act_stream(
         self,
@@ -1201,22 +1197,22 @@ class AsyncScrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
+        current_messages: List[Message] = []
         if messages is None:
             if prompt is None:
                 raise ValueError("prompt or messages must be provided")
-            messages: List[Message] = [
-                UserMessage(content=[TextPart(text=prompt)]),
-            ]
+            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
         else:
-            if prompt is not None:
-                raise ValueError("prompt and messages cannot be used together")
+            current_messages = list(messages)
+
+        current_tools = [] if tools is None else list(tools)
 
         while True:
             request = ActRequest(
                 model=model,
                 system=system,
-                messages=messages,
-                tools=tools,
+                messages=current_messages,
+                tools=current_tools,
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
@@ -1233,7 +1229,7 @@ class AsyncScrapybara:
                 raise ApiError(status_code=response.status_code, body=response.json())
 
             act_response = ActResponse.model_validate(response.json())
-            messages.append(act_response.message)
+            current_messages.append(act_response.message)
 
             # Extract text from assistant message
             text = "\n".join(
@@ -1263,7 +1259,7 @@ class AsyncScrapybara:
             if has_tool_calls:
                 tool_results: List[ToolResultPart] = []
                 for part in tool_calls:
-                    tool = next(t for t in tools if t.name == part.tool_name)
+                    tool = next(t for t in current_tools if t.name == part.tool_name)
                     try:
                         loop = asyncio.get_event_loop()
                         result = await loop.run_in_executor(
@@ -1287,7 +1283,7 @@ class AsyncScrapybara:
                         )
                 step.tool_results = tool_results
                 tool_message = ToolMessage(content=tool_results)
-                messages.append(tool_message)
+                current_messages.append(tool_message)
 
             if on_step:
                 on_step(step)
