@@ -1,4 +1,4 @@
-from typing import Literal, Optional, TypedDict, Any
+from typing import Literal, Optional, TypedDict, Any, Dict
 from anthropic.types.beta import (
     BetaToolComputerUse20241022Param,
     BetaToolTextEditor20241022Param,
@@ -188,7 +188,7 @@ class ToolCollection:
     def to_params(self) -> list:
         return [tool.to_params() for tool in self.tools]
 
-    async def run(self, *, name: str, tool_input: dict[str, Any]) -> ToolResult:
+    async def run(self, *, name: str, tool_input: Dict[str, Any]) -> ToolResult:
         tool = self.tool_map.get(name)
         if not tool:
             return ToolResult(error=f"Tool {name} not found")
