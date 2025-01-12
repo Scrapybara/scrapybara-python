@@ -2,5 +2,7 @@
 
 src/scrapybara/client.py
 src/scrapybara/anthropic/
+src/scrapybara/tools/
+src/scrapybara/types/act.py
 tests/custom/test_client.py
 .github/workflows/ci.yml

@@ -1,15 +1,27 @@
 from datetime import datetime
-from typing import Optional, Any, Dict, List, Sequence, Union, Literal
+from typing import (
+    Optional,
+    Any,
+    Dict,
+    List,
+    Sequence,
+    Union,
+    Literal,
+    Generator,
+    Callable,
+    AsyncGenerator,
+)
 import typing
-import httpx
 import os
+import asyncio
 
-from pydantic import BaseModel, ValidationError
-from scrapybara.agent.types.model import Model
+import httpx
+
+from scrapybara.core.http_client import AsyncHttpClient, HttpClient
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
+from .core.api_error import ApiError
 from .types import (
-    ActResponse,
     AuthStateResponse,
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
@@ -26,139 +38,28 @@ from .types import (
     Notebook as NotebookType,
     NotebookCell,
     SaveBrowserAuthResponse,
-    ScrapeResponse,
     StartBrowserResponse,
     StopBrowserResponse,
     StopInstanceResponse,
+)
+from .types.act import (
+    ActRequest,
+    ActResponse,
+    Message,
+    Model,
+    TextPart,
+    Tool,
+    ToolCallPart,
+    ToolMessage,
+    ToolResultPart,
+    UserMessage,
+    AssistantMessage,
+    Step,
 )
 from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
 
 OMIT = typing.cast(typing.Any, ...)
-
-PydanticModelT = typing.TypeVar("PydanticModelT", bound=BaseModel)
-
-
-class Agent:
-    def __init__(self, instance_id: str, client: BaseClient):
-        self.instance_id = instance_id
-        self._client = client
-
-    def act(
-        self,
-        *,
-        cmd: str,
-        include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Model] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> ActResponse:
-        return self._client.agent.act(
-            self.instance_id,
-            cmd=cmd,
-            include_screenshot=include_screenshot,
-            model=model,
-            request_options=request_options,
-        )
-
-    def scrape(
-        self,
-        *,
-        cmd: str,
-        schema: Optional[Dict[str, Optional[Any]]] = OMIT,
-        include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Model] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> ScrapeResponse:
-        return self._client.agent.scrape(
-            self.instance_id,
-            cmd=cmd,
-            schema=schema,
-            include_screenshot=include_screenshot,
-            model=model,
-            request_options=request_options,
-        )
-
-    def scrape_to_pydantic(
-        self,
-        *,
-        cmd: str,
-        schema: PydanticModelT,
-        model: typing.Optional[Model] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> PydanticModelT:
-        response = self._client.agent.scrape(
-            self.instance_id,
-            cmd=cmd,
-            schema=schema.model_json_schema(),
-            model=model,
-            request_options=request_options,
-        )
-
-        try:
-            return schema.model_validate(response.data)
-        except ValidationError as e:
-            raise ValidationError(f"Validation error at client side: {e}") from e
-
-
-class AsyncAgent:
-    def __init__(self, instance_id: str, client: AsyncBaseClient):
-        self.instance_id = instance_id
-        self._client = client
-
-    async def act(
-        self,
-        *,
-        cmd: str,
-        include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Model] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> ActResponse:
-        return await self._client.agent.act(
-            self.instance_id,
-            cmd=cmd,
-            include_screenshot=include_screenshot,
-            model=model,
-            request_options=request_options,
-        )
-
-    async def scrape(
-        self,
-        *,
-        cmd: str,
-        schema: Optional[Dict[str, Optional[Any]]] = OMIT,
-        include_screenshot: Optional[bool] = OMIT,
-        model: Optional[Model] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> ScrapeResponse:
-        return await self._client.agent.scrape(
-            self.instance_id,
-            cmd=cmd,
-            schema=schema,
-            include_screenshot=include_screenshot,
-            model=model,
-            request_options=request_options,
-        )
-
-    async def scrape_to_pydantic(
-        self,
-        *,
-        cmd: str,
-        schema: PydanticModelT,
-        model: typing.Optional[Model] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> PydanticModelT:
-        response = await self._client.agent.scrape(
-            self.instance_id,
-            cmd=cmd,
-            schema=schema.model_json_schema(),
-            model=model,
-            request_options=request_options,
-        )
-
-        try:
-            return schema.model_validate(response.data)
-        except ValidationError as e:
-            raise ValidationError(f"Validation error at client side: {e}") from e
 
 
 class Browser:
@@ -659,7 +560,6 @@ class Instance:
         self.instance_type = instance_type
         self.status = status
         self._client = client
-        self.agent = Agent(self.id, self._client)
         self.browser = Browser(self.id, self._client)
         self.code = Code(self.id, self._client)
         self.notebook = Notebook(self.id, self._client)
@@ -768,7 +668,6 @@ class AsyncInstance:
         self.instance_type = instance_type
         self.status = status
         self._client = client
-        self.agent = AsyncAgent(self.id, self._client)
         self.browser = AsyncBrowser(self.id, self._client)
         self.code = AsyncCode(self.id, self._client)
         self.notebook = AsyncNotebook(self.id, self._client)
@@ -887,6 +786,10 @@ class Scrapybara:
             httpx_client=httpx_client,
         )
 
+    @property
+    def httpx_client(self) -> HttpClient:
+        return self._base_client._client_wrapper.httpx_client
+
     def start(
         self,
         *,
@@ -946,6 +849,181 @@ class Scrapybara:
         response = self._base_client.get_auth_states(request_options=request_options)
         return [AuthStateResponse(id=state.id, name=state.name) for state in response]
 
+    def act(
+        self,
+        *,
+        model: Model,
+        system: Optional[str] = None,
+        prompt: Optional[str] = None,
+        messages: Optional[List[Message]] = None,
+        tools: Optional[List[Tool]] = None,
+        on_step: Optional[Callable[[Step], None]] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> List[Message]:
+        """
+        Run an agent loop with the given tools and model, returning all messages at the end.
+
+        Args:
+            tools: List of tools available to the agent
+            model: The model to use for generating responses
+            system: System prompt for the agent
+            prompt: Initial user prompt
+            messages: List of messages to start with
+            on_step: Callback for each step of the conversation
+            temperature: Optional temperature parameter for the model
+            max_tokens: Optional max tokens parameter for the model
+            request_options: Optional request configuration
+
+        Returns:
+            List of all messages from the conversation
+        """
+        result_messages: List[Message] = []
+        if messages:
+            result_messages.extend(messages)
+        for step in self.act_stream(
+            tools=tools,
+            model=model,
+            system=system,
+            prompt=prompt,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            on_step=on_step,
+            request_options=request_options,
+        ):
+            assistant_msg = AssistantMessage(
+                content=[TextPart(text=step.text)] + (step.tool_calls or [])
+            )
+            result_messages.append(assistant_msg)
+            if step.tool_results:
+                tool_msg = ToolMessage(content=step.tool_results)
+                result_messages.append(tool_msg)
+        return result_messages
+
+    def act_stream(
+        self,
+        *,
+        model: Model,
+        system: Optional[str] = None,
+        prompt: Optional[str] = None,
+        messages: Optional[List[Message]] = None,
+        tools: Optional[List[Tool]] = None,
+        on_step: Optional[Callable[[Step], None]] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Generator[Step, None, None]:
+        """
+        Run an interactive agent loop with the given tools and model.
+
+        Args:
+            tools: List of tools available to the agent
+            model: The model to use for generating responses
+            system: System prompt for the agent
+            prompt: Initial user prompt
+            messages: List of messages to start with
+            on_step: Callback for each step of the conversation
+            temperature: Optional temperature parameter for the model
+            max_tokens: Optional max tokens parameter for the model
+            request_options: Optional request configuration
+
+        Yields:
+            Steps from the conversation, including tool results
+        """
+        current_messages: List[Message] = []
+        if messages is None:
+            if prompt is None:
+                raise ValueError("prompt or messages must be provided")
+            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
+        else:
+            current_messages = list(messages)
+
+        current_tools = [] if tools is None else list(tools)
+
+        while True:
+            request = ActRequest(
+                model=model,
+                system=system,
+                messages=current_messages,
+                tools=current_tools,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+
+            response = self.httpx_client.request(
+                "v1/act",
+                method="POST",
+                json=request.model_dump(exclude_none=True),
+                headers={"content-type": "application/json"},
+                request_options=request_options,
+            )
+
+            if not 200 <= response.status_code < 300:
+                raise ApiError(status_code=response.status_code, body=response.json())
+
+            act_response = ActResponse.model_validate(response.json())
+            current_messages.append(act_response.message)
+
+            # Extract text from assistant message
+            text = "\n".join(
+                part.text
+                for part in act_response.message.content
+                if isinstance(part, TextPart)
+            )
+
+            # Extract tool calls
+            tool_calls = [
+                part
+                for part in act_response.message.content
+                if isinstance(part, ToolCallPart)
+            ]
+
+            # Create initial step
+            step = Step(
+                text=text,
+                tool_calls=tool_calls if tool_calls else None,
+                finish_reason=act_response.finish_reason,
+                usage=act_response.usage,
+            )
+
+            # Check if we should continue the loop
+            has_tool_calls = bool(tool_calls)
+
+            if has_tool_calls:
+                tool_results: List[ToolResultPart] = []
+                for part in tool_calls:
+                    tool = next(t for t in current_tools if t.name == part.tool_name)
+                    try:
+                        result = tool(**part.args)
+                        tool_results.append(
+                            ToolResultPart(
+                                tool_call_id=part.tool_call_id,
+                                tool_name=part.tool_name,
+                                result=result,
+                            )
+                        )
+                    except Exception as e:
+                        tool_results.append(
+                            ToolResultPart(
+                                tool_call_id=part.tool_call_id,
+                                tool_name=part.tool_name,
+                                result=str(e),
+                                is_error=True,
+                            )
+                        )
+                step.tool_results = tool_results
+                tool_message = ToolMessage(content=tool_results)
+                current_messages.append(tool_message)
+
+            if on_step:
+                on_step(step)
+            yield step
+
+            if not has_tool_calls:
+                break
+
 
 class AsyncScrapybara:
     def __init__(
@@ -966,6 +1044,10 @@ class AsyncScrapybara:
             follow_redirects=follow_redirects,
             httpx_client=httpx_client,
         )
+
+    @property
+    def httpx_client(self) -> AsyncHttpClient:
+        return self._base_client._client_wrapper.httpx_client
 
     async def start(
         self,
@@ -1031,3 +1113,181 @@ class AsyncScrapybara:
             request_options=request_options
         )
         return [AuthStateResponse(id=state.id, name=state.name) for state in response]
+
+    async def act(
+        self,
+        *,
+        model: Model,
+        system: Optional[str] = None,
+        prompt: Optional[str] = None,
+        messages: Optional[List[Message]] = None,
+        tools: Optional[List[Tool]] = None,
+        on_step: Optional[Callable[[Step], None]] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> List[Message]:
+        """
+        Run an agent loop with the given tools and model, returning all messages at the end.
+
+        Args:
+            tools: List of tools available to the agent
+            model: The model to use for generating responses
+            system: System prompt for the agent
+            prompt: Initial user prompt
+            messages: List of messages to start with
+            on_step: Callback for each step of the conversation
+            temperature: Optional temperature parameter for the model
+            max_tokens: Optional max tokens parameter for the model
+            request_options: Optional request configuration
+
+        Returns:
+            List of all messages from the conversation
+        """
+        result_messages: List[Message] = []
+        if messages:
+            result_messages.extend(messages)
+        async for step in self.act_stream(
+            tools=tools,
+            model=model,
+            system=system,
+            prompt=prompt,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            on_step=on_step,
+            request_options=request_options,
+        ):
+            assistant_msg = AssistantMessage(
+                content=[TextPart(text=step.text)] + (step.tool_calls or [])
+            )
+            result_messages.append(assistant_msg)
+            if step.tool_results:
+                tool_msg = ToolMessage(content=step.tool_results)
+                result_messages.append(tool_msg)
+        return result_messages
+
+    async def act_stream(
+        self,
+        *,
+        model: Model,
+        system: Optional[str] = None,
+        prompt: Optional[str] = None,
+        messages: Optional[List[Message]] = None,
+        tools: Optional[List[Tool]] = None,
+        on_step: Optional[Callable[[Step], None]] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> AsyncGenerator[Step, None]:
+        """
+        Run an interactive agent loop with the given tools and model.
+
+        Args:
+            tools: List of tools available to the agent
+            model: The model to use for generating responses
+            system: System prompt for the agent
+            prompt: Initial user prompt
+            messages: List of messages to start with
+            on_step: Callback for each step of the conversation
+            temperature: Optional temperature parameter for the model
+            max_tokens: Optional max tokens parameter for the model
+            request_options: Optional request configuration
+
+        Yields:
+            Steps from the conversation, including tool results
+        """
+        current_messages: List[Message] = []
+        if messages is None:
+            if prompt is None:
+                raise ValueError("prompt or messages must be provided")
+            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
+        else:
+            current_messages = list(messages)
+
+        current_tools = [] if tools is None else list(tools)
+
+        while True:
+            request = ActRequest(
+                model=model,
+                system=system,
+                messages=current_messages,
+                tools=current_tools,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+
+            response = await self.httpx_client.request(
+                "v1/act",
+                method="POST",
+                json=request.model_dump(exclude_none=True),
+                headers={"content-type": "application/json"},
+                request_options=request_options,
+            )
+
+            if not 200 <= response.status_code < 300:
+                raise ApiError(status_code=response.status_code, body=response.json())
+
+            act_response = ActResponse.model_validate(response.json())
+            current_messages.append(act_response.message)
+
+            # Extract text from assistant message
+            text = "\n".join(
+                part.text
+                for part in act_response.message.content
+                if isinstance(part, TextPart)
+            )
+
+            # Extract tool calls
+            tool_calls = [
+                part
+                for part in act_response.message.content
+                if isinstance(part, ToolCallPart)
+            ]
+
+            # Create initial step
+            step = Step(
+                text=text,
+                tool_calls=tool_calls if tool_calls else None,
+                finish_reason=act_response.finish_reason,
+                usage=act_response.usage,
+            )
+
+            # Check if we should continue the loop
+            has_tool_calls = bool(tool_calls)
+
+            if has_tool_calls:
+                tool_results: List[ToolResultPart] = []
+                for part in tool_calls:
+                    tool = next(t for t in current_tools if t.name == part.tool_name)
+                    try:
+                        loop = asyncio.get_event_loop()
+                        result = await loop.run_in_executor(
+                            None, lambda: tool(**part.args)
+                        )
+                        tool_results.append(
+                            ToolResultPart(
+                                tool_call_id=part.tool_call_id,
+                                tool_name=part.tool_name,
+                                result=result,
+                            )
+                        )
+                    except Exception as e:
+                        tool_results.append(
+                            ToolResultPart(
+                                tool_call_id=part.tool_call_id,
+                                tool_name=part.tool_name,
+                                result=str(e),
+                                is_error=True,
+                            )
+                        )
+                step.tool_results = tool_results
+                tool_message = ToolMessage(content=tool_results)
+                current_messages.append(tool_message)
+
+            if on_step:
+                on_step(step)
+            yield step
+
+            if not has_tool_calls:
+                break
