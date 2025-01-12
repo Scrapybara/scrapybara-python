@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Literal, Optional, Union
 from pydantic import BaseModel
+from .tool import Tool
 
 
 # Message part types
@@ -45,16 +46,6 @@ class ToolMessage(BaseModel):
 
 
 Message = Union[UserMessage, AssistantMessage, ToolMessage]
-
-
-# Tool definition
-class Tool(BaseModel):
-    name: str
-    description: Optional[str] = None
-    parameters: Optional[Dict[str, Any]] = None
-
-    def __call__(self, **kwargs: Any) -> Any:
-        raise NotImplementedError("Tool.__call__ must be implemented by subclasses")
 
 
 # Request/Response models
