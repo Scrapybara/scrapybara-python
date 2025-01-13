@@ -1,3 +1,5 @@
+import base64
+import json
 from typing import Any
 from playwright.sync_api import sync_playwright
 
@@ -179,7 +181,9 @@ class BrowserTool(Tool):
                     return True
 
                 elif command == "screenshot":
-                    return page.screenshot(type="png")
+                    return image_result(
+                        base64.b64encode(page.screenshot(type="png")).decode("utf-8")
+                    )
 
                 elif command == "get_text":
                     element = page.wait_for_selector(selector, timeout=timeout)
@@ -201,3 +205,15 @@ class BrowserTool(Tool):
 
             finally:
                 browser.close()
+
+
+def image_result(base64: str) -> str:
+    """Return an image result that is interpretable by the model."""
+    return json.dumps(
+        {
+            "output": "",
+            "error": "",
+            "base64_image": base64,
+            "system": None,
+        }
+    )
