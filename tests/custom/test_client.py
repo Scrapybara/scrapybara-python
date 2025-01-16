@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from scrapybara import Scrapybara
 import os
 
@@ -20,19 +21,27 @@ def test_client() -> None:
     cdp_url = instance.browser.get_cdp_url()
     assert cdp_url is not None
 
-    messages = client.act(
+    class YCStats(BaseModel):
+        number_of_startups: int
+        combined_valuation: int
+
+    response = client.act(
         model=Anthropic(),
         system=SYSTEM_PROMPT,
-        prompt="Go to the YC website and fetch the HTML",
+        prompt="Go to the YC website and get the number of funded startups and combined valuation",
         tools=[
             ComputerTool(instance),
             BashTool(instance),
             EditTool(instance),
             BrowserTool(instance),
         ],
-        on_step=lambda step: print(f"{step}\n"),
+        schema=YCStats,
     )
-    assert len(messages) > 0
+    print(response)
+
+    assert response.output is not None
+    assert response.output.number_of_startups is not None
+    assert response.output.combined_valuation is not None
 
     instance.browser.stop()
     instance.stop()
