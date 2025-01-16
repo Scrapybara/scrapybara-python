@@ -909,7 +909,7 @@ class Scrapybara:
             request_options: Optional request configuration
 
         Returns:
-            ActResponse containing all messages, steps, final output (structured according to schema if provided), and token usage
+            ActResponse containing all messages, steps, text, output (if schema is provided), and token usage
         """
         result_messages: List[Message] = []
         steps: List[Step] = []
@@ -1215,7 +1215,7 @@ class AsyncScrapybara:
             request_options: Optional request configuration
 
         Returns:
-            ActResponse containing all messages, steps, final output (structured according to schema if provided), and token usage
+            ActResponse containing all messages, steps, text, output (if schema is provided), and token usage
         """
         result_messages: List[Message] = []
         steps: List[Step] = []

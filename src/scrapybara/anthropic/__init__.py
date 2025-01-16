@@ -14,6 +14,21 @@ from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 
 # New: universal act API
 class Anthropic(Model):
+    """Model adapter for Anthropic.
+
+    Supported models:
+    - claude-3-5-sonnet-20241022 (with computer use beta)
+
+    If an API key is not provided, each call will cost 1 agent credit.
+
+    Args:
+        name: Anthropic model name, defaults to "claude-3-5-sonnet-20241022"
+        api_key: Optional Anthropic API key
+
+    Returns:
+        A Model configuration object
+    """
+
     provider: Literal["anthropic"] = Field(default="anthropic", frozen=True)
 
     def __init__(
