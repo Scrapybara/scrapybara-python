@@ -52,6 +52,7 @@ from .types.act import (
     Model,
     TextPart,
     Tool,
+    ApiTool,
     ToolCallPart,
     ToolMessage,
     ToolResultPart,
@@ -75,15 +76,10 @@ class StructuredOutputTool(Tool):
     _model: Type[BaseModel]
 
     def __init__(self, model: Type[BaseModel]):
-        schema = model.model_json_schema()
         super().__init__(
             name="structured_output",
             description="Output structured data according to the provided schema parameters. Only use this tool at the end of your task. The output data is final and will be passed directly back to the user.",
-            parameters={
-                "type": "object",
-                "properties": schema.get("properties", {}),
-                "required": schema.get("required", []),
-            },
+            parameters=model,
         )
         self._model = model
 
@@ -1011,11 +1007,14 @@ class Scrapybara:
             current_tools.append(StructuredOutputTool(schema))
 
         while True:
+            # Convert tools to ApiTools
+            api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
+
             request = SingleActRequest(
                 model=model,
                 system=system,
                 messages=current_messages,
-                tools=current_tools,
+                tools=api_tools,
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
@@ -1313,12 +1312,18 @@ class AsyncScrapybara:
 
         current_tools = [] if tools is None else list(tools)
 
+        if schema:
+            current_tools.append(StructuredOutputTool(schema))
+
         while True:
+            # Convert tools to ApiTools
+            api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
+
             request = SingleActRequest(
                 model=model,
                 system=system,
                 messages=current_messages,
-                tools=current_tools,
+                tools=api_tools,
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
