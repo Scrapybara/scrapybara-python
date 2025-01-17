@@ -31,18 +31,6 @@ class ComputerToolParameters(BaseModel):
     text: Optional[str] = Field(None, description="Text for keyboard actions")
 
 
-def image_result(base64: str) -> str:
-    """Return an image result that is interpretable by the model."""
-    return json.dumps(
-        {
-            "output": "",
-            "error": "",
-            "base64_image": base64,
-            "system": None,
-        }
-    )
-
-
 class ComputerTool(Tool):
     """A computer interaction tool that allows the agent to control mouse and keyboard."""
 
