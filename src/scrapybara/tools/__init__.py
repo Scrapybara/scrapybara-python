@@ -217,3 +217,15 @@ class BrowserTool(Tool):
 
             finally:
                 browser.close()
+
+
+def image_result(base64: str) -> str:
+    """Return an image result that is interpretable by the model."""
+    return json.dumps(
+        {
+            "output": "",
+            "error": "",
+            "base64_image": base64,
+            "system": None,
+        }
+    )
