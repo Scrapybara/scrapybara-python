@@ -4,8 +4,6 @@ from .tool import Tool, ApiTool  # noqa: F401
 
 OutputT = TypeVar("OutputT")
 
-OutputT = TypeVar("OutputT")
-
 
 # Message part types
 class TextPart(BaseModel):
