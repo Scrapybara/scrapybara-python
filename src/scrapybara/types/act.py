@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union, Generic, TypeVar
 from pydantic import BaseModel
 from .tool import Tool
+
+OutputT = TypeVar("OutputT")
 
 
 # Message part types
@@ -55,7 +57,7 @@ class Model(BaseModel):
     api_key: Optional[str] = None
 
 
-class ActRequest(BaseModel):
+class SingleActRequest(BaseModel):
     model: Model
     system: Optional[str] = None
     messages: Optional[List[Message]] = None
@@ -70,7 +72,7 @@ class TokenUsage(BaseModel):
     total_tokens: int
 
 
-class ActResponse(BaseModel):
+class SingleActResponse(BaseModel):
     message: AssistantMessage
     finish_reason: Literal[
         "stop", "length", "content-filter", "tool-calls", "error", "other", "unknown"
@@ -94,4 +96,13 @@ class Step(BaseModel):
             "unknown",
         ]
     ] = None
+    usage: Optional[TokenUsage] = None
+
+
+# Act response
+class ActResponse(BaseModel, Generic[OutputT]):
+    messages: List[Message]
+    steps: List[Step]
+    text: Optional[str] = None
+    output: OutputT
     usage: Optional[TokenUsage] = None

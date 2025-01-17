@@ -7,6 +7,18 @@ from ..types.tool import Tool
 from ..client import Instance
 
 
+def image_result(base64: str) -> str:
+    """Return an image result that is interpretable by the model."""
+    return json.dumps(
+        {
+            "output": "",
+            "error": "",
+            "base64_image": base64,
+            "system": None,
+        }
+    )
+
+
 class ComputerTool(Tool):
     """A computer interaction tool that allows the agent to control mouse and keyboard."""
 
@@ -205,15 +217,3 @@ class BrowserTool(Tool):
 
             finally:
                 browser.close()
-
-
-def image_result(base64: str) -> str:
-    """Return an image result that is interpretable by the model."""
-    return json.dumps(
-        {
-            "output": "",
-            "error": "",
-            "base64_image": base64,
-            "system": None,
-        }
-    )

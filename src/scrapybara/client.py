@@ -5,6 +5,8 @@ from typing import (
     Dict,
     List,
     Sequence,
+    Type,
+    TypeVar,
     Union,
     Literal,
     Generator,
@@ -16,6 +18,7 @@ import os
 import asyncio
 
 import httpx
+from pydantic import BaseModel, ConfigDict
 
 from scrapybara.core.http_client import AsyncHttpClient, HttpClient
 from scrapybara.environment import ScrapybaraEnvironment
@@ -43,8 +46,8 @@ from .types import (
     StopInstanceResponse,
 )
 from .types.act import (
-    ActRequest,
-    ActResponse,
+    SingleActRequest,
+    SingleActResponse,
     Message,
     Model,
     TextPart,
@@ -55,11 +58,38 @@ from .types.act import (
     UserMessage,
     AssistantMessage,
     Step,
+    ActResponse,
+    TokenUsage,
 )
 from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
 
 OMIT = typing.cast(typing.Any, ...)
+SchemaT = TypeVar("SchemaT", bound=BaseModel)
+
+
+class StructuredOutputTool(Tool):
+    """A tool that allows the agent to output structured data."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    _model: Type[BaseModel]
+
+    def __init__(self, model: Type[BaseModel]):
+        schema = model.model_json_schema()
+        super().__init__(
+            name="structured_output",
+            description="Output structured data according to the provided schema parameters. Only use this tool at the end of your task. The output data is final and will be passed directly back to the user.",
+            parameters={
+                "type": "object",
+                "properties": schema.get("properties", {}),
+                "required": schema.get("required", []),
+            },
+        )
+        self._model = model
+
+    def __call__(self, **kwargs: Any) -> Dict[str, Any]:
+        validated = self._model.model_validate(kwargs)
+        return validated.model_dump()
 
 
 class Browser:
@@ -853,46 +883,56 @@ class Scrapybara:
         self,
         *,
         model: Model,
+        tools: Optional[List[Tool]] = None,
         system: Optional[str] = None,
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
-        tools: Optional[List[Tool]] = None,
+        schema: Optional[Type[SchemaT]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         request_options: Optional[RequestOptions] = None,
-    ) -> List[Message]:
+    ) -> ActResponse[SchemaT]:
         """
         Run an agent loop with the given tools and model, returning all messages at the end.
 
         Args:
-            tools: List of tools available to the agent
             model: The model to use for generating responses
+            tools: List of tools available to the agent
             system: System prompt for the agent
             prompt: Initial user prompt
             messages: List of messages to start with
+            schema: Optional Pydantic model class to structure the final output
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
             request_options: Optional request configuration
 
         Returns:
-            List of all messages from the conversation
+            ActResponse containing all messages, steps, text, output (if schema is provided), and token usage
         """
         result_messages: List[Message] = []
+        steps: List[Step] = []
+        total_prompt_tokens = 0
+        total_completion_tokens = 0
+        total_tokens = 0
+
         if messages:
             result_messages.extend(messages)
+
         for step in self.act_stream(
-            tools=tools,
             model=model,
+            tools=tools,
             system=system,
             prompt=prompt,
             messages=messages,
+            schema=schema,
+            on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
-            on_step=on_step,
             request_options=request_options,
         ):
+            steps.append(step)
             assistant_msg = AssistantMessage(
                 content=[TextPart(text=step.text)] + (step.tool_calls or [])
             )
@@ -900,16 +940,40 @@ class Scrapybara:
             if step.tool_results:
                 tool_msg = ToolMessage(content=step.tool_results)
                 result_messages.append(tool_msg)
-        return result_messages
+
+            if step.usage:
+                total_prompt_tokens += step.usage.prompt_tokens
+                total_completion_tokens += step.usage.completion_tokens
+                total_tokens += step.usage.total_tokens
+
+        text = steps[-1].text if steps else None
+        if schema:
+            output = (
+                steps[-1].tool_results[-1].result if steps[-1].tool_results else None
+            )
+            output = schema.model_validate(output)
+
+        usage = None
+        if total_tokens > 0:
+            usage = TokenUsage(
+                prompt_tokens=total_prompt_tokens,
+                completion_tokens=total_completion_tokens,
+                total_tokens=total_tokens,
+            )
+
+        return ActResponse(
+            messages=result_messages, steps=steps, text=text, output=output, usage=usage
+        )
 
     def act_stream(
         self,
         *,
         model: Model,
+        tools: Optional[List[Tool]] = None,
         system: Optional[str] = None,
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
-        tools: Optional[List[Tool]] = None,
+        schema: Optional[Type[BaseModel]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
@@ -919,11 +983,12 @@ class Scrapybara:
         Run an interactive agent loop with the given tools and model.
 
         Args:
-            tools: List of tools available to the agent
             model: The model to use for generating responses
+            tools: List of tools available to the agent
             system: System prompt for the agent
             prompt: Initial user prompt
             messages: List of messages to start with
+            schema: Optional Pydantic model class to structure the final output
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
@@ -942,8 +1007,11 @@ class Scrapybara:
 
         current_tools = [] if tools is None else list(tools)
 
+        if schema:
+            current_tools.append(StructuredOutputTool(schema))
+
         while True:
-            request = ActRequest(
+            request = SingleActRequest(
                 model=model,
                 system=system,
                 messages=current_messages,
@@ -963,7 +1031,7 @@ class Scrapybara:
             if not 200 <= response.status_code < 300:
                 raise ApiError(status_code=response.status_code, body=response.json())
 
-            act_response = ActResponse.model_validate(response.json())
+            act_response = SingleActResponse.model_validate(response.json())
             current_messages.append(act_response.message)
 
             # Extract text from assistant message
@@ -988,14 +1056,17 @@ class Scrapybara:
                 usage=act_response.usage,
             )
 
-            # Check if we should continue the loop
+            # Check if there are tool calls
             has_tool_calls = bool(tool_calls)
+            has_structured_output = False
 
             if has_tool_calls:
                 tool_results: List[ToolResultPart] = []
                 for part in tool_calls:
                     tool = next(t for t in current_tools if t.name == part.tool_name)
                     try:
+                        if tool.name == "structured_output" and schema:
+                            has_structured_output = True
                         result = tool(**part.args)
                         tool_results.append(
                             ToolResultPart(
@@ -1021,7 +1092,7 @@ class Scrapybara:
                 on_step(step)
             yield step
 
-            if not has_tool_calls:
+            if not has_tool_calls or has_structured_output:
                 break
 
 
@@ -1117,16 +1188,17 @@ class AsyncScrapybara:
     async def act(
         self,
         *,
+        tools: Optional[List[Tool]] = None,
         model: Model,
         system: Optional[str] = None,
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
-        tools: Optional[List[Tool]] = None,
+        schema: Optional[Type[SchemaT]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         request_options: Optional[RequestOptions] = None,
-    ) -> List[Message]:
+    ) -> ActResponse[SchemaT]:
         """
         Run an agent loop with the given tools and model, returning all messages at the end.
 
@@ -1136,28 +1208,37 @@ class AsyncScrapybara:
             system: System prompt for the agent
             prompt: Initial user prompt
             messages: List of messages to start with
+            schema: Optional Pydantic model class to structure the final output
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
             request_options: Optional request configuration
 
         Returns:
-            List of all messages from the conversation
+            ActResponse containing all messages, steps, text, output (if schema is provided), and token usage
         """
         result_messages: List[Message] = []
+        steps: List[Step] = []
+        total_prompt_tokens = 0
+        total_completion_tokens = 0
+        total_tokens = 0
+
         if messages:
             result_messages.extend(messages)
+
         async for step in self.act_stream(
             tools=tools,
             model=model,
             system=system,
             prompt=prompt,
             messages=messages,
+            schema=schema,
             temperature=temperature,
             max_tokens=max_tokens,
             on_step=on_step,
             request_options=request_options,
         ):
+            steps.append(step)
             assistant_msg = AssistantMessage(
                 content=[TextPart(text=step.text)] + (step.tool_calls or [])
             )
@@ -1165,16 +1246,40 @@ class AsyncScrapybara:
             if step.tool_results:
                 tool_msg = ToolMessage(content=step.tool_results)
                 result_messages.append(tool_msg)
-        return result_messages
+
+            if step.usage:
+                total_prompt_tokens += step.usage.prompt_tokens
+                total_completion_tokens += step.usage.completion_tokens
+                total_tokens += step.usage.total_tokens
+
+        text = steps[-1].text if steps else None
+        if schema:
+            output = (
+                steps[-1].tool_results[-1].result if steps[-1].tool_results else None
+            )
+            output = schema.model_validate(output)
+
+        usage = None
+        if total_tokens > 0:
+            usage = TokenUsage(
+                prompt_tokens=total_prompt_tokens,
+                completion_tokens=total_completion_tokens,
+                total_tokens=total_tokens,
+            )
+
+        return ActResponse(
+            messages=result_messages, steps=steps, text=text, output=output, usage=usage
+        )
 
     async def act_stream(
         self,
         *,
         model: Model,
+        tools: Optional[List[Tool]] = None,
         system: Optional[str] = None,
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
-        tools: Optional[List[Tool]] = None,
+        schema: Optional[Type[SchemaT]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
@@ -1184,11 +1289,12 @@ class AsyncScrapybara:
         Run an interactive agent loop with the given tools and model.
 
         Args:
-            tools: List of tools available to the agent
             model: The model to use for generating responses
+            tools: List of tools available to the agent
             system: System prompt for the agent
             prompt: Initial user prompt
             messages: List of messages to start with
+            schema: Optional Pydantic model class to structure the final output
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
@@ -1208,7 +1314,7 @@ class AsyncScrapybara:
         current_tools = [] if tools is None else list(tools)
 
         while True:
-            request = ActRequest(
+            request = SingleActRequest(
                 model=model,
                 system=system,
                 messages=current_messages,
@@ -1228,7 +1334,7 @@ class AsyncScrapybara:
             if not 200 <= response.status_code < 300:
                 raise ApiError(status_code=response.status_code, body=response.json())
 
-            act_response = ActResponse.model_validate(response.json())
+            act_response = SingleActResponse.model_validate(response.json())
             current_messages.append(act_response.message)
 
             # Extract text from assistant message
@@ -1253,14 +1359,17 @@ class AsyncScrapybara:
                 usage=act_response.usage,
             )
 
-            # Check if we should continue the loop
+            # Check if there are tool calls
             has_tool_calls = bool(tool_calls)
+            has_structured_output = False
 
             if has_tool_calls:
                 tool_results: List[ToolResultPart] = []
                 for part in tool_calls:
                     tool = next(t for t in current_tools if t.name == part.tool_name)
                     try:
+                        if tool.name == "structured_output" and schema:
+                            has_structured_output = True
                         loop = asyncio.get_event_loop()
                         result = await loop.run_in_executor(
                             None, lambda: tool(**part.args)
@@ -1289,5 +1398,5 @@ class AsyncScrapybara:
                 on_step(step)
             yield step
 
-            if not has_tool_calls:
+            if not has_tool_calls or has_structured_output:
                 break
