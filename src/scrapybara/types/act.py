@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Literal, Optional, Union, Generic, TypeVar
 from pydantic import BaseModel
-from .tool import Tool
+from .tool import Tool, ApiTool  # noqa: F401
+
+OutputT = TypeVar("OutputT")
 
 OutputT = TypeVar("OutputT")
 
@@ -61,7 +63,7 @@ class SingleActRequest(BaseModel):
     model: Model
     system: Optional[str] = None
     messages: Optional[List[Message]] = None
-    tools: Optional[List[Tool]] = None
+    tools: Optional[List[ApiTool]] = None
     temperature: Optional[float] = None
     max_tokens: Optional[int] = None
 

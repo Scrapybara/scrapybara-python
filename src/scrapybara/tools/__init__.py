@@ -1,10 +1,34 @@
 import base64
 import json
-from typing import Any
+from typing import Any, Literal, Optional, Sequence, Tuple
+from pydantic import BaseModel, Field
 from playwright.sync_api import sync_playwright
 
 from ..types.tool import Tool
 from ..client import Instance
+from ..instance.types import Action, Command
+
+
+def image_result(base64: str) -> str:
+    """Return an image result that is interpretable by the model."""
+    return json.dumps(
+        {
+            "output": "",
+            "error": "",
+            "base64_image": base64,
+            "system": None,
+        }
+    )
+
+
+class ComputerToolParameters(BaseModel):
+    """Parameters for computer interaction commands."""
+
+    action: Action = Field(description="The computer action to execute")
+    coordinate: Optional[Sequence[int]] = Field(
+        None, description="Coordinates for mouse actions"
+    )
+    text: Optional[str] = Field(None, description="Text for keyboard actions")
 
 
 def image_result(base64: str) -> str:
@@ -27,19 +51,38 @@ class ComputerTool(Tool):
     def __init__(self, instance: Instance) -> None:
         super().__init__(
             name="computer",
+            description="Control mouse and keyboard for computer interaction",
+            parameters=ComputerToolParameters,
         )
         self._instance = instance
 
     def __call__(self, **kwargs: Any) -> Any:
-        action = kwargs.pop("action")
-        coordinate = kwargs.pop("coordinate", None)
-        text = kwargs.pop("text", None)
-
+        params = ComputerToolParameters.model_validate(kwargs)
         return self._instance.computer(
-            action=action,
-            coordinate=tuple(coordinate) if coordinate else None,
-            text=text,
+            action=params.action,
+            coordinate=tuple(params.coordinate) if params.coordinate else None,
+            text=params.text,
         )
+
+
+class EditToolParameters(BaseModel):
+    """Parameters for file editing commands."""
+
+    command: Command = Field(description="The edit command to execute")
+    path: str = Field(description="Path to the file to edit")
+    file_text: Optional[str] = Field(
+        None, description="File content for create command"
+    )
+    view_range: Optional[Tuple[int, int]] = Field(
+        None, description="Line range for view command"
+    )
+    old_str: Optional[str] = Field(
+        None, description="String to replace for replace command"
+    )
+    new_str: Optional[str] = Field(None, description="New string for replace command")
+    insert_line: Optional[int] = Field(
+        None, description="Line number for insert command"
+    )
 
 
 class EditTool(Tool):
@@ -50,27 +93,29 @@ class EditTool(Tool):
     def __init__(self, instance: Instance) -> None:
         super().__init__(
             name="str_replace_editor",
+            description="View, create, and edit files in the filesystem",
+            parameters=EditToolParameters,
         )
         self._instance = instance
 
     def __call__(self, **kwargs: Any) -> Any:
-        command = kwargs.pop("command")
-        path = kwargs.pop("path")
-        file_text = kwargs.pop("file_text", None)
-        view_range = kwargs.pop("view_range", None)
-        old_str = kwargs.pop("old_str", None)
-        new_str = kwargs.pop("new_str", None)
-        insert_line = kwargs.pop("insert_line", None)
-
+        params = EditToolParameters.model_validate(kwargs)
         return self._instance.edit(
-            command=command,
-            path=path,
-            file_text=file_text,
-            view_range=view_range,
-            old_str=old_str,
-            new_str=new_str,
-            insert_line=insert_line,
+            command=params.command,
+            path=params.path,
+            file_text=params.file_text,
+            view_range=params.view_range,
+            old_str=params.old_str,
+            new_str=params.new_str,
+            insert_line=params.insert_line,
         )
+
+
+class BashToolParameters(BaseModel):
+    """Parameters for bash command execution."""
+
+    command: str = Field(description="The bash command to execute")
+    restart: Optional[bool] = Field(False, description="Whether to restart the shell")
 
 
 class BashTool(Tool):
@@ -81,14 +126,59 @@ class BashTool(Tool):
     def __init__(self, instance: Instance) -> None:
         super().__init__(
             name="bash",
+            description="Execute bash commands in the shell",
+            parameters=BashToolParameters,
         )
         self._instance = instance
 
     def __call__(self, **kwargs: Any) -> Any:
-        command = kwargs.pop("command")
-        restart = kwargs.pop("restart", False)
+        params = BashToolParameters.model_validate(kwargs)
+        return self._instance.bash(command=params.command, restart=params.restart)
 
-        return self._instance.bash(command=command, restart=restart)
+
+class BrowserToolParameters(BaseModel):
+    """Parameters for browser interaction commands."""
+
+    command: Literal[
+        "go_to",  # Navigate to a URL
+        "get_html",  # Get current page HTML
+        "evaluate",  # Run JavaScript code
+        "click",  # Click on an element
+        "type",  # Type into an element
+        "screenshot",  # Take a screenshot
+        "get_text",  # Get text content of element
+        "get_attribute",  # Get attribute of element
+    ] = Field(
+        description="The browser command to execute. Required parameters per command:\n"
+        "- go_to: requires 'url'\n"
+        "- evaluate: requires 'code'\n"
+        "- click: requires 'selector'\n"
+        "- type: requires 'selector' and 'text'\n"
+        "- get_text: requires 'selector'\n"
+        "- get_attribute: requires 'selector' and 'attribute'\n"
+        "- get_html: no additional parameters\n"
+        "- screenshot: no additional parameters"
+    )
+    url: Optional[str] = Field(
+        None, description="URL for go_to command (required for go_to)"
+    )
+    selector: Optional[str] = Field(
+        None,
+        description="CSS selector for element operations (required for click, type, get_text, get_attribute)",
+    )
+    code: Optional[str] = Field(
+        None, description="JavaScript code for evaluate command (required for evaluate)"
+    )
+    text: Optional[str] = Field(
+        None, description="Text to type for type command (required for type)"
+    )
+    timeout: Optional[int] = Field(
+        30000, description="Timeout in milliseconds for operations"
+    )
+    attribute: Optional[str] = Field(
+        None,
+        description="Attribute name for get_attribute command (required for get_attribute)",
+    )
 
 
 class BrowserTool(Tool):
@@ -100,62 +190,19 @@ class BrowserTool(Tool):
         super().__init__(
             name="browser",
             description="Interact with a browser for web scraping and automation",
-            parameters={
-                "type": "object",
-                "properties": {
-                    "command": {
-                        "type": "string",
-                        "enum": [
-                            "go_to",  # Navigate to a URL
-                            "get_html",  # Get current page HTML
-                            "evaluate",  # Run JavaScript code
-                            "click",  # Click on an element
-                            "type",  # Type into an element
-                            "screenshot",  # Take a screenshot
-                            "get_text",  # Get text content of element
-                            "get_attribute",  # Get attribute of element
-                        ],
-                        "description": "The browser command to execute. Required parameters per command:\n- go_to: requires 'url'\n- evaluate: requires 'code'\n- click: requires 'selector'\n- type: requires 'selector' and 'text'\n- get_text: requires 'selector'\n- get_attribute: requires 'selector' and 'attribute'\n- get_html: no additional parameters\n- screenshot: no additional parameters",
-                    },
-                    "url": {
-                        "type": "string",
-                        "description": "URL for go_to command (required for go_to)",
-                    },
-                    "selector": {
-                        "type": "string",
-                        "description": "CSS selector for element operations (required for click, type, get_text, get_attribute)",
-                    },
-                    "code": {
-                        "type": "string",
-                        "description": "JavaScript code for evaluate command (required for evaluate)",
-                    },
-                    "text": {
-                        "type": "string",
-                        "description": "Text to type for type command (required for type)",
-                    },
-                    "timeout": {
-                        "type": "integer",
-                        "description": "Timeout in milliseconds for operations",
-                        "default": 30000,
-                    },
-                    "attribute": {
-                        "type": "string",
-                        "description": "Attribute name for get_attribute command (required for get_attribute)",
-                    },
-                },
-                "required": ["command"],
-            },
+            parameters=BrowserToolParameters,
         )
         self._instance = instance
 
     def __call__(self, **kwargs: Any) -> Any:
-        command = kwargs.pop("command")
-        url = kwargs.pop("url", None)
-        selector = kwargs.pop("selector", None)
-        code = kwargs.pop("code", None)
-        text = kwargs.pop("text", None)
-        timeout = kwargs.pop("timeout", 30000)
-        attribute = kwargs.pop("attribute", None)
+        params = BrowserToolParameters.model_validate(kwargs)
+        command = params.command
+        url = params.url
+        selector = params.selector
+        code = params.code
+        text = params.text
+        timeout = params.timeout or 30000
+        attribute = params.attribute
 
         cdp_url = self._instance.browser.get_cdp_url().cdp_url
         if cdp_url is None:
@@ -171,6 +218,8 @@ class BrowserTool(Tool):
 
             try:
                 if command == "go_to":
+                    if not url:
+                        raise ValueError("URL is required for go_to command")
                     page.goto(url, timeout=timeout)
                     return True
 
@@ -182,13 +231,21 @@ class BrowserTool(Tool):
                         return page.evaluate("() => document.documentElement.innerHTML")
 
                 elif command == "evaluate":
+                    if not code:
+                        raise ValueError("Code is required for evaluate command")
                     return page.evaluate(code)
 
                 elif command == "click":
+                    if not selector:
+                        raise ValueError("Selector is required for click command")
                     page.click(selector, timeout=timeout)
                     return True
 
                 elif command == "type":
+                    if not selector:
+                        raise ValueError("Selector is required for type command")
+                    if not text:
+                        raise ValueError("Text is required for type command")
                     page.type(selector, text, timeout=timeout)
                     return True
 
@@ -198,12 +255,22 @@ class BrowserTool(Tool):
                     )
 
                 elif command == "get_text":
+                    if not selector:
+                        raise ValueError("Selector is required for get_text command")
                     element = page.wait_for_selector(selector, timeout=timeout)
                     if element is None:
                         raise ValueError(f"Element not found: {selector}")
                     return element.text_content()
 
                 elif command == "get_attribute":
+                    if not selector:
+                        raise ValueError(
+                            "Selector is required for get_attribute command"
+                        )
+                    if not attribute:
+                        raise ValueError(
+                            "Attribute is required for get_attribute command"
+                        )
                     element = page.wait_for_selector(selector, timeout=timeout)
                     if element is None:
                         raise ValueError(f"Element not found: {selector}")
