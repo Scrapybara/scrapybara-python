@@ -943,6 +943,8 @@ class Scrapybara:
                 total_tokens += step.usage.total_tokens
 
         text = steps[-1].text if steps else None
+
+        output = None
         if schema:
             output = (
                 steps[-1].tool_results[-1].result if steps[-1].tool_results else None
@@ -1252,6 +1254,8 @@ class AsyncScrapybara:
                 total_tokens += step.usage.total_tokens
 
         text = steps[-1].text if steps else None
+
+        output = None
         if schema:
             output = (
                 steps[-1].tool_results[-1].result if steps[-1].tool_results else None
