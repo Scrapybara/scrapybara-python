@@ -11,6 +11,7 @@ from .execute_cell_request import ExecuteCellRequest
 from .file_download_response import FileDownloadResponse
 from .file_read_response import FileReadResponse
 from .get_instance_response import GetInstanceResponse
+from .get_instance_response_instance_type import GetInstanceResponseInstanceType
 from .http_validation_error import HttpValidationError
 from .instance_get_stream_url_response import InstanceGetStreamUrlResponse
 from .instance_screenshot_response import InstanceScreenshotResponse
@@ -37,6 +38,7 @@ __all__ = [
     "FileDownloadResponse",
     "FileReadResponse",
     "GetInstanceResponse",
+    "GetInstanceResponseInstanceType",
     "HttpValidationError",
     "InstanceGetStreamUrlResponse",
     "InstanceScreenshotResponse",
