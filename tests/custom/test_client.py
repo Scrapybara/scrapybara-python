@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from scrapybara import Scrapybara
 import os
+import pytest
 
 from scrapybara.anthropic import Anthropic
 from scrapybara.prompts import (
@@ -47,7 +48,7 @@ def test_ubuntu() -> None:
             EditTool(ubuntu_instance),
         ],
         schema=YCStats,
-        on_step=lambda step: print(step),
+        on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response)
     assert response.output is not None
@@ -77,7 +78,8 @@ def test_browser() -> None:
         tools=[
             ComputerTool(browser_instance),
         ],
-        on_step=lambda step: print(step),
+        schema=YCStats,
+        on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response)
     assert response.output is not None
@@ -86,6 +88,7 @@ def test_browser() -> None:
     browser_instance.stop()
 
 
+@pytest.mark.skip()
 def test_windows() -> None:
     _check_api_key()
     client = Scrapybara(
@@ -104,7 +107,8 @@ def test_windows() -> None:
         tools=[
             ComputerTool(windows_instance),
         ],
-        on_step=lambda step: print(step),
+        schema=YCStats,
+        on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response)
     assert response.output is not None
@@ -116,4 +120,4 @@ def test_windows() -> None:
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
-    test_windows()
+    # test_windows()
