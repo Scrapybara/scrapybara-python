@@ -7,7 +7,7 @@ from anthropic.types.beta import (
 import asyncio
 from pydantic import Field
 
-from ..client import Instance
+from ..client import BaseInstance, UbuntuInstance
 from ..types.act import Model
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 
@@ -47,19 +47,19 @@ class ComputerToolOptions(TypedDict):
 
 
 class ComputerTool(BaseAnthropicTool):
-    """
-    A computer interaction tool that allows the agent to control mouse and keyboard.
-    The tool parameters are defined by Anthropic and are not editable.
-    """
+    """A computer interaction tool that allows the agent to control mouse and keyboard.
+
+    Available for Ubuntu, Browser, and Windows instances."""
 
     api_type: Literal["computer_20241022"] = "computer_20241022"
     name: Literal["computer"] = "computer"
     width: int = 1024
     height: int = 768
     display_num: Optional[int] = 1
+    _instance: BaseInstance
 
-    def __init__(self, instance: Instance):
-        self.instance = instance
+    def __init__(self, instance: BaseInstance):
+        self._instance = instance
         super().__init__()
 
     @property
@@ -88,7 +88,7 @@ class ComputerTool(BaseAnthropicTool):
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
-                lambda: self.instance.computer(
+                lambda: self._instance.computer(
                     action=action,
                     coordinate=tuple(coordinate) if coordinate else None,
                     text=text,
@@ -105,16 +105,16 @@ class ComputerTool(BaseAnthropicTool):
 
 
 class EditTool(BaseAnthropicTool):
-    """
-    A filesystem editor tool that allows the agent to view, create, and edit files.
-    The tool parameters are defined by Anthropic and are not editable.
-    """
+    """A filesystem editor tool that allows the agent to view, create, and edit files.
+
+    Available for Ubuntu instances."""
 
     api_type: Literal["text_editor_20241022"] = "text_editor_20241022"
     name: Literal["str_replace_editor"] = "str_replace_editor"
+    _instance: UbuntuInstance
 
-    def __init__(self, instance: Instance):
-        self.instance = instance
+    def __init__(self, instance: UbuntuInstance):
+        self._instance = instance
         super().__init__()
 
     def to_params(self) -> BetaToolTextEditor20241022Param:
@@ -135,7 +135,7 @@ class EditTool(BaseAnthropicTool):
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
-                lambda: self.instance.edit(
+                lambda: self._instance.edit(
                     command=command,
                     path=path,
                     file_text=file_text,
@@ -156,16 +156,16 @@ class EditTool(BaseAnthropicTool):
 
 
 class BashTool(BaseAnthropicTool):
-    """
-    A shell execution tool that allows the agent to run bash commands.
-    The tool parameters are defined by Anthropic and are not editable.
-    """
+    """A shell execution tool that allows the agent to run bash commands.
+
+    Available for Ubuntu instances."""
 
     api_type: Literal["bash_20241022"] = "bash_20241022"
     name: Literal["bash"] = "bash"
+    _instance: UbuntuInstance
 
-    def __init__(self, instance: Instance):
-        self.instance = instance
+    def __init__(self, instance: UbuntuInstance):
+        self._instance = instance
         super().__init__()
 
     def to_params(self) -> BetaToolBash20241022Param:
@@ -181,7 +181,7 @@ class BashTool(BaseAnthropicTool):
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
-                lambda: self.instance.bash(command=command, restart=restart),
+                lambda: self._instance.bash(command=command, restart=restart),
             )
             return CLIResult(
                 output=result.get("output") if result else "",

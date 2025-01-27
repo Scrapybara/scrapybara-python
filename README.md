@@ -13,7 +13,7 @@ pip install scrapybara
 
 ## Reference
 
-A full reference for this library is available [here](./reference.md).
+Please refer to [docs](https://docs.scrapybara.com) for more information.
 
 ## Requirements
 
@@ -21,10 +21,6 @@ A full reference for this library is available [here](./reference.md).
 - `requests` >= 2.25.1
 - `anthropic` ^0.39.0
 - `pydantic` ^2.0.0
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Usage
 
@@ -36,7 +32,7 @@ from scrapybara import Scrapybara
 client = Scrapybara(
     api_key="YOUR_API_KEY",
 )
-client.start()
+client.start_ubuntu()
 ```
 
 ## Async Client
@@ -54,7 +50,7 @@ client = AsyncScrapybara(
 
 
 async def main() -> None:
-    await client.start()
+    await client.start_ubuntu()
 
 
 asyncio.run(main())
@@ -69,7 +65,7 @@ will be thrown.
 from scrapybara.core.api_error import ApiError
 
 try:
-    client.start(...)
+    client.start_ubuntu()
 except ApiError as e:
     print(e.status_code)
     print(e.body)
@@ -92,7 +88,7 @@ A request is deemed retriable when any of the following HTTP status codes is ret
 Use the `max_retries` request option to configure this behavior.
 
 ```python
-client.start(..., request_options={
+client.start_ubuntu(..., request_options={
     "max_retries": 1
 })
 ```
@@ -112,7 +108,7 @@ client = Scrapybara(
 
 
 # Override timeout for a specific method
-client.start(..., request_options={
+client.start_ubuntu(..., request_options={
     "timeout_in_seconds": 1
 })
 ```
@@ -121,6 +117,7 @@ client.start(..., request_options={
 
 You can override the `httpx` client to customize it for your use-case. Some common use-cases include support for proxies
 and transports.
+
 ```python
 import httpx
 from scrapybara import Scrapybara

@@ -2,4 +2,4 @@
 
 import typing
 
-DeploymentConfigInstanceType = typing.Union[typing.Literal["small", "medium", "large"], typing.Any]
+DeploymentConfigInstanceType = typing.Union[typing.Literal["ubuntu", "browser", "windows"], typing.Any]

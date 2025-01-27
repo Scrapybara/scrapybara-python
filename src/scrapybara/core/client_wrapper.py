@@ -7,9 +7,7 @@ from .http_client import AsyncHttpClient
 
 
 class BaseClientWrapper:
-    def __init__(
-        self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None
-    ):
+    def __init__(self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None):
         self.api_key = api_key
         self._base_url = base_url
         self._timeout = timeout
@@ -18,7 +16,7 @@ class BaseClientWrapper:
         headers: typing.Dict[str, str] = {
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "scrapybara",
-            "X-Fern-SDK-Version": "2.1.3",
+            "X-Fern-SDK-Version": "2.2.0",
         }
         headers["x-api-key"] = self.api_key
         return headers
@@ -32,12 +30,7 @@ class BaseClientWrapper:
 
 class SyncClientWrapper(BaseClientWrapper):
     def __init__(
-        self,
-        *,
-        api_key: str,
-        base_url: str,
-        timeout: typing.Optional[float] = None,
-        httpx_client: httpx.Client
+        self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None, httpx_client: httpx.Client
     ):
         super().__init__(api_key=api_key, base_url=base_url, timeout=timeout)
         self.httpx_client = HttpClient(
@@ -50,12 +43,7 @@ class SyncClientWrapper(BaseClientWrapper):
 
 class AsyncClientWrapper(BaseClientWrapper):
     def __init__(
-        self,
-        *,
-        api_key: str,
-        base_url: str,
-        timeout: typing.Optional[float] = None,
-        httpx_client: httpx.AsyncClient
+        self, *, api_key: str, base_url: str, timeout: typing.Optional[float] = None, httpx_client: httpx.AsyncClient
     ):
         super().__init__(api_key=api_key, base_url=base_url, timeout=timeout)
         self.httpx_client = AsyncHttpClient(

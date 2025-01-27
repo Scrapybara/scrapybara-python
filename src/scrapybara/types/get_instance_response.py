@@ -2,6 +2,7 @@
 
 from ..core.pydantic_utilities import UniversalBaseModel
 import datetime as dt
+from .get_instance_response_instance_type import GetInstanceResponseInstanceType
 from .status import Status
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
 import typing
@@ -11,7 +12,7 @@ import pydantic
 class GetInstanceResponse(UniversalBaseModel):
     id: str
     launch_time: dt.datetime
-    instance_type: str
+    instance_type: GetInstanceResponseInstanceType
     status: Status
 
     if IS_PYDANTIC_V2:
