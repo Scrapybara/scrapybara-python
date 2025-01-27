@@ -16,15 +16,19 @@ class YCStats(BaseModel):
     combined_valuation: int
 
 
-def test_client() -> None:
+def _check_api_key() -> None:
     if os.getenv("SCRAPYBARA_API_KEY") is None:
         raise ValueError("SCRAPYBARA_API_KEY is not set")
+
+
+def test_ubuntu() -> None:
+    _check_api_key()
     client = Scrapybara(
         base_url="https://scrapybara-api-alpha-47247185186.us-central1.run.app"
     )
 
-    # Ubuntu test
     ubuntu_instance = client.start_ubuntu()
+    print(ubuntu_instance.get_stream_url().stream_url)
     assert ubuntu_instance.id is not None
     instances = client.get_instances()
     assert len(instances) > 0
@@ -43,6 +47,7 @@ def test_client() -> None:
             EditTool(ubuntu_instance),
         ],
         schema=YCStats,
+        on_step=lambda step: print(step),
     )
     print(response)
     assert response.output is not None
@@ -51,8 +56,15 @@ def test_client() -> None:
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
-    # Browser test
+
+def test_browser() -> None:
+    _check_api_key()
+    client = Scrapybara(
+        base_url="https://scrapybara-api-alpha-47247185186.us-central1.run.app"
+    )
+
     browser_instance = client.start_browser()
+    print(browser_instance.get_stream_url().stream_url)
     assert browser_instance.id is not None
     screenshot_response = browser_instance.screenshot()
     assert screenshot_response.base_64_image is not None
@@ -65,6 +77,7 @@ def test_client() -> None:
         tools=[
             ComputerTool(browser_instance),
         ],
+        on_step=lambda step: print(step),
     )
     print(response)
     assert response.output is not None
@@ -72,8 +85,15 @@ def test_client() -> None:
     assert response.output.combined_valuation is not None
     browser_instance.stop()
 
-    # Windows test
+
+def test_windows() -> None:
+    _check_api_key()
+    client = Scrapybara(
+        base_url="https://scrapybara-api-alpha-47247185186.us-central1.run.app"
+    )
+
     windows_instance = client.start_windows()
+    print(windows_instance.get_stream_url().stream_url)
     assert windows_instance.id is not None
     screenshot_response = windows_instance.screenshot()
     assert screenshot_response.base_64_image is not None
@@ -84,6 +104,7 @@ def test_client() -> None:
         tools=[
             ComputerTool(windows_instance),
         ],
+        on_step=lambda step: print(step),
     )
     print(response)
     assert response.output is not None
@@ -93,4 +114,6 @@ def test_client() -> None:
 
 
 if __name__ == "__main__":
-    test_client()
+    test_ubuntu()
+    test_browser()
+    test_windows()
