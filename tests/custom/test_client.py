@@ -24,9 +24,7 @@ def _check_api_key() -> None:
 
 def test_ubuntu() -> None:
     _check_api_key()
-    client = Scrapybara(
-        base_url="https://scrapybara-api-alpha-47247185186.us-central1.run.app"
-    )
+    client = Scrapybara()
 
     ubuntu_instance = client.start_ubuntu()
     print(ubuntu_instance.get_stream_url().stream_url)
@@ -60,9 +58,7 @@ def test_ubuntu() -> None:
 
 def test_browser() -> None:
     _check_api_key()
-    client = Scrapybara(
-        base_url="https://scrapybara-api-alpha-47247185186.us-central1.run.app"
-    )
+    client = Scrapybara()
 
     browser_instance = client.start_browser()
     print(browser_instance.get_stream_url().stream_url)
@@ -91,9 +87,7 @@ def test_browser() -> None:
 @pytest.mark.skip()
 def test_windows() -> None:
     _check_api_key()
-    client = Scrapybara(
-        base_url="https://scrapybara-api-alpha-47247185186.us-central1.run.app"
-    )
+    client = Scrapybara()
 
     windows_instance = client.start_windows()
     print(windows_instance.get_stream_url().stream_url)
