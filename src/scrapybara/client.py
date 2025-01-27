@@ -704,6 +704,16 @@ class BrowserInstance(BaseInstance):
             self.id, request_options=request_options
         )
 
+    def save_auth(
+        self,
+        *,
+        name: Optional[str] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> SaveBrowserAuthResponse:
+        return self._client.browser.save_auth(
+            self.id, name=name, request_options=request_options
+        )
+
     def authenticate(
         self, *, auth_state_id: str, request_options: Optional[RequestOptions] = None
     ) -> BrowserAuthenticateResponse:
@@ -861,6 +871,16 @@ class AsyncBrowserInstance(AsyncBaseInstance):
     ) -> BrowserGetCdpUrlResponse:
         return await self._client.browser.get_cdp_url(
             self.id, request_options=request_options
+        )
+
+    async def save_auth(
+        self,
+        *,
+        name: Optional[str] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> SaveBrowserAuthResponse:
+        return await self._client.browser.save_auth(
+            self.id, name=name, request_options=request_options
         )
 
     async def authenticate(
