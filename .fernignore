@@ -4,6 +4,7 @@ src/scrapybara/client.py
 src/scrapybara/anthropic/
 src/scrapybara/prompts/
 src/scrapybara/tools/
+src/scrapybara/types/__init__.py
 src/scrapybara/types/act.py
 src/scrapybara/types/tool.py
 tests/custom/test_client.py

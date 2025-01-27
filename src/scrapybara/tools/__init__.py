@@ -1,11 +1,11 @@
 import base64
 import json
-from typing import Any, Literal, Optional, Sequence, Tuple
+from typing import Any, Literal, Optional, Sequence, Tuple, Union, cast
 from pydantic import BaseModel, Field
 from playwright.sync_api import sync_playwright
 
 from ..types.tool import Tool
-from ..client import Instance
+from ..client import BaseInstance, UbuntuInstance, BrowserInstance
 from ..instance.types import Action, Command
 
 
@@ -32,11 +32,13 @@ class ComputerToolParameters(BaseModel):
 
 
 class ComputerTool(Tool):
-    """A computer interaction tool that allows the agent to control mouse and keyboard."""
+    """A computer interaction tool that allows the agent to control mouse and keyboard.
 
-    _instance: Instance
+    Available for Ubuntu, Browser, and Windows instances."""
 
-    def __init__(self, instance: Instance) -> None:
+    _instance: BaseInstance
+
+    def __init__(self, instance: BaseInstance) -> None:
         super().__init__(
             name="computer",
             description="Control mouse and keyboard for computer interaction",
@@ -74,11 +76,13 @@ class EditToolParameters(BaseModel):
 
 
 class EditTool(Tool):
-    """A filesystem editor tool that allows the agent to view, create, and edit files."""
+    """A filesystem editor tool that allows the agent to view, create, and edit files.
 
-    _instance: Instance
+    Available for Ubuntu instances."""
 
-    def __init__(self, instance: Instance) -> None:
+    _instance: UbuntuInstance
+
+    def __init__(self, instance: UbuntuInstance) -> None:
         super().__init__(
             name="str_replace_editor",
             description="View, create, and edit files in the filesystem",
@@ -107,11 +111,13 @@ class BashToolParameters(BaseModel):
 
 
 class BashTool(Tool):
-    """A shell execution tool that allows the agent to run bash commands."""
+    """A shell execution tool that allows the agent to run bash commands.
 
-    _instance: Instance
+    Available for Ubuntu instances."""
 
-    def __init__(self, instance: Instance) -> None:
+    _instance: UbuntuInstance
+
+    def __init__(self, instance: UbuntuInstance) -> None:
         super().__init__(
             name="bash",
             description="Execute bash commands in the shell",
@@ -170,11 +176,13 @@ class BrowserToolParameters(BaseModel):
 
 
 class BrowserTool(Tool):
-    """A browser interaction tool that allows the agent to interact with a browser."""
+    """A browser interaction tool that allows the agent to interact with a browser.
 
-    _instance: Instance
+    Available for Ubuntu and Browser instances."""
 
-    def __init__(self, instance: Instance) -> None:
+    _instance: Union[UbuntuInstance, BrowserInstance]
+
+    def __init__(self, instance: Union[UbuntuInstance, BrowserInstance]) -> None:
         super().__init__(
             name="browser",
             description="Interact with a browser for web scraping and automation",
@@ -192,7 +200,12 @@ class BrowserTool(Tool):
         timeout = params.timeout or 30000
         attribute = params.attribute
 
-        cdp_url = self._instance.browser.get_cdp_url().cdp_url
+        # Get CDP URL based on instance type
+        if isinstance(self._instance, UbuntuInstance):
+            cdp_url = self._instance.browser.get_cdp_url().cdp_url
+        else:
+            cdp_url = self._instance.get_cdp_url().cdp_url
+
         if cdp_url is None:
             raise ValueError("CDP URL is not available, start the browser first")
 

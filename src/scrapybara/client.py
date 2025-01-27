@@ -8,7 +8,6 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    Literal,
     Generator,
     Callable,
     AsyncGenerator,
@@ -29,7 +28,6 @@ from .types import (
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
     CellType,
-    DeploymentConfigInstanceType,
     EnvGetResponse,
     EnvResponse,
     FileDownloadResponse,
@@ -572,25 +570,18 @@ class AsyncEnv:
         )
 
 
-class Instance:
+class BaseInstance:
     def __init__(
         self,
         id: str,
         launch_time: datetime,
-        instance_type: str,
         status: str,
         client: BaseClient,
     ):
         self.id = id
         self.launch_time = launch_time
-        self.instance_type = instance_type
         self.status = status
         self._client = client
-        self.browser = Browser(self.id, self._client)
-        self.code = Code(self.id, self._client)
-        self.notebook = Notebook(self.id, self._client)
-        self.file = File(self.id, self._client)
-        self.env = Env(self.id, self._client)
 
     def screenshot(
         self, request_options: Optional[RequestOptions] = None
@@ -621,6 +612,44 @@ class Instance:
             text=text,
             request_options=request_options,
         )
+
+    def stop(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        return self._client.instance.stop(self.id, request_options=request_options)
+
+    def pause(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        return self._client.instance.pause(self.id, request_options=request_options)
+
+    def resume(
+        self,
+        *,
+        timeout_hours: Optional[float] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> GetInstanceResponse:
+        return self._client.instance.resume(
+            self.id,
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+
+
+class UbuntuInstance(BaseInstance):
+    def __init__(
+        self,
+        id: str,
+        launch_time: datetime,
+        status: str,
+        client: BaseClient,
+    ):
+        super().__init__(id, launch_time, status, client)
+        self.browser = Browser(self.id, self._client)
+        self.code = Code(self.id, self._client)
+        self.notebook = Notebook(self.id, self._client)
+        self.file = File(self.id, self._client)
+        self.env = Env(self.id, self._client)
 
     def bash(
         self,
@@ -657,48 +686,57 @@ class Instance:
             request_options=request_options,
         )
 
-    def stop(
-        self, request_options: Optional[RequestOptions] = None
-    ) -> StopInstanceResponse:
-        return self._client.instance.stop(self.id, request_options=request_options)
 
-    def pause(
-        self, request_options: Optional[RequestOptions] = None
-    ) -> StopInstanceResponse:
-        return self._client.instance.pause(self.id, request_options=request_options)
-
-    def resume(
-        self,
-        *,
-        timeout_hours: Optional[float] = None,
-        request_options: Optional[RequestOptions] = None,
-    ) -> GetInstanceResponse:
-        return self._client.instance.resume(
-            self.id,
-            timeout_hours=timeout_hours,
-            request_options=request_options,
-        )
-
-
-class AsyncInstance:
+class BrowserInstance(BaseInstance):
     def __init__(
         self,
         id: str,
         launch_time: datetime,
-        instance_type: str,
+        status: str,
+        client: BaseClient,
+    ):
+        super().__init__(id, launch_time, status, client)
+
+    def get_cdp_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetCdpUrlResponse:
+        return self._client.browser.get_cdp_url(
+            self.id, request_options=request_options
+        )
+
+    def authenticate(
+        self, *, auth_state_id: str, request_options: Optional[RequestOptions] = None
+    ) -> BrowserAuthenticateResponse:
+        return self._client.browser.authenticate(
+            self.id,
+            auth_state_id=auth_state_id,
+            request_options=request_options,
+        )
+
+
+class WindowsInstance(BaseInstance):
+    def __init__(
+        self,
+        id: str,
+        launch_time: datetime,
+        status: str,
+        client: BaseClient,
+    ):
+        super().__init__(id, launch_time, status, client)
+
+
+class AsyncBaseInstance:
+    def __init__(
+        self,
+        id: str,
+        launch_time: datetime,
         status: str,
         client: AsyncBaseClient,
     ):
         self.id = id
         self.launch_time = launch_time
-        self.instance_type = instance_type
         self.status = status
         self._client = client
-        self.browser = AsyncBrowser(self.id, self._client)
-        self.code = AsyncCode(self.id, self._client)
-        self.notebook = AsyncNotebook(self.id, self._client)
-        self.file = AsyncFile(self.id, self._client)
-        self.env = AsyncEnv(self.id, self._client)
 
     async def screenshot(
         self, request_options: Optional[RequestOptions] = None
@@ -729,6 +767,48 @@ class AsyncInstance:
             text=text,
             request_options=request_options,
         )
+
+    async def stop(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        return await self._client.instance.stop(
+            self.id, request_options=request_options
+        )
+
+    async def pause(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> StopInstanceResponse:
+        return await self._client.instance.pause(
+            self.id, request_options=request_options
+        )
+
+    async def resume(
+        self,
+        *,
+        timeout_hours: Optional[float] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> GetInstanceResponse:
+        return await self._client.instance.resume(
+            self.id,
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+
+
+class AsyncUbuntuInstance(AsyncBaseInstance):
+    def __init__(
+        self,
+        id: str,
+        launch_time: datetime,
+        status: str,
+        client: AsyncBaseClient,
+    ):
+        super().__init__(id, launch_time, status, client)
+        self.browser = AsyncBrowser(self.id, self._client)
+        self.code = AsyncCode(self.id, self._client)
+        self.notebook = AsyncNotebook(self.id, self._client)
+        self.file = AsyncFile(self.id, self._client)
+        self.env = AsyncEnv(self.id, self._client)
 
     async def bash(
         self,
@@ -765,31 +845,43 @@ class AsyncInstance:
             request_options=request_options,
         )
 
-    async def stop(
-        self, request_options: Optional[RequestOptions] = None
-    ) -> StopInstanceResponse:
-        return await self._client.instance.stop(
-            self.id, request_options=request_options
-        )
 
-    async def pause(
-        self, request_options: Optional[RequestOptions] = None
-    ) -> StopInstanceResponse:
-        return await self._client.instance.pause(
-            self.id, request_options=request_options
-        )
-
-    async def resume(
+class AsyncBrowserInstance(AsyncBaseInstance):
+    def __init__(
         self,
-        *,
-        timeout_hours: Optional[float] = None,
-        request_options: Optional[RequestOptions] = None,
-    ) -> GetInstanceResponse:
-        return await self._client.instance.resume(
+        id: str,
+        launch_time: datetime,
+        status: str,
+        client: AsyncBaseClient,
+    ):
+        super().__init__(id, launch_time, status, client)
+
+    async def get_cdp_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetCdpUrlResponse:
+        return await self._client.browser.get_cdp_url(
+            self.id, request_options=request_options
+        )
+
+    async def authenticate(
+        self, *, auth_state_id: str, request_options: Optional[RequestOptions] = None
+    ) -> BrowserAuthenticateResponse:
+        return await self._client.browser.authenticate(
             self.id,
-            timeout_hours=timeout_hours,
+            auth_state_id=auth_state_id,
             request_options=request_options,
         )
+
+
+class AsyncWindowsInstance(AsyncBaseInstance):
+    def __init__(
+        self,
+        id: str,
+        launch_time: datetime,
+        status: str,
+        client: AsyncBaseClient,
+    ):
+        super().__init__(id, launch_time, status, client)
 
 
 class Scrapybara:
@@ -816,56 +908,122 @@ class Scrapybara:
     def httpx_client(self) -> HttpClient:
         return self._base_client._client_wrapper.httpx_client
 
-    def start(
+    def start_ubuntu(
         self,
         *,
-        instance_type: Optional[
-            Union[DeploymentConfigInstanceType, Literal["small", "medium", "large"]]
-        ] = OMIT,
         timeout_hours: Optional[float] = OMIT,
         request_options: Optional[RequestOptions] = None,
-    ) -> Instance:
+    ) -> UbuntuInstance:
         response = self._base_client.start(
-            instance_type=instance_type,
+            instance_type="ubuntu",
             timeout_hours=timeout_hours,
             request_options=request_options,
         )
-        return Instance(
+        return UbuntuInstance(
             response.id,
             response.launch_time,
-            response.instance_type,
+            response.status,
+            self._base_client,
+        )
+
+    def start_browser(
+        self,
+        *,
+        timeout_hours: Optional[float] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> BrowserInstance:
+        response = self._base_client.start(
+            instance_type="browser",
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+        return BrowserInstance(
+            response.id,
+            response.launch_time,
+            response.status,
+            self._base_client,
+        )
+
+    def start_windows(
+        self,
+        *,
+        timeout_hours: Optional[float] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> WindowsInstance:
+        response = self._base_client.start(
+            instance_type="windows",
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+        return WindowsInstance(
+            response.id,
+            response.launch_time,
             response.status,
             self._base_client,
         )
 
     def get(
         self, instance_id: str, *, request_options: Optional[RequestOptions] = None
-    ) -> Instance:
+    ) -> Union[UbuntuInstance, BrowserInstance, WindowsInstance]:
         response = self._base_client.get(instance_id, request_options=request_options)
-        return Instance(
-            response.id,
-            response.launch_time,
-            response.instance_type,
-            response.status,
-            self._base_client,
-        )
+        if response.instance_type == "ubuntu":
+            return UbuntuInstance(
+                response.id,
+                response.launch_time,
+                response.status,
+                self._base_client,
+            )
+        elif response.instance_type == "browser":
+            return BrowserInstance(
+                response.id,
+                response.launch_time,
+                response.status,
+                self._base_client,
+            )
+        else:
+            return WindowsInstance(
+                response.id,
+                response.launch_time,
+                response.status,
+                self._base_client,
+            )
 
     def get_instances(
         self,
         *,
         request_options: Optional[RequestOptions] = None,
-    ) -> List[Instance]:
+    ) -> List[Union[UbuntuInstance, BrowserInstance, WindowsInstance]]:
         response = self._base_client.get_instances(request_options=request_options)
-        return [
-            Instance(
-                instance.id,
-                instance.launch_time,
-                instance.instance_type,
-                instance.status,
-                self._base_client,
-            )
-            for instance in response
-        ]
+        instances: List[Union[UbuntuInstance, BrowserInstance, WindowsInstance]] = []
+        for instance in response:
+            if instance.instance_type == "ubuntu":
+                instances.append(
+                    UbuntuInstance(
+                        instance.id,
+                        instance.launch_time,
+                        instance.status,
+                        self._base_client,
+                    )
+                )
+            elif instance.instance_type == "browser":
+                instances.append(
+                    BrowserInstance(
+                        instance.id,
+                        instance.launch_time,
+                        instance.status,
+                        self._base_client,
+                    )
+                )
+            else:
+                instances.append(
+                    WindowsInstance(
+                        instance.id,
+                        instance.launch_time,
+                        instance.status,
+                        self._base_client,
+                    )
+                )
+        return instances
 
     def get_auth_states(
         self,
@@ -1121,60 +1279,128 @@ class AsyncScrapybara:
     def httpx_client(self) -> AsyncHttpClient:
         return self._base_client._client_wrapper.httpx_client
 
-    async def start(
+    async def start_ubuntu(
         self,
         *,
-        instance_type: Optional[
-            Union[DeploymentConfigInstanceType, Literal["small", "medium", "large"]]
-        ] = OMIT,
         timeout_hours: Optional[float] = OMIT,
         request_options: Optional[RequestOptions] = None,
-    ) -> AsyncInstance:
+    ) -> AsyncUbuntuInstance:
         response = await self._base_client.start(
-            instance_type=instance_type,
+            instance_type="ubuntu",
             timeout_hours=timeout_hours,
             request_options=request_options,
         )
-        return AsyncInstance(
+        return AsyncUbuntuInstance(
             response.id,
             response.launch_time,
-            response.instance_type,
+            response.status,
+            self._base_client,
+        )
+
+    async def start_browser(
+        self,
+        *,
+        timeout_hours: Optional[float] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> AsyncBrowserInstance:
+        response = await self._base_client.start(
+            instance_type="browser",
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+        return AsyncBrowserInstance(
+            response.id,
+            response.launch_time,
+            response.status,
+            self._base_client,
+        )
+
+    async def start_windows(
+        self,
+        *,
+        timeout_hours: Optional[float] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> AsyncWindowsInstance:
+        response = await self._base_client.start(
+            instance_type="windows",
+            timeout_hours=timeout_hours,
+            request_options=request_options,
+        )
+        return AsyncWindowsInstance(
+            response.id,
+            response.launch_time,
             response.status,
             self._base_client,
         )
 
     async def get(
         self, instance_id: str, *, request_options: Optional[RequestOptions] = None
-    ) -> AsyncInstance:
+    ) -> Union[AsyncUbuntuInstance, AsyncBrowserInstance, AsyncWindowsInstance]:
         response = await self._base_client.get(
             instance_id, request_options=request_options
         )
-        return AsyncInstance(
-            response.id,
-            response.launch_time,
-            response.instance_type,
-            response.status,
-            self._base_client,
-        )
+        if response.instance_type == "ubuntu":
+            return AsyncUbuntuInstance(
+                response.id,
+                response.launch_time,
+                response.status,
+                self._base_client,
+            )
+        elif response.instance_type == "browser":
+            return AsyncBrowserInstance(
+                response.id,
+                response.launch_time,
+                response.status,
+                self._base_client,
+            )
+        else:
+            return AsyncWindowsInstance(
+                response.id,
+                response.launch_time,
+                response.status,
+                self._base_client,
+            )
 
     async def get_instances(
         self,
         *,
         request_options: Optional[RequestOptions] = None,
-    ) -> List[AsyncInstance]:
+    ) -> List[Union[AsyncUbuntuInstance, AsyncBrowserInstance, AsyncWindowsInstance]]:
         response = await self._base_client.get_instances(
             request_options=request_options
         )
-        return [
-            AsyncInstance(
-                instance.id,
-                instance.launch_time,
-                instance.instance_type,
-                instance.status,
-                self._base_client,
-            )
-            for instance in response
-        ]
+        instances: List[
+            Union[AsyncUbuntuInstance, AsyncBrowserInstance, AsyncWindowsInstance]
+        ] = []
+        for instance in response:
+            if instance.instance_type == "ubuntu":
+                instances.append(
+                    AsyncUbuntuInstance(
+                        instance.id,
+                        instance.launch_time,
+                        instance.status,
+                        self._base_client,
+                    )
+                )
+            elif instance.instance_type == "browser":
+                instances.append(
+                    AsyncBrowserInstance(
+                        instance.id,
+                        instance.launch_time,
+                        instance.status,
+                        self._base_client,
+                    )
+                )
+            else:
+                instances.append(
+                    AsyncWindowsInstance(
+                        instance.id,
+                        instance.launch_time,
+                        instance.status,
+                        self._base_client,
+                    )
+                )
+        return instances
 
     async def get_auth_states(
         self,

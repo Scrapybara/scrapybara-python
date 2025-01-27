@@ -14,6 +14,8 @@ Action = typing.Union[
         "double_click",
         "screenshot",
         "cursor_position",
+        "scroll",
+        "wait",
     ],
     typing.Any,
 ]
