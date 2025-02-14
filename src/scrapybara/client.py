@@ -1662,9 +1662,11 @@ class AsyncScrapybara:
                     try:
                         if tool.name == "structured_output" and schema:
                             has_structured_output = True
-                        result = tool(**part.args)
-                        if inspect.isawaitable(result):
-                            await result
+                        raw_result = tool(**part.args)
+                        if inspect.isawaitable(raw_result):
+                            result = await raw_result
+                        else:
+                            result = raw_result
                         tool_results.append(
                             ToolResultPart(
                                 tool_call_id=part.tool_call_id,
