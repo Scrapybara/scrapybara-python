@@ -1,16 +1,13 @@
 from ..types.act import Model
-from typing import Literal, Optional
+from typing import Literal
 from pydantic import Field
 
 
 class Herd(Model):
     """Model adapter for Herd (Scrapybara-hosted LLMs).
 
-    Supported models:
-    - ui-tars-72b (0.5x agent credit)
-
     Args:
-        name: Herd model name, defaults to "ui-tars-72b"
+        name: Herd model name
 
     Returns:
         A Model configuration object
@@ -18,5 +15,5 @@ class Herd(Model):
 
     provider: Literal["herd"] = Field(default="herd", frozen=True)
 
-    def __init__(self, name: Optional[str] = "ui-tars-72b") -> None:
+    def __init__(self, name: str) -> None:
         super().__init__(provider="herd", name=name)

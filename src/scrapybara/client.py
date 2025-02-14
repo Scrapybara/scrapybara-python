@@ -1109,7 +1109,10 @@ class Scrapybara:
         ):
             steps.append(step)
             assistant_msg = AssistantMessage(
-                content=[TextPart(text=step.text)] + (step.tool_calls or [])
+                content=(
+                    ([TextPart(text=step.text)] if step.text else [])
+                    + (step.tool_calls or [])
+                )
             )
             result_messages.append(assistant_msg)
             if step.tool_results:
@@ -1174,6 +1177,14 @@ class Scrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
+        current_messages: List[Message] = []
+        if messages is None:
+            if prompt is None:
+                raise ValueError("prompt or messages must be provided.")
+            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
+        else:
+            current_messages = list(messages)
+
         current_tools: List[Tool] = []
         if tools:
             if model.name == "ui-tars-72b":
@@ -1190,14 +1201,6 @@ class Scrapybara:
                         )
             else:
                 current_tools = tools
-
-        current_messages: List[Message] = []
-        if messages is None:
-            if prompt is None:
-                raise ValueError("prompt or messages must be provided")
-            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
-        else:
-            current_messages = list(messages)
 
         if schema:
             if model.name == "ui-tars-72b":
@@ -1506,7 +1509,10 @@ class AsyncScrapybara:
         ):
             steps.append(step)
             assistant_msg = AssistantMessage(
-                content=[TextPart(text=step.text)] + (step.tool_calls or [])
+                content=(
+                    ([TextPart(text=step.text)] if step.text else [])
+                    + (step.tool_calls or [])
+                )
             )
             result_messages.append(assistant_msg)
             if step.tool_results:
@@ -1571,6 +1577,14 @@ class AsyncScrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
+        current_messages: List[Message] = []
+        if messages is None:
+            if prompt is None:
+                raise ValueError("prompt or messages must be provided.")
+            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
+        else:
+            current_messages = list(messages)
+
         current_tools: List[Tool] = []
         if tools:
             if model.name == "ui-tars-72b":
@@ -1587,14 +1601,6 @@ class AsyncScrapybara:
                         )
             else:
                 current_tools = tools
-
-        current_messages: List[Message] = []
-        if messages is None:
-            if prompt is None:
-                raise ValueError("prompt or messages must be provided")
-            current_messages = [UserMessage(content=[TextPart(text=prompt)])]
-        else:
-            current_messages = list(messages)
 
         if schema:
             if model.name == "ui-tars-72b":
