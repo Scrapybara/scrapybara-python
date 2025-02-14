@@ -1687,7 +1687,9 @@ class AsyncScrapybara:
                 current_messages.append(tool_message)
 
             if on_step:
-                on_step(step)
+                result = on_step(step)
+                if hasattr(result, "__await__"):
+                    await result
             yield step
 
             if not has_tool_calls or has_structured_output:
