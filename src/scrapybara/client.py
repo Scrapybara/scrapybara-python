@@ -1,4 +1,5 @@
 from datetime import datetime
+import inspect
 from typing import (
     Optional,
     Any,
@@ -14,7 +15,6 @@ from typing import (
 )
 import typing
 import os
-import asyncio
 import warnings
 
 import httpx
@@ -1662,10 +1662,9 @@ class AsyncScrapybara:
                     try:
                         if tool.name == "structured_output" and schema:
                             has_structured_output = True
-                        loop = asyncio.get_event_loop()
-                        result = await loop.run_in_executor(
-                            None, lambda: tool(**part.args)
-                        )
+                        result = tool(**part.args)
+                        if inspect.isawaitable(result):
+                            await result
                         tool_results.append(
                             ToolResultPart(
                                 tool_call_id=part.tool_call_id,
@@ -1688,7 +1687,7 @@ class AsyncScrapybara:
 
             if on_step:
                 result = on_step(step)
-                if hasattr(result, "__await__"):
+                if inspect.isawaitable(result):
                     await result
             yield step
 
