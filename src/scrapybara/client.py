@@ -15,6 +15,7 @@ from typing import (
 import typing
 import os
 import asyncio
+import warnings
 
 import httpx
 from pydantic import BaseModel, ConfigDict
@@ -61,7 +62,8 @@ from .types.act import (
     TokenUsage,
 )
 from .base_client import BaseClient, AsyncBaseClient
-from .instance.types import Action, Command
+from .instance.types import Action, Command, ComputerTool
+from .tools import ComputerTool
 
 OMIT = typing.cast(typing.Any, ...)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -1173,6 +1175,25 @@ class Scrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
+        current_tools = []
+        if tools:
+            if model.name == "ui-tars-72b":
+                computer_tools = [
+                    tool for tool in tools if isinstance(tool, ComputerTool)
+                ]
+                if not computer_tools:
+                    warnings.warn(
+                        "No compatible tools found for ui-tars-72b model. Only ComputerTool is supported."
+                    )
+                else:
+                    current_tools = computer_tools
+                    if len(tools) > len(computer_tools):
+                        warnings.warn(
+                            "Only ComputerTool is compatible with ui-tars-72b model. Other tools will be ignored."
+                        )
+            else:
+                current_tools = tools
+
         current_messages: List[Message] = []
         if messages is None:
             if prompt is None:
@@ -1181,10 +1202,11 @@ class Scrapybara:
         else:
             current_messages = list(messages)
 
-        current_tools = [] if tools is None else list(tools)
-
         if schema:
-            current_tools.append(StructuredOutputTool(schema))
+            if model.name == "ui-tars-72b":
+                raise ValueError("Schema is not supported with ui-tars-72b model.")
+            else:
+                current_tools.append(StructuredOutputTool(schema))
 
         while True:
             # Convert tools to ApiTools
@@ -1552,6 +1574,25 @@ class AsyncScrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
+        current_tools = []
+        if tools:
+            if model.name == "ui-tars-72b":
+                computer_tools = [
+                    tool for tool in tools if isinstance(tool, ComputerTool)
+                ]
+                if not computer_tools:
+                    warnings.warn(
+                        "No compatible tools found for ui-tars-72b model. Only ComputerTool is supported."
+                    )
+                else:
+                    current_tools = computer_tools
+                    if len(tools) > len(computer_tools):
+                        warnings.warn(
+                            "Only ComputerTool is compatible with ui-tars-72b model. Other tools will be ignored."
+                        )
+            else:
+                current_tools = tools
+
         current_messages: List[Message] = []
         if messages is None:
             if prompt is None:
@@ -1560,10 +1601,11 @@ class AsyncScrapybara:
         else:
             current_messages = list(messages)
 
-        current_tools = [] if tools is None else list(tools)
-
         if schema:
-            current_tools.append(StructuredOutputTool(schema))
+            if model.name == "ui-tars-72b":
+                raise ValueError("Schema is not supported with ui-tars-72b model.")
+            else:
+                current_tools.append(StructuredOutputTool(schema))
 
         while True:
             # Convert tools to ApiTools

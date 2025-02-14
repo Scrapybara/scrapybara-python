@@ -17,9 +17,7 @@ class Anthropic(Model):
     """Model adapter for Anthropic.
 
     Supported models:
-    - claude-3-5-sonnet-20241022 (with computer use beta)
-
-    If an API key is not provided, each call will cost 1 agent credit.
+    - claude-3-5-sonnet-20241022 (1x agent credit if no api_key)
 
     Args:
         name: Anthropic model name, defaults to "claude-3-5-sonnet-20241022"
