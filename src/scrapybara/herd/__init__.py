@@ -1,4 +1,6 @@
 from ..types.act import Model
+from typing import Literal, Optional
+from pydantic import Field
 
 
 class Herd(Model):

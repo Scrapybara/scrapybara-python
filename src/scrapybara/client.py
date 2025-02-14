@@ -62,7 +62,7 @@ from .types.act import (
     TokenUsage,
 )
 from .base_client import BaseClient, AsyncBaseClient
-from .instance.types import Action, Command, ComputerTool
+from .instance.types import Action, Command
 from .tools import ComputerTool
 
 OMIT = typing.cast(typing.Any, ...)
@@ -1175,10 +1175,10 @@ class Scrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
-        current_tools = []
+        current_tools: List[Tool] = []
         if tools:
             if model.name == "ui-tars-72b":
-                computer_tools = [
+                computer_tools: List[Tool] = [
                     tool for tool in tools if isinstance(tool, ComputerTool)
                 ]
                 if not computer_tools:
@@ -1574,10 +1574,10 @@ class AsyncScrapybara:
         Yields:
             Steps from the conversation, including tool results
         """
-        current_tools = []
+        current_tools: List[Tool] = []
         if tools:
             if model.name == "ui-tars-72b":
-                computer_tools = [
+                computer_tools: List[Tool] = [
                     tool for tool in tools if isinstance(tool, ComputerTool)
                 ]
                 if not computer_tools:
