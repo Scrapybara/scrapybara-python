@@ -63,7 +63,6 @@ from .types.act import (
 )
 from .base_client import BaseClient, AsyncBaseClient
 from .instance.types import Action, Command
-from .tools import ComputerTool
 
 OMIT = typing.cast(typing.Any, ...)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -1178,9 +1177,7 @@ class Scrapybara:
         current_tools: List[Tool] = []
         if tools:
             if model.name == "ui-tars-72b":
-                computer_tools: List[Tool] = [
-                    tool for tool in tools if isinstance(tool, ComputerTool)
-                ]
+                computer_tools = [tool for tool in tools if tool.name == "computer"]
                 if not computer_tools:
                     warnings.warn(
                         "No compatible tools found for ui-tars-72b model. Only ComputerTool is supported."
@@ -1577,9 +1574,7 @@ class AsyncScrapybara:
         current_tools: List[Tool] = []
         if tools:
             if model.name == "ui-tars-72b":
-                computer_tools: List[Tool] = [
-                    tool for tool in tools if isinstance(tool, ComputerTool)
-                ]
+                computer_tools = [tool for tool in tools if tool.name == "computer"]
                 if not computer_tools:
                     warnings.warn(
                         "No compatible tools found for ui-tars-72b model. Only ComputerTool is supported."

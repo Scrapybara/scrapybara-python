@@ -1,6 +1,6 @@
 import base64
 import json
-from typing import Any, Literal, Optional, Sequence, Tuple, Union, cast
+from typing import Any, Literal, Optional, Sequence, Tuple, Union
 from pydantic import BaseModel, Field
 from playwright.sync_api import sync_playwright
 
