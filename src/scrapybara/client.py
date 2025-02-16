@@ -1200,7 +1200,7 @@ class Scrapybara:
                             "Only ComputerTool is compatible with ui-tars-72b model. Other tools will be ignored."
                         )
             else:
-                current_tools = tools
+                current_tools = list(tools)
 
         if schema:
             if model.name == "ui-tars-72b":
@@ -1594,7 +1594,7 @@ class AsyncScrapybara:
                         "No compatible tools found for ui-tars-72b model. Only ComputerTool is supported."
                     )
                 else:
-                    current_tools = list(computer_tools)
+                    current_tools = computer_tools
                     if len(tools) > len(computer_tools):
                         warnings.warn(
                             "Only ComputerTool is compatible with ui-tars-72b model. Other tools will be ignored."
