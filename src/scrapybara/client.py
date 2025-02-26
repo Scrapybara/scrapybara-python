@@ -1317,7 +1317,7 @@ class Scrapybara:
             # Create initial step
             step = Step(
                 text=text,
-                reasoning=reasoning,
+                reasoning=reasoning if reasoning else None,
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
@@ -1725,7 +1725,7 @@ class AsyncScrapybara:
             # Create initial step
             step = Step(
                 text=text,
-                reasoning=reasoning,
+                reasoning=reasoning if reasoning else None,
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
