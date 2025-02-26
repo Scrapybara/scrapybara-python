@@ -56,6 +56,7 @@ from .types.act import (
     ToolCallPart,
     ToolMessage,
     ToolResultPart,
+    ReasoningPart,
     UserMessage,
     AssistantMessage,
     Step,
@@ -1306,9 +1307,17 @@ class Scrapybara:
                 if isinstance(part, ToolCallPart)
             ]
 
+            # Extract reasoning from reasoning part
+            reasoning = "\n".join(
+                part.reasoning
+                for part in act_response.message.content
+                if isinstance(part, ReasoningPart)
+            )
+
             # Create initial step
             step = Step(
                 text=text,
+                reasoning=reasoning,
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
@@ -1706,9 +1715,17 @@ class AsyncScrapybara:
                 if isinstance(part, ToolCallPart)
             ]
 
+            # Extract reasoning from reasoning part
+            reasoning = "\n".join(
+                part.reasoning
+                for part in act_response.message.content
+                if isinstance(part, ReasoningPart)
+            )
+
             # Create initial step
             step = Step(
                 text=text,
+                reasoning=reasoning,
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
