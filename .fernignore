@@ -2,6 +2,7 @@
 
 src/scrapybara/client.py
 src/scrapybara/anthropic/
+src/scrapybara/herd/
 src/scrapybara/prompts/
 src/scrapybara/tools/
 src/scrapybara/types/__init__.py
