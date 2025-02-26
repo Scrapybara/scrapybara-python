@@ -14,6 +14,7 @@ from .http_validation_error import HttpValidationError
 from .instance_get_stream_url_response import InstanceGetStreamUrlResponse
 from .instance_screenshot_response import InstanceScreenshotResponse
 from .kernel_info import KernelInfo
+from .modify_browser_auth_response import ModifyBrowserAuthResponse
 from .notebook import Notebook
 from .notebook_cell import NotebookCell
 from .save_browser_auth_response import SaveBrowserAuthResponse
@@ -58,6 +59,7 @@ __all__ = [
     "InstanceGetStreamUrlResponse",
     "InstanceScreenshotResponse",
     "KernelInfo",
+    "ModifyBrowserAuthResponse",
     "Notebook",
     "NotebookCell",
     "SaveBrowserAuthResponse",
