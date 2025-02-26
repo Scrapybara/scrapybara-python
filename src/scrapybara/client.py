@@ -1166,15 +1166,13 @@ class Scrapybara:
             request_options=request_options,
         ):
             steps.append(step)
-            content_parts = []
-            if step.text:
-                content_parts.append(TextPart(text=step.text))
-            if step.reasoning:
-                content_parts.append(ReasoningPart(reasoning=step.reasoning))
-            if step.tool_calls:
-                content_parts.extend(step.tool_calls)
-                
-            assistant_msg = AssistantMessage(content=content_parts)
+            assistant_msg = AssistantMessage(
+                content=(
+                    ([TextPart(text=step.text)] if step.text else [])
+                    + ([ReasoningPart(reasoning=step.reasoning)] if step.reasoning else [])
+                    + (step.tool_calls or [])
+                )
+            )
             result_messages.append(assistant_msg)
             if step.tool_results:
                 tool_msg = ToolMessage(content=step.tool_results)
@@ -1577,15 +1575,13 @@ class AsyncScrapybara:
             request_options=request_options,
         ):
             steps.append(step)
-            content_parts = []
-            if step.text:
-                content_parts.append(TextPart(text=step.text))
-            if step.reasoning:
-                content_parts.append(ReasoningPart(reasoning=step.reasoning))
-            if step.tool_calls:
-                content_parts.extend(step.tool_calls)
-                
-            assistant_msg = AssistantMessage(content=content_parts)
+            assistant_msg = AssistantMessage(
+                content=(
+                    ([TextPart(text=step.text)] if step.text else [])
+                    + ([ReasoningPart(reasoning=step.reasoning)] if step.reasoning else [])
+                    + (step.tool_calls or [])
+                )
+            )
             result_messages.append(assistant_msg)
             if step.tool_results:
                 tool_msg = ToolMessage(content=step.tool_results)
