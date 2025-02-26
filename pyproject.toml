@@ -32,7 +32,7 @@ Repository = 'https://github.com/scrapybara/scrapybara-python'
 
 [tool.poetry.dependencies]
 python = "^3.8"
-anthropic = "^0.39.0"
+anthropic = "^0.47.2"
 httpx = ">=0.21.2"
 playwright = "^1.48.0"
 pydantic = ">= 1.9.2"
