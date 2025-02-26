@@ -12,6 +12,7 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
 from ..types.browser_get_cdp_url_response import BrowserGetCdpUrlResponse
 from ..types.save_browser_auth_response import SaveBrowserAuthResponse
+from ..types.modify_browser_auth_response import ModifyBrowserAuthResponse
 from ..types.browser_authenticate_response import BrowserAuthenticateResponse
 from ..types.stop_browser_response import StopBrowserResponse
 from ..core.client_wrapper import AsyncClientWrapper
@@ -180,6 +181,76 @@ class BrowserClient:
                     SaveBrowserAuthResponse,
                     parse_obj_as(
                         type_=SaveBrowserAuthResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def modify_auth(
+        self,
+        instance_id: str,
+        *,
+        auth_state_id: str,
+        name: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ModifyBrowserAuthResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        auth_state_id : str
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ModifyBrowserAuthResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.browser.modify_auth(
+            instance_id="instance_id",
+            auth_state_id="auth_state_id",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/browser/modify_auth",
+            method="POST",
+            params={
+                "auth_state_id": auth_state_id,
+                "name": name,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    ModifyBrowserAuthResponse,
+                    parse_obj_as(
+                        type_=ModifyBrowserAuthResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -502,6 +573,84 @@ class AsyncBrowserClient:
                     SaveBrowserAuthResponse,
                     parse_obj_as(
                         type_=SaveBrowserAuthResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def modify_auth(
+        self,
+        instance_id: str,
+        *,
+        auth_state_id: str,
+        name: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ModifyBrowserAuthResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        auth_state_id : str
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ModifyBrowserAuthResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.browser.modify_auth(
+                instance_id="instance_id",
+                auth_state_id="auth_state_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/browser/modify_auth",
+            method="POST",
+            params={
+                "auth_state_id": auth_state_id,
+                "name": name,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    ModifyBrowserAuthResponse,
+                    parse_obj_as(
+                        type_=ModifyBrowserAuthResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

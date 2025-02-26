@@ -942,6 +942,79 @@ client.browser.save_auth(
 </dl>
 </details>
 
+<details><summary><code>client.browser.<a href="src/scrapybara/browser/client.py">modify_auth</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.browser.modify_auth(
+    instance_id="instance_id",
+    auth_state_id="auth_state_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**auth_state_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.browser.<a href="src/scrapybara/browser/client.py">authenticate</a>(...)</code></summary>
 <dl>
 <dd>
