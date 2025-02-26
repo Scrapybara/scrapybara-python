@@ -48,7 +48,7 @@ def test_ubuntu() -> None:
         schema=YCStats,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
-    print(response)
+    print(response.output)
     assert response.output is not None
     assert response.output.number_of_startups is not None
     assert response.output.combined_valuation is not None
@@ -77,7 +77,7 @@ def test_browser() -> None:
         schema=YCStats,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
-    print(response)
+    print(response.output)
     assert response.output is not None
     assert response.output.number_of_startups is not None
     assert response.output.combined_valuation is not None
