@@ -744,6 +744,20 @@ class BrowserInstance(BaseInstance):
             self.id, name=name, request_options=request_options
         )
 
+    def modify_auth(
+        self,
+        *,
+        auth_state_id: str,
+        name: Optional[str] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ModifyBrowserAuthResponse:
+        return self._client.browser.modify_auth(
+            self.id,
+            auth_state_id=auth_state_id,
+            name=name,
+            request_options=request_options,
+        )
+
     def authenticate(
         self, *, auth_state_id: str, request_options: Optional[RequestOptions] = None
     ) -> BrowserAuthenticateResponse:
@@ -911,6 +925,20 @@ class AsyncBrowserInstance(AsyncBaseInstance):
     ) -> SaveBrowserAuthResponse:
         return await self._client.browser.save_auth(
             self.id, name=name, request_options=request_options
+        )
+
+    async def modify_auth(
+        self,
+        *,
+        auth_state_id: str,
+        name: Optional[str] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ModifyBrowserAuthResponse:
+        return await self._client.browser.modify_auth(
+            self.id,
+            auth_state_id=auth_state_id,
+            name=name,
+            request_options=request_options,
         )
 
     async def authenticate(
