@@ -88,7 +88,7 @@ class SingleActResponse(BaseModel):
 # Step definition
 class Step(BaseModel):
     text: str
-    reasoning: Optional[List[ReasoningPart]] = None
+    reasoning_parts: Optional[List[ReasoningPart]] = None
     tool_calls: Optional[List[ToolCallPart]] = None
     tool_results: Optional[List[ToolResultPart]] = None
     finish_reason: Optional[
