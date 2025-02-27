@@ -1169,7 +1169,7 @@ class Scrapybara:
             assistant_msg = AssistantMessage(
                 content=(
                     ([TextPart(text=step.text)] if step.text else [])
-                    + ([ReasoningPart(reasoning=step.reasoning)] if step.reasoning else [])
+                    + (step.reasoning if step.reasoning else [])
                     + (step.tool_calls or [])
                 )
             )
@@ -1309,11 +1309,11 @@ class Scrapybara:
             ]
 
             # Extract reasoning from reasoning part
-            reasoning = "\n".join(
-                part.reasoning
+            reasoning = [
+                part
                 for part in act_response.message.content
                 if isinstance(part, ReasoningPart)
-            )
+            ]
 
             # Create initial step
             step = Step(
@@ -1578,7 +1578,7 @@ class AsyncScrapybara:
             assistant_msg = AssistantMessage(
                 content=(
                     ([TextPart(text=step.text)] if step.text else [])
-                    + ([ReasoningPart(reasoning=step.reasoning)] if step.reasoning else [])
+                    + (step.reasoning if step.reasoning else [])
                     + (step.tool_calls or [])
                 )
             )
@@ -1718,11 +1718,11 @@ class AsyncScrapybara:
             ]
 
             # Extract reasoning from reasoning part
-            reasoning = "\n".join(
-                part.reasoning
+            reasoning = [
+                part
                 for part in act_response.message.content
                 if isinstance(part, ReasoningPart)
-            )
+            ]
 
             # Create initial step
             step = Step(
