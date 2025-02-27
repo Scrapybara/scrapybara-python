@@ -31,6 +31,11 @@ class ToolResultPart(BaseModel):
     result: Any
     is_error: Optional[bool] = False
 
+class ReasoningPart(BaseModel):
+    type: Literal["reasoning"] = "reasoning"
+    reasoning: str
+    signature: Optional[str] = None
+    instructions: Optional[str] = None
 
 class UserMessage(BaseModel):
     role: Literal["user"] = "user"
@@ -39,7 +44,7 @@ class UserMessage(BaseModel):
 
 class AssistantMessage(BaseModel):
     role: Literal["assistant"] = "assistant"
-    content: List[Union[TextPart, ToolCallPart]]
+    content: List[Union[TextPart, ToolCallPart, ReasoningPart]]
 
 
 class ToolMessage(BaseModel):
@@ -83,6 +88,7 @@ class SingleActResponse(BaseModel):
 # Step definition
 class Step(BaseModel):
     text: str
+    reasoning_parts: Optional[List[ReasoningPart]] = None
     tool_calls: Optional[List[ToolCallPart]] = None
     tool_results: Optional[List[ToolResultPart]] = None
     finish_reason: Optional[

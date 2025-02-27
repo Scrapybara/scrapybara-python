@@ -56,6 +56,7 @@ from .types.act import (
     ToolCallPart,
     ToolMessage,
     ToolResultPart,
+    ReasoningPart,
     UserMessage,
     AssistantMessage,
     Step,
@@ -1168,6 +1169,7 @@ class Scrapybara:
             assistant_msg = AssistantMessage(
                 content=(
                     ([TextPart(text=step.text)] if step.text else [])
+                    + (step.reasoning_parts if step.reasoning_parts else [])
                     + (step.tool_calls or [])
                 )
             )
@@ -1306,9 +1308,17 @@ class Scrapybara:
                 if isinstance(part, ToolCallPart)
             ]
 
+            # Extract reasoning from reasoning part
+            reasoning_parts = [
+                part
+                for part in act_response.message.content
+                if isinstance(part, ReasoningPart)
+            ]
+
             # Create initial step
             step = Step(
                 text=text,
+                reasoning_parts=reasoning_parts if reasoning_parts else None,
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
@@ -1568,6 +1578,7 @@ class AsyncScrapybara:
             assistant_msg = AssistantMessage(
                 content=(
                     ([TextPart(text=step.text)] if step.text else [])
+                    + (step.reasoning_parts if step.reasoning_parts else [])
                     + (step.tool_calls or [])
                 )
             )
@@ -1706,9 +1717,17 @@ class AsyncScrapybara:
                 if isinstance(part, ToolCallPart)
             ]
 
+            # Extract reasoning from reasoning part
+            reasoning_parts = [
+                part
+                for part in act_response.message.content
+                if isinstance(part, ReasoningPart)
+            ]
+
             # Create initial step
             step = Step(
                 text=text,
+                reasoning_parts=reasoning_parts if reasoning_parts else None,
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
