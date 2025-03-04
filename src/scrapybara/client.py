@@ -12,6 +12,8 @@ from typing import (
     Generator,
     Callable,
     AsyncGenerator,
+    Literal,
+    overload,
 )
 import typing
 import os
@@ -25,9 +27,13 @@ from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .core.api_error import ApiError
 from .types import (
+    Action,
     AuthStateResponse,
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
+    Button,
+    ClickMouseActionClickType,
+    ComputerResponse,
     CellType,
     EnvGetResponse,
     EnvResponse,
@@ -44,6 +50,15 @@ from .types import (
     StopBrowserResponse,
     StopInstanceResponse,
     ModifyBrowserAuthResponse,
+    ClickMouseAction,
+    MoveMouseAction,
+    DragMouseAction,
+    PressKeyAction,
+    ScrollAction,
+    TakeScreenshotAction,
+    TypeTextAction,
+    WaitAction,
+    GetCursorPositionAction,
 )
 from .types.act import (
     SingleActRequest,
@@ -64,7 +79,7 @@ from .types.act import (
     TokenUsage,
 )
 from .base_client import BaseClient, AsyncBaseClient
-from .instance.types import Action, Command
+from .instance.types import Command
 
 OMIT = typing.cast(typing.Any, ...)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -628,19 +643,148 @@ class BaseInstance:
             self.id, request_options=request_options
         )
 
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["move_mouse"],
+        coordinates: List[int],
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["click_mouse"],
+        button: Button,
+        click_type: Optional[ClickMouseActionClickType] = None,
+        coordinates: Optional[List[int]] = None,
+        num_clicks: Optional[int] = None,
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["drag_mouse"],
+        path: List[List[int]],
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["scroll"],
+        coordinates: List[int],
+        delta_x: Optional[float] = None,
+        delta_y: Optional[float] = None,
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["press_key"],
+        keys: List[str],
+        duration: Optional[float] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["type_text"],
+        text: str,
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["wait"],
+        duration: float,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["take_screenshot"],
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: Literal["get_cursor_position"],
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
     def computer(
         self,
         *,
         action: Action,
-        coordinate: Optional[Sequence[int]] = OMIT,
-        text: Optional[str] = OMIT,
+        button: Optional[Button] = None,
+        click_type: Optional[ClickMouseActionClickType] = None,
+        coordinates: Optional[List[int]] = None,
+        delta_x: Optional[float] = None,
+        delta_y: Optional[float] = None,
+        num_clicks: Optional[int] = None,
+        hold_keys: Optional[List[str]] = None,
+        path: Optional[List[List[int]]] = None,
+        keys: Optional[List[str]] = None,
+        text: Optional[str] = None,
+        duration: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
-    ) -> Optional[Any]:
+    ) -> ComputerResponse:
+        request: Any = None
+
+        if action == "move_mouse":
+            request = MoveMouseAction(coordinates=coordinates, hold_keys=hold_keys)
+        elif action == "click_mouse":
+            request = ClickMouseAction(
+                button=button,
+                click_type=click_type,
+                coordinates=coordinates,
+                num_clicks=num_clicks,
+                hold_keys=hold_keys,
+            )
+        elif action == "drag_mouse":
+            request = DragMouseAction(path=path, hold_keys=hold_keys)
+        elif action == "scroll":
+            request = ScrollAction(
+                coordinates=coordinates,
+                delta_x=delta_x,
+                delta_y=delta_y,
+                hold_keys=hold_keys,
+            )
+        elif action == "press_key":
+            request = PressKeyAction(keys=keys, duration=duration)
+        elif action == "type_text":
+            request = TypeTextAction(text=text, hold_keys=hold_keys)
+        elif action == "wait":
+            request = WaitAction(duration=duration)
+        elif action == "take_screenshot":
+            request = TakeScreenshotAction()
+        elif action == "get_cursor_position":
+            request = GetCursorPositionAction()
+
         return self._client.instance.computer(
             self.id,
-            action=action,
-            coordinate=coordinate,
-            text=text,
+            request=request,
             request_options=request_options,
         )
 
@@ -807,19 +951,148 @@ class AsyncBaseInstance:
             self.id, request_options=request_options
         )
 
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["move_mouse"],
+        coordinates: List[int],
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["click_mouse"],
+        button: Button,
+        click_type: Optional[ClickMouseActionClickType] = None,
+        coordinates: Optional[List[int]] = None,
+        num_clicks: Optional[int] = None,
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["drag_mouse"],
+        path: List[List[int]],
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["scroll"],
+        coordinates: List[int],
+        delta_x: Optional[float] = None,
+        delta_y: Optional[float] = None,
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["press_key"],
+        keys: List[str],
+        duration: Optional[float] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["type_text"],
+        text: str,
+        hold_keys: Optional[List[str]] = None,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["wait"],
+        duration: float,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["take_screenshot"],
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: Literal["get_cursor_position"],
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
     async def computer(
         self,
         *,
         action: Action,
-        coordinate: Optional[Sequence[int]] = OMIT,
-        text: Optional[str] = OMIT,
+        button: Optional[Button] = None,
+        click_type: Optional[ClickMouseActionClickType] = None,
+        coordinates: Optional[List[int]] = None,
+        delta_x: Optional[float] = None,
+        delta_y: Optional[float] = None,
+        num_clicks: Optional[int] = None,
+        hold_keys: Optional[List[str]] = None,
+        path: Optional[List[List[int]]] = None,
+        keys: Optional[List[str]] = None,
+        text: Optional[str] = None,
+        duration: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
-    ) -> Optional[Any]:
+    ) -> ComputerResponse:
+        request: Any = None
+
+        if action == "move_mouse":
+            request = MoveMouseAction(coordinates=coordinates, hold_keys=hold_keys)
+        elif action == "click_mouse":
+            request = ClickMouseAction(
+                button=button,
+                click_type=click_type,
+                coordinates=coordinates,
+                num_clicks=num_clicks,
+                hold_keys=hold_keys,
+            )
+        elif action == "drag_mouse":
+            request = DragMouseAction(path=path, hold_keys=hold_keys)
+        elif action == "scroll":
+            request = ScrollAction(
+                coordinates=coordinates,
+                delta_x=delta_x,
+                delta_y=delta_y,
+                hold_keys=hold_keys,
+            )
+        elif action == "press_key":
+            request = PressKeyAction(keys=keys, duration=duration)
+        elif action == "type_text":
+            request = TypeTextAction(text=text, hold_keys=hold_keys)
+        elif action == "wait":
+            request = WaitAction(duration=duration)
+        elif action == "take_screenshot":
+            request = TakeScreenshotAction()
+        elif action == "get_cursor_position":
+            request = GetCursorPositionAction()
+
         return await self._client.instance.computer(
             self.id,
-            action=action,
-            coordinate=coordinate,
-            text=text,
+            request=request,
             request_options=request_options,
         )
 
