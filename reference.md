@@ -336,13 +336,16 @@ client.instance.get_stream_url(
 
 ```python
 from scrapybara import Scrapybara
+from scrapybara.instance import Request_MoveMouse
 
 client = Scrapybara(
     api_key="YOUR_API_KEY",
 )
 client.instance.computer(
     instance_id="instance_id",
-    action="key",
+    request=Request_MoveMouse(
+        coordinates=[1],
+    ),
 )
 
 ```
@@ -367,23 +370,7 @@ client.instance.computer(
 <dl>
 <dd>
 
-**action:** `Action` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**coordinate:** `typing.Optional[typing.Sequence[int]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**text:** `typing.Optional[str]` 
+**request:** `Request` 
     
 </dd>
 </dl>
