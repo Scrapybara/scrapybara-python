@@ -765,7 +765,6 @@ class BaseInstance:
                 num_clicks=num_clicks,
                 hold_keys=hold_keys,
             )
-            print(request)
         elif action == "drag_mouse":
             request = Request_DragMouse(path=path, hold_keys=hold_keys)
         elif action == "scroll":
@@ -1091,7 +1090,6 @@ class AsyncBaseInstance:
             request = Request_Wait(duration=duration)
         elif action == "take_screenshot":
             request = Request_TakeScreenshot()
-            print("taking screenshot")
         elif action == "get_cursor_position":
             request = Request_GetCursorPosition()
 
