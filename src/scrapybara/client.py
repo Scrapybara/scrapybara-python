@@ -50,16 +50,8 @@ from .types import (
     StopBrowserResponse,
     StopInstanceResponse,
     ModifyBrowserAuthResponse,
-    ClickMouseAction,
-    MoveMouseAction,
-    DragMouseAction,
-    PressKeyAction,
-    ScrollAction,
-    TakeScreenshotAction,
-    TypeTextAction,
-    WaitAction,
-    GetCursorPositionAction,
 )
+
 from .types.act import (
     SingleActRequest,
     SingleActResponse,
@@ -79,7 +71,18 @@ from .types.act import (
     TokenUsage,
 )
 from .base_client import BaseClient, AsyncBaseClient
-from .instance.types import Command
+from .instance.types import (
+    Command,
+    Request_MoveMouse,
+    Request_ClickMouse,
+    Request_DragMouse,
+    Request_Scroll,
+    Request_PressKey,
+    Request_TypeText,
+    Request_Wait,
+    Request_TakeScreenshot,
+    Request_GetCursorPosition,
+)
 
 OMIT = typing.cast(typing.Any, ...)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -753,34 +756,35 @@ class BaseInstance:
         request: Any = None
 
         if action == "move_mouse":
-            request = MoveMouseAction(coordinates=coordinates, hold_keys=hold_keys)
+            request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
         elif action == "click_mouse":
-            request = ClickMouseAction(
+            request = Request_ClickMouse(
                 button=button,
                 click_type=click_type,
                 coordinates=coordinates,
                 num_clicks=num_clicks,
                 hold_keys=hold_keys,
             )
+            print(request)
         elif action == "drag_mouse":
-            request = DragMouseAction(path=path, hold_keys=hold_keys)
+            request = Request_DragMouse(path=path, hold_keys=hold_keys)
         elif action == "scroll":
-            request = ScrollAction(
+            request = Request_Scroll(
                 coordinates=coordinates,
                 delta_x=delta_x,
                 delta_y=delta_y,
                 hold_keys=hold_keys,
             )
         elif action == "press_key":
-            request = PressKeyAction(keys=keys, duration=duration)
+            request = Request_PressKey(keys=keys, duration=duration)
         elif action == "type_text":
-            request = TypeTextAction(text=text, hold_keys=hold_keys)
+            request = Request_TypeText(text=text, hold_keys=hold_keys)
         elif action == "wait":
-            request = WaitAction(duration=duration)
+            request = Request_Wait(duration=duration)
         elif action == "take_screenshot":
-            request = TakeScreenshotAction()
+            request = Request_TakeScreenshot()
         elif action == "get_cursor_position":
-            request = GetCursorPositionAction()
+            request = Request_GetCursorPosition()
 
         return self._client.instance.computer(
             self.id,
@@ -1061,9 +1065,9 @@ class AsyncBaseInstance:
         request: Any = None
 
         if action == "move_mouse":
-            request = MoveMouseAction(coordinates=coordinates, hold_keys=hold_keys)
+            request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
         elif action == "click_mouse":
-            request = ClickMouseAction(
+            request = Request_ClickMouse(
                 button=button,
                 click_type=click_type,
                 coordinates=coordinates,
@@ -1071,24 +1075,25 @@ class AsyncBaseInstance:
                 hold_keys=hold_keys,
             )
         elif action == "drag_mouse":
-            request = DragMouseAction(path=path, hold_keys=hold_keys)
+            request = Request_DragMouse(path=path, hold_keys=hold_keys)
         elif action == "scroll":
-            request = ScrollAction(
+            request = Request_Scroll(
                 coordinates=coordinates,
                 delta_x=delta_x,
                 delta_y=delta_y,
                 hold_keys=hold_keys,
             )
         elif action == "press_key":
-            request = PressKeyAction(keys=keys, duration=duration)
+            request = Request_PressKey(keys=keys, duration=duration)
         elif action == "type_text":
-            request = TypeTextAction(text=text, hold_keys=hold_keys)
+            request = Request_TypeText(text=text, hold_keys=hold_keys)
         elif action == "wait":
-            request = WaitAction(duration=duration)
+            request = Request_Wait(duration=duration)
         elif action == "take_screenshot":
-            request = TakeScreenshotAction()
+            request = Request_TakeScreenshot()
+            print("taking screenshot")
         elif action == "get_cursor_position":
-            request = GetCursorPositionAction()
+            request = Request_GetCursorPosition()
 
         return await self._client.instance.computer(
             self.id,
