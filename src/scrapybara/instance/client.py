@@ -11,8 +11,12 @@ from ..types.http_validation_error import HttpValidationError
 from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
 from ..types.instance_get_stream_url_response import InstanceGetStreamUrlResponse
-from .types.action import Action
+from .types.request import Request
+from ..types.computer_response import ComputerResponse
+from ..core.serialization import convert_and_respect_annotation_metadata
+from ..types.bash_response import BashResponse
 from .types.command import Command
+from ..types.edit_response import EditResponse
 from ..types.stop_instance_response import StopInstanceResponse
 from ..types.get_instance_response import GetInstanceResponse
 from ..core.client_wrapper import AsyncClientWrapper
@@ -138,65 +142,51 @@ class InstanceClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def computer(
-        self,
-        instance_id: str,
-        *,
-        action: Action,
-        coordinate: typing.Optional[typing.Sequence[int]] = OMIT,
-        text: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Optional[typing.Any]:
+        self, instance_id: str, *, request: Request, request_options: typing.Optional[RequestOptions] = None
+    ) -> ComputerResponse:
         """
         Parameters
         ----------
         instance_id : str
 
-        action : Action
-
-        coordinate : typing.Optional[typing.Sequence[int]]
-
-        text : typing.Optional[str]
+        request : Request
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.Optional[typing.Any]
+        ComputerResponse
             Successful Response
 
         Examples
         --------
         from scrapybara import Scrapybara
+        from scrapybara.instance import Request_MoveMouse
 
         client = Scrapybara(
             api_key="YOUR_API_KEY",
         )
         client.instance.computer(
             instance_id="instance_id",
-            action="key",
+            request=Request_MoveMouse(
+                coordinates=[1],
+            ),
         )
         """
         _response = self._client_wrapper.httpx_client.request(
             f"v1/instance/{jsonable_encoder(instance_id)}/computer",
             method="POST",
-            json={
-                "action": action,
-                "coordinate": coordinate,
-                "text": text,
-            },
-            headers={
-                "content-type": "application/json",
-            },
+            json=convert_and_respect_annotation_metadata(object_=request, annotation=Request, direction="write"),
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    typing.Optional[typing.Any],
+                    ComputerResponse,
                     parse_obj_as(
-                        type_=typing.Optional[typing.Any],  # type: ignore
+                        type_=ComputerResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -222,7 +212,7 @@ class InstanceClient:
         command: typing.Optional[str] = OMIT,
         restart: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Optional[typing.Any]:
+    ) -> BashResponse:
         """
         Parameters
         ----------
@@ -237,7 +227,7 @@ class InstanceClient:
 
         Returns
         -------
-        typing.Optional[typing.Any]
+        BashResponse
             Successful Response
 
         Examples
@@ -267,9 +257,9 @@ class InstanceClient:
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    typing.Optional[typing.Any],
+                    BashResponse,
                     parse_obj_as(
-                        type_=typing.Optional[typing.Any],  # type: ignore
+                        type_=BashResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -300,7 +290,7 @@ class InstanceClient:
         new_str: typing.Optional[str] = OMIT,
         insert_line: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Optional[typing.Any]:
+    ) -> EditResponse:
         """
         Parameters
         ----------
@@ -325,7 +315,7 @@ class InstanceClient:
 
         Returns
         -------
-        typing.Optional[typing.Any]
+        EditResponse
             Successful Response
 
         Examples
@@ -362,9 +352,9 @@ class InstanceClient:
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    typing.Optional[typing.Any],
+                    EditResponse,
                     parse_obj_as(
-                        type_=typing.Optional[typing.Any],  # type: ignore
+                        type_=EditResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -694,31 +684,21 @@ class AsyncInstanceClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def computer(
-        self,
-        instance_id: str,
-        *,
-        action: Action,
-        coordinate: typing.Optional[typing.Sequence[int]] = OMIT,
-        text: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Optional[typing.Any]:
+        self, instance_id: str, *, request: Request, request_options: typing.Optional[RequestOptions] = None
+    ) -> ComputerResponse:
         """
         Parameters
         ----------
         instance_id : str
 
-        action : Action
-
-        coordinate : typing.Optional[typing.Sequence[int]]
-
-        text : typing.Optional[str]
+        request : Request
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.Optional[typing.Any]
+        ComputerResponse
             Successful Response
 
         Examples
@@ -726,6 +706,7 @@ class AsyncInstanceClient:
         import asyncio
 
         from scrapybara import AsyncScrapybara
+        from scrapybara.instance import Request_MoveMouse
 
         client = AsyncScrapybara(
             api_key="YOUR_API_KEY",
@@ -735,7 +716,9 @@ class AsyncInstanceClient:
         async def main() -> None:
             await client.instance.computer(
                 instance_id="instance_id",
-                action="key",
+                request=Request_MoveMouse(
+                    coordinates=[1],
+                ),
             )
 
 
@@ -744,23 +727,16 @@ class AsyncInstanceClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"v1/instance/{jsonable_encoder(instance_id)}/computer",
             method="POST",
-            json={
-                "action": action,
-                "coordinate": coordinate,
-                "text": text,
-            },
-            headers={
-                "content-type": "application/json",
-            },
+            json=convert_and_respect_annotation_metadata(object_=request, annotation=Request, direction="write"),
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    typing.Optional[typing.Any],
+                    ComputerResponse,
                     parse_obj_as(
-                        type_=typing.Optional[typing.Any],  # type: ignore
+                        type_=ComputerResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -786,7 +762,7 @@ class AsyncInstanceClient:
         command: typing.Optional[str] = OMIT,
         restart: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Optional[typing.Any]:
+    ) -> BashResponse:
         """
         Parameters
         ----------
@@ -801,7 +777,7 @@ class AsyncInstanceClient:
 
         Returns
         -------
-        typing.Optional[typing.Any]
+        BashResponse
             Successful Response
 
         Examples
@@ -839,9 +815,9 @@ class AsyncInstanceClient:
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    typing.Optional[typing.Any],
+                    BashResponse,
                     parse_obj_as(
-                        type_=typing.Optional[typing.Any],  # type: ignore
+                        type_=BashResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -872,7 +848,7 @@ class AsyncInstanceClient:
         new_str: typing.Optional[str] = OMIT,
         insert_line: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Optional[typing.Any]:
+    ) -> EditResponse:
         """
         Parameters
         ----------
@@ -897,7 +873,7 @@ class AsyncInstanceClient:
 
         Returns
         -------
-        typing.Optional[typing.Any]
+        EditResponse
             Successful Response
 
         Examples
@@ -942,9 +918,9 @@ class AsyncInstanceClient:
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    typing.Optional[typing.Any],
+                    EditResponse,
                     parse_obj_as(
-                        type_=typing.Optional[typing.Any],  # type: ignore
+                        type_=EditResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

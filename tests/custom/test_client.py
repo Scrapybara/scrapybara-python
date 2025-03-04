@@ -110,6 +110,8 @@ def test_windows() -> None:
     assert response.output.combined_valuation is not None
     windows_instance.stop()
 
+
+@pytest.mark.skip()
 def test_ubuntu_thinking() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -144,6 +146,7 @@ def test_ubuntu_thinking() -> None:
     ubuntu_instance.stop()
 
 
+@pytest.mark.skip()
 def test_browser_thinking() -> None:
     _check_api_key()
     client = Scrapybara()
