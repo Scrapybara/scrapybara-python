@@ -32,9 +32,7 @@ UBUNTU_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 * Read through web pages thoroughly by scrolling down till you have gathered enough info
 * Be concise!
 </IMPORTANT>"""
-"""DEPRECATED: Please import prompts from their respective models instead:
-
-from scrapybara.anthropic import UBUNTU_SYSTEM_PROMPT"""
+"""DEPRECATED — Please import prompts from their respective models instead: `from scrapybara.anthropic import UBUNTU_SYSTEM_PROMPT`"""
 
 
 BROWSER_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
@@ -61,9 +59,7 @@ BROWSER_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 * Read through web pages thoroughly by scrolling down till you have gathered enough info
 * Be concise!
 </IMPORTANT>"""
-"""DEPRECATED: Please import prompts from their respective models instead:
-
-from scrapybara.anthropic import BROWSER_SYSTEM_PROMPT"""
+"""DEPRECATED — Please import prompts from their respective models instead: `from scrapybara.anthropic import BROWSER_SYSTEM_PROMPT`"""
 
 
 WINDOWS_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
@@ -91,6 +87,4 @@ WINDOWS_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 * Read through web pages thoroughly by scrolling down till you have gathered enough info
 * Be concise!
 </IMPORTANT>"""
-"""DEPRECATED: Please import prompts from their respective models instead:
-
-from scrapybara.anthropic import WINDOWS_SYSTEM_PROMPT"""
+"""DEPRECATED — Please import prompts from their respective models instead: `from scrapybara.anthropic import WINDOWS_SYSTEM_PROMPT`"""
