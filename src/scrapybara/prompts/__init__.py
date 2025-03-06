@@ -17,7 +17,6 @@ UBUNTU_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
   - Scroll to ensure you see everything
 * When interacting with a field, always clear the field first using "ctrl+A" and "delete"
   - Take an extra screenshot after clicking "enter" to confirm the field is properly submitted and move the mouse to the next field
-* When using str_replace_editor, create files in the ~/ directory unless instructed otherwise
 * Computer function calls take time, string together calls when possible
 * You are allowed to take actions on behalf of the user on sites that are authenticated
 * If the user asks you to access a site, assume that the user has already authenticated

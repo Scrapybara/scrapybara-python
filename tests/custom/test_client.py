@@ -3,10 +3,10 @@ from scrapybara import Scrapybara
 import os
 import pytest
 
-from scrapybara.anthropic import Anthropic
-from scrapybara.prompts import (
-    BROWSER_SYSTEM_PROMPT,
+from scrapybara.anthropic import (
+    Anthropic,
     UBUNTU_SYSTEM_PROMPT,
+    BROWSER_SYSTEM_PROMPT,
     WINDOWS_SYSTEM_PROMPT,
 )
 from scrapybara.tools import BashTool, ComputerTool, EditTool
