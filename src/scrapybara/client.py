@@ -1667,6 +1667,7 @@ class Scrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> ActResponse[SchemaT]:
         """
@@ -1682,6 +1683,7 @@ class Scrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Returns:
@@ -1706,6 +1708,7 @@ class Scrapybara:
             on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
+            images_to_keep=images_to_keep,
             request_options=request_options,
         ):
             steps.append(step)
@@ -1743,6 +1746,8 @@ class Scrapybara:
                 total_tokens=total_tokens,
             )
 
+        _filter_images(result_messages, images_to_keep)
+
         return ActResponse(
             messages=result_messages, steps=steps, text=text, output=output, usage=usage
         )
@@ -1759,6 +1764,7 @@ class Scrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> Generator[Step, None, None]:
         """
@@ -1774,6 +1780,7 @@ class Scrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Yields:
@@ -1813,6 +1820,8 @@ class Scrapybara:
         while True:
             # Convert tools to ApiTools
             api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
+            
+            _filter_images(current_messages, images_to_keep)
 
             request = SingleActRequest(
                 model=model,
@@ -2076,6 +2085,7 @@ class AsyncScrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> ActResponse[SchemaT]:
         """
@@ -2091,6 +2101,7 @@ class AsyncScrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Returns:
@@ -2112,9 +2123,10 @@ class AsyncScrapybara:
             prompt=prompt,
             messages=messages,
             schema=schema,
+            on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
-            on_step=on_step,
+            images_to_keep=images_to_keep,
             request_options=request_options,
         ):
             steps.append(step)
@@ -2152,6 +2164,8 @@ class AsyncScrapybara:
                 total_tokens=total_tokens,
             )
 
+        _filter_images(result_messages, images_to_keep)
+
         return ActResponse(
             messages=result_messages, steps=steps, text=text, output=output, usage=usage
         )
@@ -2168,6 +2182,7 @@ class AsyncScrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncGenerator[Step, None]:
         """
@@ -2183,6 +2198,7 @@ class AsyncScrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Yields:
@@ -2222,6 +2238,8 @@ class AsyncScrapybara:
         while True:
             # Convert tools to ApiTools
             api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
+
+            _filter_images(current_messages, images_to_keep)
 
             request = SingleActRequest(
                 model=model,
@@ -2321,7 +2339,6 @@ class AsyncScrapybara:
             if not has_tool_calls or has_structured_output:
                 break
 
-
 def _create_request_from_action(action):
     """Helper function to create a request object from an action object."""
     if isinstance(action, MoveMouseAction):
@@ -2369,3 +2386,31 @@ def _create_request_from_action(action):
         return Request_GetCursorPosition()
     else:
         return None
+
+def _filter_images(messages: List[Message], images_to_keep: int):
+    """
+    Helper function to filter base64 images in messages, keeping only the latest ones up to specified limit.
+    
+    Args:
+        messages: List of messages to filter
+        images_to_keep: Maximum number of images to keep
+    """
+    images_kept = 0
+    
+    for i in range(len(messages) - 1, -1, -1):
+        msg = messages[i]
+        
+        if isinstance(msg, ToolMessage) and msg.content:
+            for j in range(len(msg.content) - 1, -1, -1):
+                tool_result = msg.content[j]
+                
+                if (tool_result and 
+                    hasattr(tool_result, "result") and 
+                    tool_result.result and 
+                    isinstance(tool_result.result, dict) and
+                    "base_64_image" in tool_result.result):
+                    
+                    if images_kept < images_to_keep:
+                        images_kept += 1
+                    else:
+                        del tool_result.result["base_64_image"]
