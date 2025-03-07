@@ -1746,7 +1746,7 @@ class Scrapybara:
                 total_tokens=total_tokens,
             )
 
-        _filter_images(result_messages, images_to_keep)
+        _filter_images(result_messages, images_to_keep or 4)
 
         return ActResponse(
             messages=result_messages, steps=steps, text=text, output=output, usage=usage
@@ -1821,7 +1821,7 @@ class Scrapybara:
             # Convert tools to ApiTools
             api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
             
-            _filter_images(current_messages, images_to_keep)
+            _filter_images(current_messages, images_to_keep or 4)
 
             request = SingleActRequest(
                 model=model,
@@ -2164,7 +2164,7 @@ class AsyncScrapybara:
                 total_tokens=total_tokens,
             )
 
-        _filter_images(result_messages, images_to_keep)
+        _filter_images(result_messages, images_to_keep or 4)
 
         return ActResponse(
             messages=result_messages, steps=steps, text=text, output=output, usage=usage
@@ -2239,7 +2239,7 @@ class AsyncScrapybara:
             # Convert tools to ApiTools
             api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
 
-            _filter_images(current_messages, images_to_keep)
+            _filter_images(current_messages, images_to_keep or 4)
 
             request = SingleActRequest(
                 model=model,
@@ -2387,7 +2387,7 @@ def _create_request_from_action(action):
     else:
         return None
 
-def _filter_images(messages: List[Message], images_to_keep: Optional[int] = 4):
+def _filter_images(messages: List[Message], images_to_keep: int):
     """
     Helper function to filter base64 images in messages, keeping only the latest ones up to specified limit.
     
