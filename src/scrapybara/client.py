@@ -83,6 +83,17 @@ from .instance.types import (
     Request_TakeScreenshot,
     Request_GetCursorPosition,
 )
+from .types import (
+    MoveMouseAction,
+    ClickMouseAction,
+    DragMouseAction,
+    ScrollAction,
+    PressKeyAction,
+    TypeTextAction,
+    WaitAction,
+    TakeScreenshotAction,
+    GetCursorPositionAction,
+)
 
 OMIT = typing.cast(typing.Any, ...)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -650,6 +661,78 @@ class BaseInstance:
     def computer(
         self,
         *,
+        action: MoveMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: ClickMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: DragMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: ScrollAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: PressKeyAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: TypeTextAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: WaitAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: TakeScreenshotAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: GetCursorPositionAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
         action: Literal["move_mouse"],
         coordinates: List[int],
         hold_keys: Optional[List[str]] = None,
@@ -739,7 +822,18 @@ class BaseInstance:
     def computer(
         self,
         *,
-        action: Action,
+        action: Union[
+            Action,
+            MoveMouseAction,
+            ClickMouseAction,
+            DragMouseAction,
+            ScrollAction,
+            PressKeyAction,
+            TypeTextAction,
+            WaitAction,
+            TakeScreenshotAction,
+            GetCursorPositionAction,
+        ],
         button: Optional[Button] = None,
         click_type: Optional[ClickMouseActionClickType] = "click",
         coordinates: Optional[List[int]] = None,
@@ -753,37 +847,82 @@ class BaseInstance:
         duration: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse:
+        """Control computer actions like mouse movements, clicks, and keyboard input.
+        
+        This method supports two ways of specifying actions:
+        
+        1. Using action objects (recommended):
+           ```python
+           click_action = ClickMouseAction(
+               button="left",
+               coordinates=[500, 500]
+           )
+           instance.computer(action=click_action)
+           ```
+        
+        2. Using string action types with parameters (legacy):
+           ```python
+           instance.computer(
+               action="click_mouse",
+               button="left",
+               coordinates=[500, 500]
+           )
+           ```
+        
+        Args:
+            action: Either a string action type or an action object
+            button: The mouse button to use (for click actions)
+            click_type: The type of click to perform
+            coordinates: Coordinates for mouse actions
+            delta_x: X delta for scroll actions
+            delta_y: Y delta for scroll actions
+            num_clicks: Number of clicks to perform
+            hold_keys: Keys to hold during the action
+            path: Path for drag mouse actions
+            keys: Keys to press
+            text: Text to type
+            duration: Duration for wait actions
+            request_options: Options for the request
+            
+        Returns:
+            ComputerResponse: Response from the action
+        """
         request: Any = None
 
-        if action == "move_mouse":
-            request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
-        elif action == "click_mouse":
-            request = Request_ClickMouse(
-                button=button,
-                click_type=click_type,
-                coordinates=coordinates,
-                num_clicks=num_clicks,
-                hold_keys=hold_keys,
-            )
-        elif action == "drag_mouse":
-            request = Request_DragMouse(path=path, hold_keys=hold_keys)
-        elif action == "scroll":
-            request = Request_Scroll(
-                coordinates=coordinates,
-                delta_x=delta_x,
-                delta_y=delta_y,
-                hold_keys=hold_keys,
-            )
-        elif action == "press_key":
-            request = Request_PressKey(keys=keys, duration=duration)
-        elif action == "type_text":
-            request = Request_TypeText(text=text, hold_keys=hold_keys)
-        elif action == "wait":
-            request = Request_Wait(duration=duration)
-        elif action == "take_screenshot":
-            request = Request_TakeScreenshot()
-        elif action == "get_cursor_position":
-            request = Request_GetCursorPosition()
+        # Check if action is an action object
+        request = _create_request_from_action(action)
+        
+        # If it wasn't an object or the object wasn't recognized, use the legacy string-based approach
+        if request is None:
+            if action == "move_mouse":
+                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
+            elif action == "click_mouse":
+                request = Request_ClickMouse(
+                    button=button,
+                    click_type=click_type,
+                    coordinates=coordinates,
+                    num_clicks=num_clicks,
+                    hold_keys=hold_keys,
+                )
+            elif action == "drag_mouse":
+                request = Request_DragMouse(path=path, hold_keys=hold_keys)
+            elif action == "scroll":
+                request = Request_Scroll(
+                    coordinates=coordinates,
+                    delta_x=delta_x,
+                    delta_y=delta_y,
+                    hold_keys=hold_keys,
+                )
+            elif action == "press_key":
+                request = Request_PressKey(keys=keys, duration=duration)
+            elif action == "type_text":
+                request = Request_TypeText(text=text, hold_keys=hold_keys)
+            elif action == "wait":
+                request = Request_Wait(duration=duration)
+            elif action == "take_screenshot":
+                request = Request_TakeScreenshot()
+            elif action == "get_cursor_position":
+                request = Request_GetCursorPosition()
 
         return self._client.instance.computer(
             self.id,
@@ -958,6 +1097,78 @@ class AsyncBaseInstance:
     async def computer(
         self,
         *,
+        action: MoveMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: ClickMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: DragMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: ScrollAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: PressKeyAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: TypeTextAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: WaitAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: TakeScreenshotAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: GetCursorPositionAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
         action: Literal["move_mouse"],
         coordinates: List[int],
         hold_keys: Optional[List[str]] = None,
@@ -1047,7 +1258,18 @@ class AsyncBaseInstance:
     async def computer(
         self,
         *,
-        action: Action,
+        action: Union[
+            Action,
+            MoveMouseAction,
+            ClickMouseAction,
+            DragMouseAction,
+            ScrollAction,
+            PressKeyAction,
+            TypeTextAction,
+            WaitAction,
+            TakeScreenshotAction,
+            GetCursorPositionAction,
+        ],
         button: Optional[Button] = None,
         click_type: Optional[ClickMouseActionClickType] = "click",
         coordinates: Optional[List[int]] = None,
@@ -1061,37 +1283,82 @@ class AsyncBaseInstance:
         duration: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse:
+        """Control computer actions like mouse movements, clicks, and keyboard input.
+        
+        This method supports two ways of specifying actions:
+        
+        1. Using action objects (recommended):
+           ```python
+           click_action = ClickMouseAction(
+               button="left",
+               coordinates=[500, 500]
+           )
+           await instance.computer(action=click_action)
+           ```
+        
+        2. Using string action types with parameters (legacy):
+           ```python
+           await instance.computer(
+               action="click_mouse",
+               button="left",
+               coordinates=[500, 500]
+           )
+           ```
+        
+        Args:
+            action: Either a string action type or an action object
+            button: The mouse button to use (for click actions)
+            click_type: The type of click to perform
+            coordinates: Coordinates for mouse actions
+            delta_x: X delta for scroll actions
+            delta_y: Y delta for scroll actions
+            num_clicks: Number of clicks to perform
+            hold_keys: Keys to hold during the action
+            path: Path for drag mouse actions
+            keys: Keys to press
+            text: Text to type
+            duration: Duration for wait actions
+            request_options: Options for the request
+            
+        Returns:
+            ComputerResponse: Response from the action
+        """
         request: Any = None
 
-        if action == "move_mouse":
-            request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
-        elif action == "click_mouse":
-            request = Request_ClickMouse(
-                button=button,
-                click_type=click_type,
-                coordinates=coordinates,
-                num_clicks=num_clicks,
-                hold_keys=hold_keys,
-            )
-        elif action == "drag_mouse":
-            request = Request_DragMouse(path=path, hold_keys=hold_keys)
-        elif action == "scroll":
-            request = Request_Scroll(
-                coordinates=coordinates,
-                delta_x=delta_x,
-                delta_y=delta_y,
-                hold_keys=hold_keys,
-            )
-        elif action == "press_key":
-            request = Request_PressKey(keys=keys, duration=duration)
-        elif action == "type_text":
-            request = Request_TypeText(text=text, hold_keys=hold_keys)
-        elif action == "wait":
-            request = Request_Wait(duration=duration)
-        elif action == "take_screenshot":
-            request = Request_TakeScreenshot()
-        elif action == "get_cursor_position":
-            request = Request_GetCursorPosition()
+        # Check if action is an action object
+        request = _create_request_from_action(action)
+        
+        # If it wasn't an object or the object wasn't recognized, use the legacy string-based approach
+        if request is None:
+            if action == "move_mouse":
+                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
+            elif action == "click_mouse":
+                request = Request_ClickMouse(
+                    button=button,
+                    click_type=click_type,
+                    coordinates=coordinates,
+                    num_clicks=num_clicks,
+                    hold_keys=hold_keys,
+                )
+            elif action == "drag_mouse":
+                request = Request_DragMouse(path=path, hold_keys=hold_keys)
+            elif action == "scroll":
+                request = Request_Scroll(
+                    coordinates=coordinates,
+                    delta_x=delta_x,
+                    delta_y=delta_y,
+                    hold_keys=hold_keys,
+                )
+            elif action == "press_key":
+                request = Request_PressKey(keys=keys, duration=duration)
+            elif action == "type_text":
+                request = Request_TypeText(text=text, hold_keys=hold_keys)
+            elif action == "wait":
+                request = Request_Wait(duration=duration)
+            elif action == "take_screenshot":
+                request = Request_TakeScreenshot()
+            elif action == "get_cursor_position":
+                request = Request_GetCursorPosition()
 
         return await self._client.instance.computer(
             self.id,
@@ -2053,3 +2320,52 @@ class AsyncScrapybara:
 
             if not has_tool_calls or has_structured_output:
                 break
+
+
+def _create_request_from_action(action):
+    """Helper function to create a request object from an action object."""
+    if isinstance(action, MoveMouseAction):
+        return Request_MoveMouse(
+            coordinates=action.coordinates, 
+            hold_keys=action.hold_keys
+        )
+    elif isinstance(action, ClickMouseAction):
+        return Request_ClickMouse(
+            button=action.button,
+            click_type=action.click_type,
+            coordinates=action.coordinates,
+            num_clicks=action.num_clicks,
+            hold_keys=action.hold_keys,
+        )
+    elif isinstance(action, DragMouseAction):
+        return Request_DragMouse(
+            path=action.path, 
+            hold_keys=action.hold_keys
+        )
+    elif isinstance(action, ScrollAction):
+        return Request_Scroll(
+            coordinates=action.coordinates,
+            delta_x=action.delta_x,
+            delta_y=action.delta_y,
+            hold_keys=action.hold_keys,
+        )
+    elif isinstance(action, PressKeyAction):
+        return Request_PressKey(
+            keys=action.keys, 
+            duration=action.duration
+        )
+    elif isinstance(action, TypeTextAction):
+        return Request_TypeText(
+            text=action.text, 
+            hold_keys=action.hold_keys
+        )
+    elif isinstance(action, WaitAction):
+        return Request_Wait(
+            duration=action.duration
+        )
+    elif isinstance(action, TakeScreenshotAction):
+        return Request_TakeScreenshot()
+    elif isinstance(action, GetCursorPositionAction):
+        return Request_GetCursorPosition()
+    else:
+        return None
