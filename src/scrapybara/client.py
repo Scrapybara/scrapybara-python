@@ -2387,7 +2387,7 @@ def _create_request_from_action(action):
     else:
         return None
 
-def _filter_images(messages: List[Message], images_to_keep: int):
+def _filter_images(messages: List[Message], images_to_keep: Optional[int] = 4):
     """
     Helper function to filter base64 images in messages, keeping only the latest ones up to specified limit.
     
