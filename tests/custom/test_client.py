@@ -178,6 +178,6 @@ def test_browser_thinking() -> None:
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
-    test_ubuntu_thinking()
-    test_browser_thinking()
+    # test_ubuntu_thinking()
+    # test_browser_thinking()
     # test_windows()

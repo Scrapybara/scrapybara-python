@@ -7,7 +7,7 @@ import pydantic
 
 
 class ScrollAction(UniversalBaseModel):
-    coordinates: typing.List[int]
+    coordinates: typing.Optional[typing.List[int]] = None
     delta_x: typing.Optional[float] = None
     delta_y: typing.Optional[float] = None
     hold_keys: typing.Optional[typing.List[str]] = None

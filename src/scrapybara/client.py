@@ -83,6 +83,17 @@ from .instance.types import (
     Request_TakeScreenshot,
     Request_GetCursorPosition,
 )
+from .types import (
+    MoveMouseAction,
+    ClickMouseAction,
+    DragMouseAction,
+    ScrollAction,
+    PressKeyAction,
+    TypeTextAction,
+    WaitAction,
+    TakeScreenshotAction,
+    GetCursorPositionAction,
+)
 
 OMIT = typing.cast(typing.Any, ...)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -650,6 +661,78 @@ class BaseInstance:
     def computer(
         self,
         *,
+        action: MoveMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: ClickMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: DragMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: ScrollAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: PressKeyAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: TypeTextAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: WaitAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: TakeScreenshotAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
+        action: GetCursorPositionAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    def computer(
+        self,
+        *,
         action: Literal["move_mouse"],
         coordinates: List[int],
         hold_keys: Optional[List[str]] = None,
@@ -684,7 +767,7 @@ class BaseInstance:
         self,
         *,
         action: Literal["scroll"],
-        coordinates: List[int],
+        coordinates: Optional[List[int]] = None,
         delta_x: Optional[float] = 0,
         delta_y: Optional[float] = 0,
         hold_keys: Optional[List[str]] = None,
@@ -739,7 +822,18 @@ class BaseInstance:
     def computer(
         self,
         *,
-        action: Action,
+        action: Union[
+            Action,
+            MoveMouseAction,
+            ClickMouseAction,
+            DragMouseAction,
+            ScrollAction,
+            PressKeyAction,
+            TypeTextAction,
+            WaitAction,
+            TakeScreenshotAction,
+            GetCursorPositionAction,
+        ],
         button: Optional[Button] = None,
         click_type: Optional[ClickMouseActionClickType] = "click",
         coordinates: Optional[List[int]] = None,
@@ -753,37 +847,82 @@ class BaseInstance:
         duration: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse:
+        """Control computer actions like mouse movements, clicks, and keyboard input.
+        
+        This method supports two ways of specifying actions:
+        
+        1. Using action objects (recommended):
+           ```python
+           click_action = ClickMouseAction(
+               button="left",
+               coordinates=[500, 500]
+           )
+           instance.computer(action=click_action)
+           ```
+        
+        2. Using string action types with parameters (legacy):
+           ```python
+           instance.computer(
+               action="click_mouse",
+               button="left",
+               coordinates=[500, 500]
+           )
+           ```
+        
+        Args:
+            action: Either a string action type or an action object
+            button: The mouse button to use (for click actions)
+            click_type: The type of click to perform
+            coordinates: Coordinates for mouse actions
+            delta_x: X delta for scroll actions
+            delta_y: Y delta for scroll actions
+            num_clicks: Number of clicks to perform
+            hold_keys: Keys to hold during the action
+            path: Path for drag mouse actions
+            keys: Keys to press
+            text: Text to type
+            duration: Duration for wait actions
+            request_options: Options for the request
+            
+        Returns:
+            ComputerResponse: Response from the action
+        """
         request: Any = None
 
-        if action == "move_mouse":
-            request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
-        elif action == "click_mouse":
-            request = Request_ClickMouse(
-                button=button,
-                click_type=click_type,
-                coordinates=coordinates,
-                num_clicks=num_clicks,
-                hold_keys=hold_keys,
-            )
-        elif action == "drag_mouse":
-            request = Request_DragMouse(path=path, hold_keys=hold_keys)
-        elif action == "scroll":
-            request = Request_Scroll(
-                coordinates=coordinates,
-                delta_x=delta_x,
-                delta_y=delta_y,
-                hold_keys=hold_keys,
-            )
-        elif action == "press_key":
-            request = Request_PressKey(keys=keys, duration=duration)
-        elif action == "type_text":
-            request = Request_TypeText(text=text, hold_keys=hold_keys)
-        elif action == "wait":
-            request = Request_Wait(duration=duration)
-        elif action == "take_screenshot":
-            request = Request_TakeScreenshot()
-        elif action == "get_cursor_position":
-            request = Request_GetCursorPosition()
+        # Check if action is an action object
+        request = _create_request_from_action(action)
+        
+        # If it wasn't an object or the object wasn't recognized, use the legacy string-based approach
+        if request is None:
+            if action == "move_mouse":
+                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
+            elif action == "click_mouse":
+                request = Request_ClickMouse(
+                    button=button,
+                    click_type=click_type,
+                    coordinates=coordinates,
+                    num_clicks=num_clicks,
+                    hold_keys=hold_keys,
+                )
+            elif action == "drag_mouse":
+                request = Request_DragMouse(path=path, hold_keys=hold_keys)
+            elif action == "scroll":
+                request = Request_Scroll(
+                    coordinates=coordinates,
+                    delta_x=delta_x,
+                    delta_y=delta_y,
+                    hold_keys=hold_keys,
+                )
+            elif action == "press_key":
+                request = Request_PressKey(keys=keys, duration=duration)
+            elif action == "type_text":
+                request = Request_TypeText(text=text, hold_keys=hold_keys)
+            elif action == "wait":
+                request = Request_Wait(duration=duration)
+            elif action == "take_screenshot":
+                request = Request_TakeScreenshot()
+            elif action == "get_cursor_position":
+                request = Request_GetCursorPosition()
 
         return self._client.instance.computer(
             self.id,
@@ -958,6 +1097,78 @@ class AsyncBaseInstance:
     async def computer(
         self,
         *,
+        action: MoveMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: ClickMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: DragMouseAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: ScrollAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: PressKeyAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: TypeTextAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: WaitAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: TakeScreenshotAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
+        action: GetCursorPositionAction,
+        request_options: Optional[RequestOptions] = None,
+    ) -> ComputerResponse: ...
+
+    @overload
+    async def computer(
+        self,
+        *,
         action: Literal["move_mouse"],
         coordinates: List[int],
         hold_keys: Optional[List[str]] = None,
@@ -992,7 +1203,7 @@ class AsyncBaseInstance:
         self,
         *,
         action: Literal["scroll"],
-        coordinates: List[int],
+        coordinates: Optional[List[int]] = None,
         delta_x: Optional[float] = 0,
         delta_y: Optional[float] = 0,
         hold_keys: Optional[List[str]] = None,
@@ -1047,7 +1258,18 @@ class AsyncBaseInstance:
     async def computer(
         self,
         *,
-        action: Action,
+        action: Union[
+            Action,
+            MoveMouseAction,
+            ClickMouseAction,
+            DragMouseAction,
+            ScrollAction,
+            PressKeyAction,
+            TypeTextAction,
+            WaitAction,
+            TakeScreenshotAction,
+            GetCursorPositionAction,
+        ],
         button: Optional[Button] = None,
         click_type: Optional[ClickMouseActionClickType] = "click",
         coordinates: Optional[List[int]] = None,
@@ -1061,37 +1283,82 @@ class AsyncBaseInstance:
         duration: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse:
+        """Control computer actions like mouse movements, clicks, and keyboard input.
+        
+        This method supports two ways of specifying actions:
+        
+        1. Using action objects (recommended):
+           ```python
+           click_action = ClickMouseAction(
+               button="left",
+               coordinates=[500, 500]
+           )
+           await instance.computer(action=click_action)
+           ```
+        
+        2. Using string action types with parameters (legacy):
+           ```python
+           await instance.computer(
+               action="click_mouse",
+               button="left",
+               coordinates=[500, 500]
+           )
+           ```
+        
+        Args:
+            action: Either a string action type or an action object
+            button: The mouse button to use (for click actions)
+            click_type: The type of click to perform
+            coordinates: Coordinates for mouse actions
+            delta_x: X delta for scroll actions
+            delta_y: Y delta for scroll actions
+            num_clicks: Number of clicks to perform
+            hold_keys: Keys to hold during the action
+            path: Path for drag mouse actions
+            keys: Keys to press
+            text: Text to type
+            duration: Duration for wait actions
+            request_options: Options for the request
+            
+        Returns:
+            ComputerResponse: Response from the action
+        """
         request: Any = None
 
-        if action == "move_mouse":
-            request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
-        elif action == "click_mouse":
-            request = Request_ClickMouse(
-                button=button,
-                click_type=click_type,
-                coordinates=coordinates,
-                num_clicks=num_clicks,
-                hold_keys=hold_keys,
-            )
-        elif action == "drag_mouse":
-            request = Request_DragMouse(path=path, hold_keys=hold_keys)
-        elif action == "scroll":
-            request = Request_Scroll(
-                coordinates=coordinates,
-                delta_x=delta_x,
-                delta_y=delta_y,
-                hold_keys=hold_keys,
-            )
-        elif action == "press_key":
-            request = Request_PressKey(keys=keys, duration=duration)
-        elif action == "type_text":
-            request = Request_TypeText(text=text, hold_keys=hold_keys)
-        elif action == "wait":
-            request = Request_Wait(duration=duration)
-        elif action == "take_screenshot":
-            request = Request_TakeScreenshot()
-        elif action == "get_cursor_position":
-            request = Request_GetCursorPosition()
+        # Check if action is an action object
+        request = _create_request_from_action(action)
+        
+        # If it wasn't an object or the object wasn't recognized, use the legacy string-based approach
+        if request is None:
+            if action == "move_mouse":
+                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
+            elif action == "click_mouse":
+                request = Request_ClickMouse(
+                    button=button,
+                    click_type=click_type,
+                    coordinates=coordinates,
+                    num_clicks=num_clicks,
+                    hold_keys=hold_keys,
+                )
+            elif action == "drag_mouse":
+                request = Request_DragMouse(path=path, hold_keys=hold_keys)
+            elif action == "scroll":
+                request = Request_Scroll(
+                    coordinates=coordinates,
+                    delta_x=delta_x,
+                    delta_y=delta_y,
+                    hold_keys=hold_keys,
+                )
+            elif action == "press_key":
+                request = Request_PressKey(keys=keys, duration=duration)
+            elif action == "type_text":
+                request = Request_TypeText(text=text, hold_keys=hold_keys)
+            elif action == "wait":
+                request = Request_Wait(duration=duration)
+            elif action == "take_screenshot":
+                request = Request_TakeScreenshot()
+            elif action == "get_cursor_position":
+                request = Request_GetCursorPosition()
 
         return await self._client.instance.computer(
             self.id,
@@ -1400,6 +1667,7 @@ class Scrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> ActResponse[SchemaT]:
         """
@@ -1415,6 +1683,7 @@ class Scrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Returns:
@@ -1439,6 +1708,7 @@ class Scrapybara:
             on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
+            images_to_keep=images_to_keep,
             request_options=request_options,
         ):
             steps.append(step)
@@ -1476,6 +1746,8 @@ class Scrapybara:
                 total_tokens=total_tokens,
             )
 
+        _filter_images(result_messages, images_to_keep or 4)
+
         return ActResponse(
             messages=result_messages, steps=steps, text=text, output=output, usage=usage
         )
@@ -1492,6 +1764,7 @@ class Scrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> Generator[Step, None, None]:
         """
@@ -1507,6 +1780,7 @@ class Scrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Yields:
@@ -1546,6 +1820,8 @@ class Scrapybara:
         while True:
             # Convert tools to ApiTools
             api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
+            
+            _filter_images(current_messages, images_to_keep or 4)
 
             request = SingleActRequest(
                 model=model,
@@ -1809,6 +2085,7 @@ class AsyncScrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> ActResponse[SchemaT]:
         """
@@ -1824,6 +2101,7 @@ class AsyncScrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Returns:
@@ -1845,9 +2123,10 @@ class AsyncScrapybara:
             prompt=prompt,
             messages=messages,
             schema=schema,
+            on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
-            on_step=on_step,
+            images_to_keep=images_to_keep,
             request_options=request_options,
         ):
             steps.append(step)
@@ -1885,6 +2164,8 @@ class AsyncScrapybara:
                 total_tokens=total_tokens,
             )
 
+        _filter_images(result_messages, images_to_keep or 4)
+
         return ActResponse(
             messages=result_messages, steps=steps, text=text, output=output, usage=usage
         )
@@ -1901,6 +2182,7 @@ class AsyncScrapybara:
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        images_to_keep: Optional[int] = 4,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncGenerator[Step, None]:
         """
@@ -1916,6 +2198,7 @@ class AsyncScrapybara:
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
+            images_to_keep: Optional maximum number of most recent images to retain in messages and model call, defaults to 4
             request_options: Optional request configuration
 
         Yields:
@@ -1955,6 +2238,8 @@ class AsyncScrapybara:
         while True:
             # Convert tools to ApiTools
             api_tools = [ApiTool.from_tool(tool) for tool in current_tools]
+
+            _filter_images(current_messages, images_to_keep or 4)
 
             request = SingleActRequest(
                 model=model,
@@ -2053,3 +2338,79 @@ class AsyncScrapybara:
 
             if not has_tool_calls or has_structured_output:
                 break
+
+def _create_request_from_action(action):
+    """Helper function to create a request object from an action object."""
+    if isinstance(action, MoveMouseAction):
+        return Request_MoveMouse(
+            coordinates=action.coordinates, 
+            hold_keys=action.hold_keys
+        )
+    elif isinstance(action, ClickMouseAction):
+        return Request_ClickMouse(
+            button=action.button,
+            click_type=action.click_type,
+            coordinates=action.coordinates,
+            num_clicks=action.num_clicks,
+            hold_keys=action.hold_keys,
+        )
+    elif isinstance(action, DragMouseAction):
+        return Request_DragMouse(
+            path=action.path, 
+            hold_keys=action.hold_keys
+        )
+    elif isinstance(action, ScrollAction):
+        return Request_Scroll(
+            coordinates=action.coordinates,
+            delta_x=action.delta_x,
+            delta_y=action.delta_y,
+            hold_keys=action.hold_keys,
+        )
+    elif isinstance(action, PressKeyAction):
+        return Request_PressKey(
+            keys=action.keys, 
+            duration=action.duration
+        )
+    elif isinstance(action, TypeTextAction):
+        return Request_TypeText(
+            text=action.text, 
+            hold_keys=action.hold_keys
+        )
+    elif isinstance(action, WaitAction):
+        return Request_Wait(
+            duration=action.duration
+        )
+    elif isinstance(action, TakeScreenshotAction):
+        return Request_TakeScreenshot()
+    elif isinstance(action, GetCursorPositionAction):
+        return Request_GetCursorPosition()
+    else:
+        return None
+
+def _filter_images(messages: List[Message], images_to_keep: int):
+    """
+    Helper function to filter base64 images in messages, keeping only the latest ones up to specified limit.
+    
+    Args:
+        messages: List of messages to filter
+        images_to_keep: Maximum number of images to keep
+    """
+    images_kept = 0
+    
+    for i in range(len(messages) - 1, -1, -1):
+        msg = messages[i]
+        
+        if isinstance(msg, ToolMessage) and msg.content:
+            for j in range(len(msg.content) - 1, -1, -1):
+                tool_result = msg.content[j]
+                
+                if (tool_result and 
+                    hasattr(tool_result, "result") and 
+                    tool_result.result and 
+                    isinstance(tool_result.result, dict) and
+                    "base_64_image" in tool_result.result):
+                    
+                    if images_kept < images_to_keep:
+                        images_kept += 1
+                    else:
+                        del tool_result.result["base_64_image"]

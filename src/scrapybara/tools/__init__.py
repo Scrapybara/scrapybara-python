@@ -75,8 +75,6 @@ class ComputerTool(Tool):
                 hold_keys=params.hold_keys,
             )
         elif params.action == "scroll":
-            if not params.coordinates:
-                raise ValueError("coordinates is required for scroll action")
             return self._instance.computer(
                 action=params.action,
                 coordinates=params.coordinates,
