@@ -1717,7 +1717,8 @@ class Scrapybara:
                     ([TextPart(text=step.text)] if step.text else [])
                     + (step.reasoning_parts if step.reasoning_parts else [])
                     + (step.tool_calls or [])
-                )
+                ),
+                response_id=step.response_id
             )
             result_messages.append(assistant_msg)
             if step.tool_results:
@@ -1874,6 +1875,7 @@ class Scrapybara:
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
+                response_id=act_response.message.response_id if act_response.message.response_id else None
             )
 
             # Check if there are tool calls
@@ -2135,7 +2137,8 @@ class AsyncScrapybara:
                     ([TextPart(text=step.text)] if step.text else [])
                     + (step.reasoning_parts if step.reasoning_parts else [])
                     + (step.tool_calls or [])
-                )
+                ),
+                response_id=step.response_id
             )
             result_messages.append(assistant_msg)
             if step.tool_results:
@@ -2292,6 +2295,7 @@ class AsyncScrapybara:
                 tool_calls=tool_calls if tool_calls else None,
                 finish_reason=act_response.finish_reason,
                 usage=act_response.usage,
+                response_id=act_response.message.response_id if act_response.message.response_id else None
             )
 
             # Check if there are tool calls
