@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional
 from pydantic import BaseModel, Field
 
 from ..types import Action, Button, ClickMouseActionClickType, Tool
@@ -121,7 +121,7 @@ class EditToolParameters(BaseModel):
     file_text: Optional[str] = Field(
         None, description="File content for create command"
     )
-    view_range: Optional[Tuple[int, int]] = Field(
+    view_range: Optional[List[int]] = Field(
         None, description="Line range for view command"
     )
     old_str: Optional[str] = Field(
