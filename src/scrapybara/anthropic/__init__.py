@@ -56,7 +56,7 @@ UBUNTU_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 * If first screenshot shows black screen:
   - Click mouse in screen center
   - Take another screenshot
-* Today's date is {datetime.today().strftime('%A, %B %-d, %Y')}
+* Today's date is {datetime.today().strftime('%A, %B %d, %Y')}
 </SYSTEM_CAPABILITY>
 
 <IMPORTANT>
@@ -83,7 +83,7 @@ BROWSER_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 * If first screenshot shows black screen:
   - Click mouse in screen center
   - Take another screenshot
-* Today's date is {datetime.today().strftime('%A, %B %-d, %Y')}
+* Today's date is {datetime.today().strftime('%A, %B %d, %Y')}
 </SYSTEM_CAPABILITY>
 
 <IMPORTANT>
@@ -111,7 +111,7 @@ WINDOWS_SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 * If first screenshot shows black screen:
   - Click mouse in screen center
   - Take another screenshot
-* Today's date is {datetime.today().strftime('%A, %B %-d, %Y')}
+* Today's date is {datetime.today().strftime('%A, %B %d, %Y')}
 </SYSTEM_CAPABILITY>
 
 <IMPORTANT>
