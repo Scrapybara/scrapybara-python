@@ -31,6 +31,7 @@ from .types import (
     AuthStateResponse,
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
+    BrowserGetCurrentUrlResponse,
     Button,
     ClickMouseActionClickType,
     ComputerResponse,
@@ -136,6 +137,13 @@ class Browser:
         return self._client.browser.get_cdp_url(
             self.instance_id, request_options=request_options
         )
+    
+    def get_current_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetCurrentUrlResponse:
+        return self._client.browser.get_current_url(
+            self.instance_id, request_options=request_options
+        )
 
     def save_auth(
         self,
@@ -194,6 +202,13 @@ class AsyncBrowser:
         self, request_options: Optional[RequestOptions] = None
     ) -> BrowserGetCdpUrlResponse:
         return await self._client.browser.get_cdp_url(
+            self.instance_id, request_options=request_options
+        )
+    
+    async def get_current_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetCurrentUrlResponse:
+        return await self._client.browser.get_current_url(
             self.instance_id, request_options=request_options
         )
 
@@ -1020,6 +1035,13 @@ class BrowserInstance(BaseInstance):
         return self._client.browser.get_cdp_url(
             self.id, request_options=request_options
         )
+    
+    def get_current_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetCurrentUrlResponse:
+        return self._client.browser.get_current_url(
+            self.id, request_options=request_options
+        )
 
     def save_auth(
         self,
@@ -1460,6 +1482,13 @@ class AsyncBrowserInstance(AsyncBaseInstance):
         return await self._client.browser.get_cdp_url(
             self.id, request_options=request_options
         )
+    
+    async def get_current_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetCurrentUrlResponse:
+        return await self._client.browser.get_current_url(
+            self.id, request_options=request_options
+        )
 
     async def save_auth(
         self,
@@ -1534,11 +1563,13 @@ class Scrapybara:
         self,
         *,
         timeout_hours: Optional[float] = OMIT,
+        blocked_domains: Optional[Sequence[str]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> UbuntuInstance:
         response = self._base_client.start(
             instance_type="ubuntu",
             timeout_hours=timeout_hours,
+            blocked_domains=blocked_domains,
             request_options=request_options,
         )
         return UbuntuInstance(
@@ -1552,11 +1583,13 @@ class Scrapybara:
         self,
         *,
         timeout_hours: Optional[float] = OMIT,
+        blocked_domains: Optional[Sequence[str]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> BrowserInstance:
         response = self._base_client.start(
             instance_type="browser",
             timeout_hours=timeout_hours,
+            blocked_domains=blocked_domains,
             request_options=request_options,
         )
         return BrowserInstance(
@@ -1946,11 +1979,13 @@ class AsyncScrapybara:
         self,
         *,
         timeout_hours: Optional[float] = OMIT,
+        blocked_domains: Optional[Sequence[str]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncUbuntuInstance:
         response = await self._base_client.start(
             instance_type="ubuntu",
             timeout_hours=timeout_hours,
+            blocked_domains=blocked_domains,
             request_options=request_options,
         )
         return AsyncUbuntuInstance(
@@ -1964,11 +1999,13 @@ class AsyncScrapybara:
         self,
         *,
         timeout_hours: Optional[float] = OMIT,
+        blocked_domains: Optional[Sequence[str]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncBrowserInstance:
         response = await self._base_client.start(
             instance_type="browser",
             timeout_hours=timeout_hours,
+            blocked_domains=blocked_domains,
             request_options=request_options,
         )
         return AsyncBrowserInstance(
