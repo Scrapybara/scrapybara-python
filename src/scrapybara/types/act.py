@@ -19,7 +19,7 @@ class ImagePart(BaseModel):
 
 class ToolCallPart(BaseModel):
     type: Literal["tool-call"] = "tool-call"
-    tool_id: Optional[str] = None
+    id: Optional[str] = None
     tool_call_id: str
     tool_name: str
     args: Dict[str, Any]
