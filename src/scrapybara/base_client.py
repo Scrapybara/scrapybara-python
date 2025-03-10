@@ -107,6 +107,7 @@ class BaseClient:
         *,
         instance_type: typing.Optional[DeploymentConfigInstanceType] = OMIT,
         timeout_hours: typing.Optional[float] = OMIT,
+        blocked_domains: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         """
@@ -115,6 +116,8 @@ class BaseClient:
         instance_type : typing.Optional[DeploymentConfigInstanceType]
 
         timeout_hours : typing.Optional[float]
+
+        blocked_domains : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -139,6 +142,7 @@ class BaseClient:
             json={
                 "instance_type": instance_type,
                 "timeout_hours": timeout_hours,
+                "blocked_domains": blocked_domains,
             },
             headers={
                 "content-type": "application/json",
@@ -383,6 +387,7 @@ class AsyncBaseClient:
         *,
         instance_type: typing.Optional[DeploymentConfigInstanceType] = OMIT,
         timeout_hours: typing.Optional[float] = OMIT,
+        blocked_domains: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         """
@@ -391,6 +396,8 @@ class AsyncBaseClient:
         instance_type : typing.Optional[DeploymentConfigInstanceType]
 
         timeout_hours : typing.Optional[float]
+
+        blocked_domains : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -423,6 +430,7 @@ class AsyncBaseClient:
             json={
                 "instance_type": instance_type,
                 "timeout_hours": timeout_hours,
+                "blocked_domains": blocked_domains,
             },
             headers={
                 "content-type": "application/json",
