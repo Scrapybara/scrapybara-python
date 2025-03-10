@@ -3,6 +3,7 @@ from .auth_state_response import AuthStateResponse
 from .bash_response import BashResponse
 from .browser_authenticate_response import BrowserAuthenticateResponse
 from .browser_get_cdp_url_response import BrowserGetCdpUrlResponse
+from .browser_get_current_url_response import BrowserGetCurrentUrlResponse
 from .button import Button
 from .cell_type import CellType
 from .click_mouse_action import ClickMouseAction
@@ -78,6 +79,7 @@ __all__ = [
     "BashResponse",
     "BrowserAuthenticateResponse",
     "BrowserGetCdpUrlResponse",
+    "BrowserGetCurrentUrlResponse",
     "Button",
     "CellType",
     "ClickMouseAction",
