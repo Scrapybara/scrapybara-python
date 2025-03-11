@@ -61,7 +61,7 @@ Message = Union[UserMessage, AssistantMessage, ToolMessage]
 
 # Request/Response models
 class Model(BaseModel):
-    provider: Literal["anthropic", "herd"]
+    provider: Literal["anthropic", "openai", "herd"]
     name: str
     api_key: Optional[str] = None
 
