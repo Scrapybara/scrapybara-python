@@ -22,6 +22,7 @@ class ToolCallPart(BaseModel):
     id: Optional[str] = None
     tool_call_id: str
     tool_name: str
+    safety_checks: Optional[List[Any]] = None
     args: Dict[str, Any]
 
 
