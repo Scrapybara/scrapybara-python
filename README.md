@@ -15,13 +15,6 @@ pip install scrapybara
 
 Please refer to [docs](https://docs.scrapybara.com) for more information.
 
-## Requirements
-
-- Python >= 3.8
-- `requests` >= 2.25.1
-- `anthropic` ^0.39.0
-- `pydantic` ^2.0.0
-
 ## Usage
 
 Instantiate and use the client with the following:
