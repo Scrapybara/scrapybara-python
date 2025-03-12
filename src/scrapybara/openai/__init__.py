@@ -10,10 +10,10 @@ class OpenAI(Model):
     """Model adapter for OpenAI.
 
     Supported models:
-    - computer-use-preview-2025-02-04
+    - computer-use-preview
 
     Args:
-        name: OpenAI model name, defaults to "computer-use-preview-2025-02-04"
+        name: OpenAI model name, defaults to "computer-use-preview"
         api_key: Optional OpenAI API key
 
     Returns:
@@ -24,7 +24,7 @@ class OpenAI(Model):
 
     def __init__(
         self,
-        name: Optional[str] = "computer-use-preview-2025-02-04",
+        name: Optional[str] = "computer-use-preview",
         api_key: Optional[str] = None,
     ) -> None:
         super().__init__(provider="openai", name=name, api_key=api_key)
