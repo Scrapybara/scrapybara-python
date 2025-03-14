@@ -1,6 +1,6 @@
-from typing import Literal, Optional, Type
+from typing import Literal, Optional
 
-from pydantic import Field, BaseModel
+from pydantic import Field
 
 from ..types.act import Model
 from datetime import datetime
