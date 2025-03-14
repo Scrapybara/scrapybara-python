@@ -1850,6 +1850,32 @@ class Scrapybara:
                 raise ValueError("Schema is not supported with ui-tars-72b model.")
             else:
                 current_tools.append(StructuredOutputTool(schema))
+                
+                # If a schema is provided and system matches one of our default prompts, add structured output section
+                if system is not None:
+                    if model.provider == "anthropic":
+                        from .anthropic import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For Anthropic prompts, add inside the system capability section
+                            system = system.replace("</SYSTEM_CAPABILITY>", f"{STRUCTURED_OUTPUT_SECTION}\n</SYSTEM_CAPABILITY>")
+                    
+                    elif model.provider == "openai":
+                        from .openai import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For OpenAI prompts, simply append the structured output section
+                            system = system + STRUCTURED_OUTPUT_SECTION
 
         while True:
             # Convert tools to ApiTools
@@ -2274,6 +2300,32 @@ class AsyncScrapybara:
                 raise ValueError("Schema is not supported with ui-tars-72b model.")
             else:
                 current_tools.append(StructuredOutputTool(schema))
+                
+                # If a schema is provided and system matches one of our default prompts, add structured output section
+                if system is not None:
+                    if model.provider == "anthropic":
+                        from .anthropic import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For Anthropic prompts, add inside the system capability section
+                            system = system.replace("</SYSTEM_CAPABILITY>", f"{STRUCTURED_OUTPUT_SECTION}\n</SYSTEM_CAPABILITY>")
+                    
+                    elif model.provider == "openai":
+                        from .openai import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For OpenAI prompts, simply append the structured output section
+                            system = system + STRUCTURED_OUTPUT_SECTION
 
         while True:
             # Convert tools to ApiTools
