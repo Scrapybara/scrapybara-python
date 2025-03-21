@@ -1697,6 +1697,8 @@ class Scrapybara:
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
         schema: Optional[Type[SchemaT]] = None,
+        on_assistant_message: Optional[Callable[[AssistantMessage], None]] = None,
+        on_tool_message: Optional[Callable[[ToolMessage], None]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
@@ -1713,6 +1715,8 @@ class Scrapybara:
             prompt: Initial user prompt
             messages: List of messages to start with
             schema: Optional Pydantic model class to structure the final output
+            on_assistant_message: Callback for each assistant message
+            on_tool_message: Callback for each tool message
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
@@ -1738,6 +1742,8 @@ class Scrapybara:
             prompt=prompt,
             messages=messages,
             schema=schema,
+            on_assistant_message=on_assistant_message,
+            on_tool_message=on_tool_message,
             on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -1795,6 +1801,8 @@ class Scrapybara:
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
         schema: Optional[Type[BaseModel]] = None,
+        on_assistant_message: Optional[Callable[[AssistantMessage], None]] = None,
+        on_tool_message: Optional[Callable[[ToolMessage], None]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
@@ -1811,6 +1819,8 @@ class Scrapybara:
             prompt: Initial user prompt
             messages: List of messages to start with
             schema: Optional Pydantic model class to structure the final output
+            on_assistant_message: Callback for each assistant message
+            on_tool_message: Callback for each tool message
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
@@ -1850,6 +1860,32 @@ class Scrapybara:
                 raise ValueError("Schema is not supported with ui-tars-72b model.")
             else:
                 current_tools.append(StructuredOutputTool(schema))
+                
+                # If a schema is provided and system matches one of our default prompts, add structured output section
+                if system is not None:
+                    if model.provider == "anthropic":
+                        from .anthropic import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For Anthropic prompts, add inside the system capability section
+                            system = system.replace("</SYSTEM_CAPABILITY>", f"{STRUCTURED_OUTPUT_SECTION}\n</SYSTEM_CAPABILITY>")
+                    
+                    elif model.provider == "openai":
+                        from .openai import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For OpenAI prompts, simply append the structured output section
+                            system = system + STRUCTURED_OUTPUT_SECTION
 
         while True:
             # Convert tools to ApiTools
@@ -1879,6 +1915,8 @@ class Scrapybara:
 
             act_response = SingleActResponse.model_validate(response.json())
             current_messages.append(act_response.message)
+            if on_assistant_message:
+                on_assistant_message(act_response.message)
 
             # Extract text from assistant message
             text = "\n".join(
@@ -1942,6 +1980,8 @@ class Scrapybara:
                 step.tool_results = tool_results
                 tool_message = ToolMessage(content=tool_results)
                 current_messages.append(tool_message)
+                if on_tool_message:
+                    on_tool_message(tool_message)
 
             if on_step:
                 on_step(step)
@@ -2121,6 +2161,8 @@ class AsyncScrapybara:
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
         schema: Optional[Type[SchemaT]] = None,
+        on_assistant_message: Optional[Callable[[AssistantMessage], None]] = None,
+        on_tool_message: Optional[Callable[[ToolMessage], None]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
@@ -2137,6 +2179,8 @@ class AsyncScrapybara:
             prompt: Initial user prompt
             messages: List of messages to start with
             schema: Optional Pydantic model class to structure the final output
+            on_assistant_message: Callback for each assistant message
+            on_tool_message: Callback for each tool message
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
@@ -2162,6 +2206,8 @@ class AsyncScrapybara:
             prompt=prompt,
             messages=messages,
             schema=schema,
+            on_assistant_message=on_assistant_message,
+            on_tool_message=on_tool_message,
             on_step=on_step,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -2219,6 +2265,8 @@ class AsyncScrapybara:
         prompt: Optional[str] = None,
         messages: Optional[List[Message]] = None,
         schema: Optional[Type[SchemaT]] = None,
+        on_assistant_message: Optional[Callable[[AssistantMessage], None]] = None,
+        on_tool_message: Optional[Callable[[ToolMessage], None]] = None,
         on_step: Optional[Callable[[Step], None]] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
@@ -2235,6 +2283,8 @@ class AsyncScrapybara:
             prompt: Initial user prompt
             messages: List of messages to start with
             schema: Optional Pydantic model class to structure the final output
+            on_assistant_message: Callback for each assistant message
+            on_tool_message: Callback for each tool message
             on_step: Callback for each step of the conversation
             temperature: Optional temperature parameter for the model
             max_tokens: Optional max tokens parameter for the model
@@ -2274,6 +2324,32 @@ class AsyncScrapybara:
                 raise ValueError("Schema is not supported with ui-tars-72b model.")
             else:
                 current_tools.append(StructuredOutputTool(schema))
+                
+                # If a schema is provided and system matches one of our default prompts, add structured output section
+                if system is not None:
+                    if model.provider == "anthropic":
+                        from .anthropic import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For Anthropic prompts, add inside the system capability section
+                            system = system.replace("</SYSTEM_CAPABILITY>", f"{STRUCTURED_OUTPUT_SECTION}\n</SYSTEM_CAPABILITY>")
+                    
+                    elif model.provider == "openai":
+                        from .openai import (
+                            UBUNTU_SYSTEM_PROMPT, 
+                            BROWSER_SYSTEM_PROMPT, 
+                            WINDOWS_SYSTEM_PROMPT, 
+                            STRUCTURED_OUTPUT_SECTION
+                        )
+                        
+                        if system in (UBUNTU_SYSTEM_PROMPT, BROWSER_SYSTEM_PROMPT, WINDOWS_SYSTEM_PROMPT):
+                            # For OpenAI prompts, simply append the structured output section
+                            system = system + STRUCTURED_OUTPUT_SECTION
 
         while True:
             # Convert tools to ApiTools
@@ -2303,6 +2379,10 @@ class AsyncScrapybara:
 
             act_response = SingleActResponse.model_validate(response.json())
             current_messages.append(act_response.message)
+            if on_assistant_message:
+                result = on_assistant_message(act_response.message)
+                if inspect.isawaitable(result):
+                    await result
 
             # Extract text from assistant message
             text = "\n".join(
@@ -2370,6 +2450,10 @@ class AsyncScrapybara:
                 step.tool_results = tool_results
                 tool_message = ToolMessage(content=tool_results)
                 current_messages.append(tool_message)
+                if on_tool_message:
+                    result = on_tool_message(tool_message)
+                    if inspect.isawaitable(result):
+                        await result
 
             if on_step:
                 result = on_step(step)

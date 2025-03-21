@@ -138,3 +138,12 @@ WINDOWS_SYSTEM_PROMPT = f"""You have access to a Windows VM with internet connec
 
 ### Date Context  
 Today's date is {datetime.today().strftime('%A, %B %d, %Y')}."""
+
+STRUCTURED_OUTPUT_SECTION = """
+### Final Output  
+- When you have completed your task and are ready to provide the final result to the user, use the 'structured_output' tool.  
+- This tool allows you to output structured data according to the provided schema.  
+- Ensure that your output matches the expected schema by providing the correct fields and data types as specified in the tool's parameters.  
+- The output from this tool will be passed directly back to the user as the final result.  
+- Do not present the final result in plain text; always use the 'structured_output' tool for the final output.
+"""
