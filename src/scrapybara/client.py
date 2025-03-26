@@ -1564,12 +1564,14 @@ class Scrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
+        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> UbuntuInstance:
         response = self._base_client.start(
             instance_type="ubuntu",
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
+            resolution=resolution,
             request_options=request_options,
         )
         return UbuntuInstance(
@@ -1584,12 +1586,14 @@ class Scrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
+        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> BrowserInstance:
         response = self._base_client.start(
             instance_type="browser",
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
+            resolution=resolution,
             request_options=request_options,
         )
         return BrowserInstance(
@@ -2020,12 +2024,14 @@ class AsyncScrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
+        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncUbuntuInstance:
         response = await self._base_client.start(
             instance_type="ubuntu",
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
+            resolution=resolution,
             request_options=request_options,
         )
         return AsyncUbuntuInstance(
@@ -2040,12 +2046,14 @@ class AsyncScrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
+        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncBrowserInstance:
         response = await self._base_client.start(
             instance_type="browser",
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
+            resolution=resolution,
             request_options=request_options,
         )
         return AsyncBrowserInstance(
