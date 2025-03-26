@@ -108,6 +108,7 @@ class BaseClient:
         instance_type: typing.Optional[DeploymentConfigInstanceType] = OMIT,
         timeout_hours: typing.Optional[float] = OMIT,
         blocked_domains: typing.Optional[typing.Sequence[str]] = OMIT,
+        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         """
@@ -118,6 +119,8 @@ class BaseClient:
         timeout_hours : typing.Optional[float]
 
         blocked_domains : typing.Optional[typing.Sequence[str]]
+
+        resolution : typing.Optional[typing.Sequence[int]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -143,6 +146,7 @@ class BaseClient:
                 "instance_type": instance_type,
                 "timeout_hours": timeout_hours,
                 "blocked_domains": blocked_domains,
+                "resolution": resolution,
             },
             headers={
                 "content-type": "application/json",
@@ -388,6 +392,7 @@ class AsyncBaseClient:
         instance_type: typing.Optional[DeploymentConfigInstanceType] = OMIT,
         timeout_hours: typing.Optional[float] = OMIT,
         blocked_domains: typing.Optional[typing.Sequence[str]] = OMIT,
+        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         """
@@ -398,6 +403,8 @@ class AsyncBaseClient:
         timeout_hours : typing.Optional[float]
 
         blocked_domains : typing.Optional[typing.Sequence[str]]
+
+        resolution : typing.Optional[typing.Sequence[int]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -431,6 +438,7 @@ class AsyncBaseClient:
                 "instance_type": instance_type,
                 "timeout_hours": timeout_hours,
                 "blocked_domains": blocked_domains,
+                "resolution": resolution,
             },
             headers={
                 "content-type": "application/json",
