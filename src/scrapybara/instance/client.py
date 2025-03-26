@@ -211,6 +211,8 @@ class InstanceClient:
         *,
         command: typing.Optional[str] = OMIT,
         restart: typing.Optional[bool] = OMIT,
+        get_background_processes: typing.Optional[bool] = OMIT,
+        kill_pid: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -221,6 +223,10 @@ class InstanceClient:
         command : typing.Optional[str]
 
         restart : typing.Optional[bool]
+
+        get_background_processes : typing.Optional[bool]
+
+        kill_pid : typing.Optional[int]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -247,6 +253,8 @@ class InstanceClient:
             json={
                 "command": command,
                 "restart": restart,
+                "get_background_processes": get_background_processes,
+                "kill_pid": kill_pid,
             },
             headers={
                 "content-type": "application/json",
@@ -761,6 +769,8 @@ class AsyncInstanceClient:
         *,
         command: typing.Optional[str] = OMIT,
         restart: typing.Optional[bool] = OMIT,
+        get_background_processes: typing.Optional[bool] = OMIT,
+        kill_pid: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -771,6 +781,10 @@ class AsyncInstanceClient:
         command : typing.Optional[str]
 
         restart : typing.Optional[bool]
+
+        get_background_processes : typing.Optional[bool]
+
+        kill_pid : typing.Optional[int]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -805,6 +819,8 @@ class AsyncInstanceClient:
             json={
                 "command": command,
                 "restart": restart,
+                "get_background_processes": get_background_processes,
+                "kill_pid": kill_pid,
             },
             headers={
                 "content-type": "application/json",
