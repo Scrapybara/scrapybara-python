@@ -1564,7 +1564,7 @@ class Scrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
-        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
+        resolution: Optional[Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> UbuntuInstance:
         response = self._base_client.start(
@@ -1586,7 +1586,7 @@ class Scrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
-        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
+        resolution: Optional[Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> BrowserInstance:
         response = self._base_client.start(
@@ -2024,7 +2024,7 @@ class AsyncScrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
-        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
+        resolution: Optional[Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncUbuntuInstance:
         response = await self._base_client.start(
@@ -2046,7 +2046,7 @@ class AsyncScrapybara:
         *,
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
-        resolution: typing.Optional[typing.Sequence[int]] = OMIT,
+        resolution: Optional[Sequence[int]] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncBrowserInstance:
         response = await self._base_client.start(
