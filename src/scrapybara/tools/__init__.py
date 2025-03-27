@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from ..types import Action, Button, ClickMouseActionClickType, Tool
 from ..client import BaseInstance, UbuntuInstance
 from ..instance.types import Command
-
+from typing import Literal
 
 class ComputerToolParameters(BaseModel):
     """Parameters for computer interaction commands."""
@@ -198,24 +198,97 @@ class BashTool(Tool):
 class FilesystemToolParameters(BaseModel):
     """Parameters for filesystem operations."""
 
-    command: str = Field(description="The filesystem command to execute")
-    path: Optional[str] = Field(None, description="Path to the file or directory")
-    content: Optional[str] = Field(None, description="Content for write operations")
-    mode: Optional[str] = Field(None, description="File mode for creation/access")
-    encoding: Optional[str] = Field(None, description="File encoding")
-    view_range: Optional[List[int]] = Field(None, description="Line range to view")
-    recursive: Optional[bool] = Field(None, description="Whether to operate recursively")
-    src: Optional[str] = Field(None, description="Source path for copy/move operations")
-    dst: Optional[str] = Field(None, description="Destination path for copy/move operations")
-    old_str: Optional[str] = Field(None, description="String to replace")
-    new_str: Optional[str] = Field(None, description="Replacement string")
-    line: Optional[int] = Field(None, description="Line number for line operations")
-    text: Optional[str] = Field(None, description="Text for line operations")
-    lines: Optional[List[int]] = Field(None, description="Line numbers for multi-line operations")
-    all_occurrences: Optional[bool] = Field(None, description="Whether to replace all occurrences")
-    pattern: Optional[str] = Field(None, description="Pattern for search operations")
-    case_sensitive: Optional[bool] = Field(None, description="Whether search is case-sensitive")
-    line_numbers: Optional[bool] = Field(None, description="Whether to include line numbers in output")
+    command: Literal[
+        "read", "write", "append", "delete", "exists", "list", "mkdir", "rmdir", "move", "copy",
+        "view", "create", "replace", "insert", "delete_lines", "undo", "grep"
+    ] = Field(
+        description="The filesystem command to execute. Determines which other parameters are required or optional. Supported commands: read, write, append, delete, exists, list, mkdir, rmdir, move, copy, view, create, replace, insert, delete_lines, undo, grep."
+    )
+    
+    path: Optional[str] = Field(
+        None,
+        description="Path to the file or directory. Required for commands: read, write, append, delete, exists, list, mkdir, rmdir, view, create, replace, insert, delete_lines, undo, grep."
+    )
+    
+    content: Optional[str] = Field(
+        None,
+        description="Content to write, append, or create in a file. Required for commands: write, append, create."
+    )
+    
+    mode: Optional[str] = Field(
+        None,
+        description="Mode for file operations ('text' or 'binary'). Optional for commands: read, write, append, create. Defaults to 'text' if not specified."
+    )
+    
+    encoding: Optional[str] = Field(
+        None,
+        description="Encoding for text operations (e.g., 'utf-8'). Optional for commands: read, write, append, create. Defaults to 'utf-8' if not specified."
+    )
+    
+    view_range: Optional[List[int]] = Field(
+        None,
+        description="Range of lines to view as [start, end]. Optional for command: view. Not applicable if viewing a directory."
+    )
+    
+    recursive: Optional[bool] = Field(
+        None,
+        description="Whether to perform the operation recursively. Optional for command: delete (defaults to False); required to be True for grep when searching directories."
+    )
+    
+    src: Optional[str] = Field(
+        None,
+        description="Source path for move and copy operations. Required for commands: move, copy."
+    )
+    
+    dst: Optional[str] = Field(
+        None,
+        description="Destination path for move and copy operations. Required for commands: move, copy."
+    )
+    
+    old_str: Optional[str] = Field(
+        None,
+        description="String to be replaced in the file. Required for command: replace."
+    )
+    
+    new_str: Optional[str] = Field(
+        None,
+        description="Replacement string. Required for command: replace."
+    )
+    
+    line: Optional[int] = Field(
+        None,
+        description="Line number where text should be inserted (1-based index). Required for command: insert."
+    )
+    
+    text: Optional[str] = Field(
+        None,
+        description="Text to insert at the specified line. Required for command: insert."
+    )
+    
+    lines: Optional[List[int]] = Field(
+        None,
+        description="List of line numbers to delete (1-based indices). Required for command: delete_lines."
+    )
+    
+    all_occurrences: Optional[bool] = Field(
+        None,
+        description="Whether to replace all occurrences of old_str. Optional for command: replace. Defaults to False, replacing only the first occurrence."
+    )
+    
+    pattern: Optional[str] = Field(
+        None,
+        description="Regex pattern to search for in files. Required for command: grep."
+    )
+    
+    case_sensitive: Optional[bool] = Field(
+        None,
+        description="Whether the grep search is case-sensitive. Optional for command: grep. Defaults to True."
+    )
+    
+    line_numbers: Optional[bool] = Field(
+        None,
+        description="Whether to include line numbers in grep output. Optional for command: grep. Defaults to True."
+    )
 
 
 class FilesystemTool(Tool):
