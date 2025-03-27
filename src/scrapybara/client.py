@@ -38,8 +38,6 @@ from .types import (
     CellType,
     EnvGetResponse,
     EnvResponse,
-    FileDownloadResponse,
-    FileReadResponse,
     GetInstanceResponse,
     InstanceGetStreamUrlResponse,
     InstanceScreenshotResponse,
@@ -475,120 +473,6 @@ class AsyncNotebook:
         )
 
 
-class File:
-    def __init__(self, instance_id: str, client: BaseClient):
-        self.instance_id = instance_id
-        self._client = client
-
-    def read(
-        self,
-        *,
-        path: str,
-        encoding: Optional[str] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> FileReadResponse:
-        return self._client.file.read(
-            self.instance_id,
-            path=path,
-            encoding=encoding,
-            request_options=request_options,
-        )
-
-    def write(
-        self,
-        *,
-        path: str,
-        content: str,
-        encoding: Optional[str] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return self._client.file.write(
-            self.instance_id,
-            path=path,
-            content=content,
-            encoding=encoding,
-            request_options=request_options,
-        )
-
-    def upload(
-        self,
-        *,
-        path: str,
-        content: str,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return self._client.file.upload(
-            self.instance_id,
-            path=path,
-            content=content,
-            request_options=request_options,
-        )
-
-    def download(
-        self, *, path: str, request_options: Optional[RequestOptions] = None
-    ) -> FileDownloadResponse:
-        return self._client.file.download(
-            self.instance_id, path=path, request_options=request_options
-        )
-
-
-class AsyncFile:
-    def __init__(self, instance_id: str, client: AsyncBaseClient):
-        self.instance_id = instance_id
-        self._client = client
-
-    async def read(
-        self,
-        *,
-        path: str,
-        encoding: Optional[str] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> FileReadResponse:
-        return await self._client.file.read(
-            self.instance_id,
-            path=path,
-            encoding=encoding,
-            request_options=request_options,
-        )
-
-    async def write(
-        self,
-        *,
-        path: str,
-        content: str,
-        encoding: Optional[str] = OMIT,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return await self._client.file.write(
-            self.instance_id,
-            path=path,
-            content=content,
-            encoding=encoding,
-            request_options=request_options,
-        )
-
-    async def upload(
-        self,
-        *,
-        path: str,
-        content: str,
-        request_options: Optional[RequestOptions] = None,
-    ) -> Dict[str, Optional[Any]]:
-        return await self._client.file.upload(
-            self.instance_id,
-            path=path,
-            content=content,
-            request_options=request_options,
-        )
-
-    async def download(
-        self, *, path: str, request_options: Optional[RequestOptions] = None
-    ) -> FileDownloadResponse:
-        return await self._client.file.download(
-            self.instance_id, path=path, request_options=request_options
-        )
-
-
 class Env:
     def __init__(self, instance_id: str, client: BaseClient):
         self.instance_id = instance_id
@@ -990,7 +874,6 @@ class UbuntuInstance(BaseInstance):
         self.browser = Browser(self.id, self._client)
         self.code = Code(self.id, self._client)
         self.notebook = Notebook(self.id, self._client)
-        self.file = File(self.id, self._client)
         self.env = Env(self.id, self._client)
 
     def bash(
@@ -1035,7 +918,7 @@ class UbuntuInstance(BaseInstance):
             request_options=request_options,
         )
     
-    async def filesystem(
+    async def file(
         self,
         *,
         command: str,
@@ -1058,7 +941,7 @@ class UbuntuInstance(BaseInstance):
         line_numbers: Optional[bool] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
-        return self._client.instance.filesystem(
+        return self._client.instance.file(
             self.id,
             command=command,
             path=path,
@@ -1499,7 +1382,6 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         self.browser = AsyncBrowser(self.id, self._client)
         self.code = AsyncCode(self.id, self._client)
         self.notebook = AsyncNotebook(self.id, self._client)
-        self.file = AsyncFile(self.id, self._client)
         self.env = AsyncEnv(self.id, self._client)
 
     async def bash(
@@ -1544,7 +1426,7 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
             request_options=request_options,
         )
     
-    async def filesystem(
+    async def file(
         self,
         *,
         command: str,
@@ -1567,7 +1449,7 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         line_numbers: Optional[bool] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
-        return await self._client.instance.filesystem(
+        return await self._client.instance.file(
             self.id,
             command=command,
             path=path,
