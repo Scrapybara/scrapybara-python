@@ -17,9 +17,7 @@ from .types import (
     EnvGetResponse,
     EnvResponse,
     ExecuteCellRequest,
-    FileDownloadResponse,
-    FileReadResponse,
-    FilesystemResponse,
+    FileResponse,
     GetCursorPositionAction,
     GetInstanceResponse,
     GetInstanceResponseInstanceType,
@@ -45,7 +43,7 @@ from .types import (
     WaitAction,
 )
 from .errors import UnprocessableEntityError
-from . import browser, code, env, file, instance, notebook
+from . import browser, code, env, instance, notebook
 from .client import AsyncScrapybara, Scrapybara
 from .environment import ScrapybaraEnvironment
 from .instance import (
@@ -82,9 +80,7 @@ __all__ = [
     "EnvGetResponse",
     "EnvResponse",
     "ExecuteCellRequest",
-    "FileDownloadResponse",
-    "FileReadResponse",
-    "FilesystemResponse",
+    "FileResponse",
     "GetCursorPositionAction",
     "GetInstanceResponse",
     "GetInstanceResponseInstanceType",
@@ -125,7 +121,6 @@ __all__ = [
     "browser",
     "code",
     "env",
-    "file",
     "instance",
     "notebook",
 ]

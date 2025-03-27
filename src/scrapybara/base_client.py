@@ -10,7 +10,6 @@ from .instance.client import InstanceClient
 from .browser.client import BrowserClient
 from .code.client import CodeClient
 from .notebook.client import NotebookClient
-from .file.client import FileClient
 from .env.client import EnvClient
 from .types.deployment_config_instance_type import DeploymentConfigInstanceType
 from .core.request_options import RequestOptions
@@ -26,7 +25,6 @@ from .instance.client import AsyncInstanceClient
 from .browser.client import AsyncBrowserClient
 from .code.client import AsyncCodeClient
 from .notebook.client import AsyncNotebookClient
-from .file.client import AsyncFileClient
 from .env.client import AsyncEnvClient
 
 # this is used as the default value for optional parameters
@@ -99,7 +97,6 @@ class BaseClient:
         self.browser = BrowserClient(client_wrapper=self._client_wrapper)
         self.code = CodeClient(client_wrapper=self._client_wrapper)
         self.notebook = NotebookClient(client_wrapper=self._client_wrapper)
-        self.file = FileClient(client_wrapper=self._client_wrapper)
         self.env = EnvClient(client_wrapper=self._client_wrapper)
 
     def start(
@@ -383,7 +380,6 @@ class AsyncBaseClient:
         self.browser = AsyncBrowserClient(client_wrapper=self._client_wrapper)
         self.code = AsyncCodeClient(client_wrapper=self._client_wrapper)
         self.notebook = AsyncNotebookClient(client_wrapper=self._client_wrapper)
-        self.file = AsyncFileClient(client_wrapper=self._client_wrapper)
         self.env = AsyncEnvClient(client_wrapper=self._client_wrapper)
 
     async def start(
