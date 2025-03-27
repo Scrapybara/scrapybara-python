@@ -2,14 +2,21 @@
 
 from ..core.pydantic_utilities import UniversalBaseModel
 import typing
+import typing_extensions
+from ..core.serialization import FieldMetadata
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
 import pydantic
 
 
-class TypeTextAction(UniversalBaseModel):
-    text: str
-    hold_keys: typing.Optional[typing.List[str]] = None
-    screenshot: typing.Optional[bool] = None
+class FilesystemResponse(UniversalBaseModel):
+    """
+    Response model for filesystem actions.
+    """
+
+    output: typing.Optional[str] = None
+    error: typing.Optional[str] = None
+    base_64_image: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="base64_image")] = None
+    system: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
