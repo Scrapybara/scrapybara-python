@@ -164,8 +164,10 @@ class EditTool(Tool):
 class BashToolParameters(BaseModel):
     """Parameters for bash command execution."""
 
-    command: str = Field(description="The bash command to execute")
+    command: Optional[str] = Field(description="The bash command to execute")
     restart: Optional[bool] = Field(False, description="Whether to restart the shell")
+    get_background_processes: Optional[bool] = Field(None, description="Retrieve information (pid, status, command) about background processes")
+    kill_pid: Optional[int] = Field(None, description="Process ID to kill")
 
 
 class BashTool(Tool):
@@ -185,4 +187,71 @@ class BashTool(Tool):
 
     def __call__(self, **kwargs: Any) -> Any:
         params = BashToolParameters.model_validate(kwargs)
-        return self._instance.bash(command=params.command, restart=params.restart)
+        return self._instance.bash(
+            command=params.command, 
+            restart=params.restart,
+            get_background_processes=params.get_background_processes,
+            kill_pid=params.kill_pid
+        )
+
+
+class FilesystemToolParameters(BaseModel):
+    """Parameters for filesystem operations."""
+
+    command: str = Field(description="The filesystem command to execute")
+    path: Optional[str] = Field(None, description="Path to the file or directory")
+    content: Optional[str] = Field(None, description="Content for write operations")
+    mode: Optional[str] = Field(None, description="File mode for creation/access")
+    encoding: Optional[str] = Field(None, description="File encoding")
+    view_range: Optional[List[int]] = Field(None, description="Line range to view")
+    recursive: Optional[bool] = Field(None, description="Whether to operate recursively")
+    src: Optional[str] = Field(None, description="Source path for copy/move operations")
+    dst: Optional[str] = Field(None, description="Destination path for copy/move operations")
+    old_str: Optional[str] = Field(None, description="String to replace")
+    new_str: Optional[str] = Field(None, description="Replacement string")
+    line: Optional[int] = Field(None, description="Line number for line operations")
+    text: Optional[str] = Field(None, description="Text for line operations")
+    lines: Optional[List[int]] = Field(None, description="Line numbers for multi-line operations")
+    all_occurrences: Optional[bool] = Field(None, description="Whether to replace all occurrences")
+    pattern: Optional[str] = Field(None, description="Pattern for search operations")
+    case_sensitive: Optional[bool] = Field(None, description="Whether search is case-sensitive")
+    line_numbers: Optional[bool] = Field(None, description="Whether to include line numbers in output")
+
+
+class FilesystemTool(Tool):
+    """A filesystem manipulation tool that allows the agent to perform various filesystem operations.
+
+    Available for Ubuntu instances."""
+
+    _instance: UbuntuInstance
+
+    def __init__(self, instance: UbuntuInstance) -> None:
+        super().__init__(
+            name="filesystem",
+            description="Perform filesystem operations like reading, writing, and manipulating files",
+            parameters=FilesystemToolParameters,
+        )
+        self._instance = instance
+
+    def __call__(self, **kwargs: Any) -> Any:
+        params = FilesystemToolParameters.model_validate(kwargs)
+        return self._instance.filesystem(
+            command=params.command,
+            path=params.path,
+            content=params.content,
+            mode=params.mode,
+            encoding=params.encoding,
+            view_range=params.view_range,
+            recursive=params.recursive,
+            src=params.src,
+            dst=params.dst,
+            old_str=params.old_str,
+            new_str=params.new_str,
+            line=params.line,
+            text=params.text,
+            lines=params.lines,
+            all_occurrences=params.all_occurrences,
+            pattern=params.pattern,
+            case_sensitive=params.case_sensitive,
+            line_numbers=params.line_numbers,
+        )
