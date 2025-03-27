@@ -918,7 +918,7 @@ class UbuntuInstance(BaseInstance):
             request_options=request_options,
         )
     
-    async def file(
+    def file(
         self,
         *,
         command: str,

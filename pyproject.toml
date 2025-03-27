@@ -3,7 +3,7 @@ name = "scrapybara"
 
 [tool.poetry]
 name = "scrapybara"
-version = "2.4.6"
+version = "2.4.7"
 description = ""
 readme = "README.md"
 authors = []
