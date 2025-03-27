@@ -998,10 +998,17 @@ class UbuntuInstance(BaseInstance):
         *,
         command: Optional[str] = OMIT,
         restart: Optional[bool] = OMIT,
+        get_background_processes: Optional[bool] = OMIT,
+        kill_pid: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.bash(
-            self.id, command=command, restart=restart, request_options=request_options
+            self.id, 
+            command=command, 
+            restart=restart, 
+            get_background_processes=get_background_processes, 
+            kill_pid=kill_pid, 
+            request_options=request_options
         )
 
     def edit(
@@ -1027,7 +1034,52 @@ class UbuntuInstance(BaseInstance):
             insert_line=insert_line,
             request_options=request_options,
         )
-
+    
+    async def filesystem(
+        self,
+        *,
+        command: str,
+        path: Optional[str] = OMIT,
+        content: Optional[str] = OMIT,
+        mode: Optional[str] = OMIT,
+        encoding: Optional[str] = OMIT,
+        view_range: Optional[Sequence[int]] = OMIT,
+        recursive: Optional[bool] = OMIT,
+        src: Optional[str] = OMIT,
+        dst: Optional[str] = OMIT,
+        old_str: Optional[str] = OMIT,
+        new_str: Optional[str] = OMIT,
+        line: Optional[int] = OMIT,
+        text: Optional[str] = OMIT,
+        lines: Optional[Sequence[int]] = OMIT,
+        all_occurrences: Optional[bool] = OMIT,
+        pattern: Optional[str] = OMIT,
+        case_sensitive: Optional[bool] = OMIT,
+        line_numbers: Optional[bool] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Optional[Any]:
+        return self._client.instance.filesystem(
+            self.id,
+            command=command,
+            path=path,
+            content=content,
+            mode=mode,
+            encoding=encoding,
+            view_range=view_range,
+            recursive=recursive,
+            src=src,
+            dst=dst,
+            old_str=old_str,
+            new_str=new_str,
+            line=line,
+            text=text,
+            lines=lines,
+            all_occurrences=all_occurrences,
+            pattern=pattern,
+            case_sensitive=case_sensitive,
+            line_numbers=line_numbers,
+            request_options=request_options
+        )
 
 class BrowserInstance(BaseInstance):
     def __init__(
@@ -1455,10 +1507,17 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         *,
         command: Optional[str] = OMIT,
         restart: Optional[bool] = OMIT,
+        get_background_processes: Optional[bool] = OMIT,
+        kill_pid: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.bash(
-            self.id, command=command, restart=restart, request_options=request_options
+            self.id, 
+            command=command, 
+            restart=restart, 
+            get_background_processes=get_background_processes, 
+            kill_pid=kill_pid, 
+            request_options=request_options
         )
 
     async def edit(
@@ -1484,7 +1543,52 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
             insert_line=insert_line,
             request_options=request_options,
         )
-
+    
+    async def filesystem(
+        self,
+        *,
+        command: str,
+        path: Optional[str] = OMIT,
+        content: Optional[str] = OMIT,
+        mode: Optional[str] = OMIT,
+        encoding: Optional[str] = OMIT,
+        view_range: Optional[Sequence[int]] = OMIT,
+        recursive: Optional[bool] = OMIT,
+        src: Optional[str] = OMIT,
+        dst: Optional[str] = OMIT,
+        old_str: Optional[str] = OMIT,
+        new_str: Optional[str] = OMIT,
+        line: Optional[int] = OMIT,
+        text: Optional[str] = OMIT,
+        lines: Optional[Sequence[int]] = OMIT,
+        all_occurrences: Optional[bool] = OMIT,
+        pattern: Optional[str] = OMIT,
+        case_sensitive: Optional[bool] = OMIT,
+        line_numbers: Optional[bool] = OMIT,
+        request_options: Optional[RequestOptions] = None,
+    ) -> Optional[Any]:
+        return await self._client.instance.filesystem(
+            self.id,
+            command=command,
+            path=path,
+            content=content,
+            mode=mode,
+            encoding=encoding,
+            view_range=view_range,
+            recursive=recursive,
+            src=src,
+            dst=dst,
+            old_str=old_str,
+            new_str=new_str,
+            line=line,
+            text=text,
+            lines=lines,
+            all_occurrences=all_occurrences,
+            pattern=pattern,
+            case_sensitive=case_sensitive,
+            line_numbers=line_numbers,
+            request_options=request_options
+        )
 
 class AsyncBrowserInstance(AsyncBaseInstance):
     def __init__(
