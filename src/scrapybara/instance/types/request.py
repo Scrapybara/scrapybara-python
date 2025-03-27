@@ -13,6 +13,7 @@ class Request_MoveMouse(UniversalBaseModel):
     action: typing.Literal["move_mouse"] = "move_mouse"
     coordinates: typing.List[int]
     hold_keys: typing.Optional[typing.List[str]] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -31,6 +32,7 @@ class Request_ClickMouse(UniversalBaseModel):
     coordinates: typing.Optional[typing.List[int]] = None
     num_clicks: typing.Optional[int] = None
     hold_keys: typing.Optional[typing.List[str]] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -46,6 +48,7 @@ class Request_DragMouse(UniversalBaseModel):
     action: typing.Literal["drag_mouse"] = "drag_mouse"
     path: typing.List[typing.List[int]]
     hold_keys: typing.Optional[typing.List[str]] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -63,6 +66,7 @@ class Request_Scroll(UniversalBaseModel):
     delta_x: typing.Optional[float] = None
     delta_y: typing.Optional[float] = None
     hold_keys: typing.Optional[typing.List[str]] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -78,6 +82,7 @@ class Request_PressKey(UniversalBaseModel):
     action: typing.Literal["press_key"] = "press_key"
     keys: typing.List[str]
     duration: typing.Optional[float] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -93,6 +98,7 @@ class Request_TypeText(UniversalBaseModel):
     action: typing.Literal["type_text"] = "type_text"
     text: str
     hold_keys: typing.Optional[typing.List[str]] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -107,6 +113,7 @@ class Request_TypeText(UniversalBaseModel):
 class Request_Wait(UniversalBaseModel):
     action: typing.Literal["wait"] = "wait"
     duration: float
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

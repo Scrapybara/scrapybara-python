@@ -17,6 +17,7 @@ from ..core.serialization import convert_and_respect_annotation_metadata
 from ..types.bash_response import BashResponse
 from .types.command import Command
 from ..types.edit_response import EditResponse
+from ..types.filesystem_response import FilesystemResponse
 from ..types.stop_instance_response import StopInstanceResponse
 from ..types.get_instance_response import GetInstanceResponse
 from ..core.client_wrapper import AsyncClientWrapper
@@ -211,6 +212,8 @@ class InstanceClient:
         *,
         command: typing.Optional[str] = OMIT,
         restart: typing.Optional[bool] = OMIT,
+        get_background_processes: typing.Optional[bool] = OMIT,
+        kill_pid: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -221,6 +224,10 @@ class InstanceClient:
         command : typing.Optional[str]
 
         restart : typing.Optional[bool]
+
+        get_background_processes : typing.Optional[bool]
+
+        kill_pid : typing.Optional[int]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -247,6 +254,8 @@ class InstanceClient:
             json={
                 "command": command,
                 "restart": restart,
+                "get_background_processes": get_background_processes,
+                "kill_pid": kill_pid,
             },
             headers={
                 "content-type": "application/json",
@@ -355,6 +364,144 @@ class InstanceClient:
                     EditResponse,
                     parse_obj_as(
                         type_=EditResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def filesystem(
+        self,
+        instance_id: str,
+        *,
+        command: str,
+        path: typing.Optional[str] = OMIT,
+        content: typing.Optional[str] = OMIT,
+        mode: typing.Optional[str] = OMIT,
+        encoding: typing.Optional[str] = OMIT,
+        view_range: typing.Optional[typing.Sequence[int]] = OMIT,
+        recursive: typing.Optional[bool] = OMIT,
+        src: typing.Optional[str] = OMIT,
+        dst: typing.Optional[str] = OMIT,
+        old_str: typing.Optional[str] = OMIT,
+        new_str: typing.Optional[str] = OMIT,
+        line: typing.Optional[int] = OMIT,
+        text: typing.Optional[str] = OMIT,
+        lines: typing.Optional[typing.Sequence[int]] = OMIT,
+        all_occurrences: typing.Optional[bool] = OMIT,
+        pattern: typing.Optional[str] = OMIT,
+        case_sensitive: typing.Optional[bool] = OMIT,
+        line_numbers: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FilesystemResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        command : str
+
+        path : typing.Optional[str]
+
+        content : typing.Optional[str]
+
+        mode : typing.Optional[str]
+
+        encoding : typing.Optional[str]
+
+        view_range : typing.Optional[typing.Sequence[int]]
+
+        recursive : typing.Optional[bool]
+
+        src : typing.Optional[str]
+
+        dst : typing.Optional[str]
+
+        old_str : typing.Optional[str]
+
+        new_str : typing.Optional[str]
+
+        line : typing.Optional[int]
+
+        text : typing.Optional[str]
+
+        lines : typing.Optional[typing.Sequence[int]]
+
+        all_occurrences : typing.Optional[bool]
+
+        pattern : typing.Optional[str]
+
+        case_sensitive : typing.Optional[bool]
+
+        line_numbers : typing.Optional[bool]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FilesystemResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.instance.filesystem(
+            instance_id="instance_id",
+            command="command",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/filesystem",
+            method="POST",
+            json={
+                "command": command,
+                "path": path,
+                "content": content,
+                "mode": mode,
+                "encoding": encoding,
+                "view_range": view_range,
+                "recursive": recursive,
+                "src": src,
+                "dst": dst,
+                "old_str": old_str,
+                "new_str": new_str,
+                "line": line,
+                "text": text,
+                "lines": lines,
+                "all_occurrences": all_occurrences,
+                "pattern": pattern,
+                "case_sensitive": case_sensitive,
+                "line_numbers": line_numbers,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    FilesystemResponse,
+                    parse_obj_as(
+                        type_=FilesystemResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -761,6 +908,8 @@ class AsyncInstanceClient:
         *,
         command: typing.Optional[str] = OMIT,
         restart: typing.Optional[bool] = OMIT,
+        get_background_processes: typing.Optional[bool] = OMIT,
+        kill_pid: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -771,6 +920,10 @@ class AsyncInstanceClient:
         command : typing.Optional[str]
 
         restart : typing.Optional[bool]
+
+        get_background_processes : typing.Optional[bool]
+
+        kill_pid : typing.Optional[int]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -805,6 +958,8 @@ class AsyncInstanceClient:
             json={
                 "command": command,
                 "restart": restart,
+                "get_background_processes": get_background_processes,
+                "kill_pid": kill_pid,
             },
             headers={
                 "content-type": "application/json",
@@ -921,6 +1076,152 @@ class AsyncInstanceClient:
                     EditResponse,
                     parse_obj_as(
                         type_=EditResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def filesystem(
+        self,
+        instance_id: str,
+        *,
+        command: str,
+        path: typing.Optional[str] = OMIT,
+        content: typing.Optional[str] = OMIT,
+        mode: typing.Optional[str] = OMIT,
+        encoding: typing.Optional[str] = OMIT,
+        view_range: typing.Optional[typing.Sequence[int]] = OMIT,
+        recursive: typing.Optional[bool] = OMIT,
+        src: typing.Optional[str] = OMIT,
+        dst: typing.Optional[str] = OMIT,
+        old_str: typing.Optional[str] = OMIT,
+        new_str: typing.Optional[str] = OMIT,
+        line: typing.Optional[int] = OMIT,
+        text: typing.Optional[str] = OMIT,
+        lines: typing.Optional[typing.Sequence[int]] = OMIT,
+        all_occurrences: typing.Optional[bool] = OMIT,
+        pattern: typing.Optional[str] = OMIT,
+        case_sensitive: typing.Optional[bool] = OMIT,
+        line_numbers: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FilesystemResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        command : str
+
+        path : typing.Optional[str]
+
+        content : typing.Optional[str]
+
+        mode : typing.Optional[str]
+
+        encoding : typing.Optional[str]
+
+        view_range : typing.Optional[typing.Sequence[int]]
+
+        recursive : typing.Optional[bool]
+
+        src : typing.Optional[str]
+
+        dst : typing.Optional[str]
+
+        old_str : typing.Optional[str]
+
+        new_str : typing.Optional[str]
+
+        line : typing.Optional[int]
+
+        text : typing.Optional[str]
+
+        lines : typing.Optional[typing.Sequence[int]]
+
+        all_occurrences : typing.Optional[bool]
+
+        pattern : typing.Optional[str]
+
+        case_sensitive : typing.Optional[bool]
+
+        line_numbers : typing.Optional[bool]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FilesystemResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.instance.filesystem(
+                instance_id="instance_id",
+                command="command",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/filesystem",
+            method="POST",
+            json={
+                "command": command,
+                "path": path,
+                "content": content,
+                "mode": mode,
+                "encoding": encoding,
+                "view_range": view_range,
+                "recursive": recursive,
+                "src": src,
+                "dst": dst,
+                "old_str": old_str,
+                "new_str": new_str,
+                "line": line,
+                "text": text,
+                "lines": lines,
+                "all_occurrences": all_occurrences,
+                "pattern": pattern,
+                "case_sensitive": case_sensitive,
+                "line_numbers": line_numbers,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    FilesystemResponse,
+                    parse_obj_as(
+                        type_=FilesystemResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

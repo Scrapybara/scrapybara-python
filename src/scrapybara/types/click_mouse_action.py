@@ -14,6 +14,7 @@ class ClickMouseAction(UniversalBaseModel):
     coordinates: typing.Optional[typing.List[int]] = None
     num_clicks: typing.Optional[int] = None
     hold_keys: typing.Optional[typing.List[str]] = None
+    screenshot: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

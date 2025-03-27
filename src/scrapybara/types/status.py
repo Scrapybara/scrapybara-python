@@ -2,4 +2,4 @@
 
 import typing
 
-Status = typing.Union[typing.Literal["deploying", "running", "paused", "terminated", "error"], typing.Any]
+Status = typing.Union[typing.Literal["deploying", "running", "paused", "terminated", "error", "warm_pool"], typing.Any]

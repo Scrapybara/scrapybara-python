@@ -4,8 +4,8 @@ from ..core.pydantic_utilities import UniversalBaseModel
 import datetime as dt
 from .get_instance_response_instance_type import GetInstanceResponseInstanceType
 from .status import Status
-from ..core.pydantic_utilities import IS_PYDANTIC_V2
 import typing
+from ..core.pydantic_utilities import IS_PYDANTIC_V2
 import pydantic
 
 
@@ -14,6 +14,7 @@ class GetInstanceResponse(UniversalBaseModel):
     launch_time: dt.datetime
     instance_type: GetInstanceResponseInstanceType
     status: Status
+    resolution: typing.Optional[typing.List[int]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
