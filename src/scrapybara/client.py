@@ -751,6 +751,7 @@ class BaseInstance:
         action: Literal["move_mouse"],
         coordinates: List[int],
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -764,6 +765,7 @@ class BaseInstance:
         coordinates: Optional[List[int]] = None,
         num_clicks: Optional[int] = 1,
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -774,6 +776,7 @@ class BaseInstance:
         action: Literal["drag_mouse"],
         path: List[List[int]],
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -786,6 +789,7 @@ class BaseInstance:
         delta_x: Optional[float] = 0,
         delta_y: Optional[float] = 0,
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -796,6 +800,7 @@ class BaseInstance:
         action: Literal["press_key"],
         keys: List[str],
         duration: Optional[float] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -806,6 +811,7 @@ class BaseInstance:
         action: Literal["type_text"],
         text: str,
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -815,6 +821,7 @@ class BaseInstance:
         *,
         action: Literal["wait"],
         duration: float,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -860,6 +867,7 @@ class BaseInstance:
         keys: Optional[List[str]] = None,
         text: Optional[str] = None,
         duration: Optional[float] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse:
         """Control computer actions like mouse movements, clicks, and keyboard input.
@@ -910,7 +918,7 @@ class BaseInstance:
         # If it wasn't an object or the object wasn't recognized, use the legacy string-based approach
         if request is None:
             if action == "move_mouse":
-                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
+                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys, screenshot=screenshot)
             elif action == "click_mouse":
                 request = Request_ClickMouse(
                     button=button,
@@ -918,22 +926,24 @@ class BaseInstance:
                     coordinates=coordinates,
                     num_clicks=num_clicks,
                     hold_keys=hold_keys,
+                    screenshot=screenshot,
                 )
             elif action == "drag_mouse":
-                request = Request_DragMouse(path=path, hold_keys=hold_keys)
+                request = Request_DragMouse(path=path, hold_keys=hold_keys, screenshot=screenshot)
             elif action == "scroll":
                 request = Request_Scroll(
                     coordinates=coordinates,
                     delta_x=delta_x,
                     delta_y=delta_y,
                     hold_keys=hold_keys,
+                    screenshot=screenshot,
                 )
             elif action == "press_key":
-                request = Request_PressKey(keys=keys, duration=duration)
+                request = Request_PressKey(keys=keys, duration=duration, screenshot=screenshot)
             elif action == "type_text":
-                request = Request_TypeText(text=text, hold_keys=hold_keys)
+                request = Request_TypeText(text=text, hold_keys=hold_keys, screenshot=screenshot)
             elif action == "wait":
-                request = Request_Wait(duration=duration)
+                request = Request_Wait(duration=duration, screenshot=screenshot)
             elif action == "take_screenshot":
                 request = Request_TakeScreenshot()
             elif action == "get_cursor_position":
@@ -1194,6 +1204,7 @@ class AsyncBaseInstance:
         action: Literal["move_mouse"],
         coordinates: List[int],
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1207,6 +1218,7 @@ class AsyncBaseInstance:
         coordinates: Optional[List[int]] = None,
         num_clicks: Optional[int] = 1,
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1217,6 +1229,7 @@ class AsyncBaseInstance:
         action: Literal["drag_mouse"],
         path: List[List[int]],
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1229,6 +1242,7 @@ class AsyncBaseInstance:
         delta_x: Optional[float] = 0,
         delta_y: Optional[float] = 0,
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1239,6 +1253,7 @@ class AsyncBaseInstance:
         action: Literal["press_key"],
         keys: List[str],
         duration: Optional[float] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1249,6 +1264,7 @@ class AsyncBaseInstance:
         action: Literal["type_text"],
         text: str,
         hold_keys: Optional[List[str]] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1258,6 +1274,7 @@ class AsyncBaseInstance:
         *,
         action: Literal["wait"],
         duration: float,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse: ...
 
@@ -1303,6 +1320,7 @@ class AsyncBaseInstance:
         keys: Optional[List[str]] = None,
         text: Optional[str] = None,
         duration: Optional[float] = None,
+        screenshot: Optional[bool] = True,
         request_options: Optional[RequestOptions] = None,
     ) -> ComputerResponse:
         """Control computer actions like mouse movements, clicks, and keyboard input.
@@ -1353,7 +1371,7 @@ class AsyncBaseInstance:
         # If it wasn't an object or the object wasn't recognized, use the legacy string-based approach
         if request is None:
             if action == "move_mouse":
-                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys)
+                request = Request_MoveMouse(coordinates=coordinates, hold_keys=hold_keys, screenshot=screenshot)
             elif action == "click_mouse":
                 request = Request_ClickMouse(
                     button=button,
@@ -1361,22 +1379,24 @@ class AsyncBaseInstance:
                     coordinates=coordinates,
                     num_clicks=num_clicks,
                     hold_keys=hold_keys,
+                    screenshot=screenshot,
                 )
             elif action == "drag_mouse":
-                request = Request_DragMouse(path=path, hold_keys=hold_keys)
+                request = Request_DragMouse(path=path, hold_keys=hold_keys, screenshot=screenshot)
             elif action == "scroll":
                 request = Request_Scroll(
                     coordinates=coordinates,
                     delta_x=delta_x,
                     delta_y=delta_y,
                     hold_keys=hold_keys,
+                    screenshot=screenshot,
                 )
             elif action == "press_key":
-                request = Request_PressKey(keys=keys, duration=duration)
+                request = Request_PressKey(keys=keys, duration=duration, screenshot=screenshot)
             elif action == "type_text":
-                request = Request_TypeText(text=text, hold_keys=hold_keys)
+                request = Request_TypeText(text=text, hold_keys=hold_keys, screenshot=screenshot)
             elif action == "wait":
-                request = Request_Wait(duration=duration)
+                request = Request_Wait(duration=duration, screenshot=screenshot)
             elif action == "take_screenshot":
                 request = Request_TakeScreenshot()
             elif action == "get_cursor_position":
@@ -2477,7 +2497,8 @@ def _create_request_from_action(action):
     if isinstance(action, MoveMouseAction):
         return Request_MoveMouse(
             coordinates=action.coordinates, 
-            hold_keys=action.hold_keys
+            hold_keys=action.hold_keys,
+            screenshot=action.screenshot
         )
     elif isinstance(action, ClickMouseAction):
         return Request_ClickMouse(
@@ -2486,11 +2507,13 @@ def _create_request_from_action(action):
             coordinates=action.coordinates,
             num_clicks=action.num_clicks,
             hold_keys=action.hold_keys,
+            screenshot=action.screenshot
         )
     elif isinstance(action, DragMouseAction):
         return Request_DragMouse(
             path=action.path, 
-            hold_keys=action.hold_keys
+            hold_keys=action.hold_keys,
+            screenshot=action.screenshot
         )
     elif isinstance(action, ScrollAction):
         return Request_Scroll(
@@ -2498,20 +2521,24 @@ def _create_request_from_action(action):
             delta_x=action.delta_x,
             delta_y=action.delta_y,
             hold_keys=action.hold_keys,
+            screenshot=action.screenshot
         )
     elif isinstance(action, PressKeyAction):
         return Request_PressKey(
             keys=action.keys, 
-            duration=action.duration
+            duration=action.duration,
+            screenshot=action.screenshot
         )
     elif isinstance(action, TypeTextAction):
         return Request_TypeText(
             text=action.text, 
-            hold_keys=action.hold_keys
+            hold_keys=action.hold_keys,
+            screenshot=action.screenshot
         )
     elif isinstance(action, WaitAction):
         return Request_Wait(
-            duration=action.duration
+            duration=action.duration,
+            screenshot=action.screenshot
         )
     elif isinstance(action, TakeScreenshotAction):
         return Request_TakeScreenshot()
