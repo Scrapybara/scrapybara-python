@@ -8,9 +8,9 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2
 import pydantic
 
 
-class FilesystemResponse(UniversalBaseModel):
+class FileResponse(UniversalBaseModel):
     """
-    Response model for filesystem actions.
+    Response model for file actions.
     """
 
     output: typing.Optional[str] = None

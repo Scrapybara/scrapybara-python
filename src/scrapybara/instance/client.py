@@ -17,7 +17,7 @@ from ..core.serialization import convert_and_respect_annotation_metadata
 from ..types.bash_response import BashResponse
 from .types.command import Command
 from ..types.edit_response import EditResponse
-from ..types.filesystem_response import FilesystemResponse
+from ..types.file_response import FileResponse
 from ..types.stop_instance_response import StopInstanceResponse
 from ..types.get_instance_response import GetInstanceResponse
 from ..core.client_wrapper import AsyncClientWrapper
@@ -382,7 +382,7 @@ class InstanceClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def filesystem(
+    def file(
         self,
         instance_id: str,
         *,
@@ -405,7 +405,7 @@ class InstanceClient:
         case_sensitive: typing.Optional[bool] = OMIT,
         line_numbers: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> FilesystemResponse:
+    ) -> FileResponse:
         """
         Parameters
         ----------
@@ -452,7 +452,7 @@ class InstanceClient:
 
         Returns
         -------
-        FilesystemResponse
+        FileResponse
             Successful Response
 
         Examples
@@ -462,13 +462,13 @@ class InstanceClient:
         client = Scrapybara(
             api_key="YOUR_API_KEY",
         )
-        client.instance.filesystem(
+        client.instance.file(
             instance_id="instance_id",
             command="command",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"v1/instance/{jsonable_encoder(instance_id)}/filesystem",
+            f"v1/instance/{jsonable_encoder(instance_id)}/file",
             method="POST",
             json={
                 "command": command,
@@ -499,9 +499,9 @@ class InstanceClient:
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    FilesystemResponse,
+                    FileResponse,
                     parse_obj_as(
-                        type_=FilesystemResponse,  # type: ignore
+                        type_=FileResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1094,7 +1094,7 @@ class AsyncInstanceClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def filesystem(
+    async def file(
         self,
         instance_id: str,
         *,
@@ -1117,7 +1117,7 @@ class AsyncInstanceClient:
         case_sensitive: typing.Optional[bool] = OMIT,
         line_numbers: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> FilesystemResponse:
+    ) -> FileResponse:
         """
         Parameters
         ----------
@@ -1164,7 +1164,7 @@ class AsyncInstanceClient:
 
         Returns
         -------
-        FilesystemResponse
+        FileResponse
             Successful Response
 
         Examples
@@ -1179,7 +1179,7 @@ class AsyncInstanceClient:
 
 
         async def main() -> None:
-            await client.instance.filesystem(
+            await client.instance.file(
                 instance_id="instance_id",
                 command="command",
             )
@@ -1188,7 +1188,7 @@ class AsyncInstanceClient:
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"v1/instance/{jsonable_encoder(instance_id)}/filesystem",
+            f"v1/instance/{jsonable_encoder(instance_id)}/file",
             method="POST",
             json={
                 "command": command,
@@ -1219,9 +1219,9 @@ class AsyncInstanceClient:
         try:
             if 200 <= _response.status_code < 300:
                 return typing.cast(
-                    FilesystemResponse,
+                    FileResponse,
                     parse_obj_as(
-                        type_=FilesystemResponse,  # type: ignore
+                        type_=FileResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
