@@ -15,9 +15,7 @@ from .edit_response import EditResponse
 from .env_get_response import EnvGetResponse
 from .env_response import EnvResponse
 from .execute_cell_request import ExecuteCellRequest
-from .file_download_response import FileDownloadResponse
-from .file_read_response import FileReadResponse
-from .filesystem_response import FilesystemResponse
+from .file_response import FileResponse
 from .get_cursor_position_action import GetCursorPositionAction
 from .get_instance_response import GetInstanceResponse
 from .get_instance_response_instance_type import GetInstanceResponseInstanceType
@@ -92,9 +90,7 @@ __all__ = [
     "EnvGetResponse",
     "EnvResponse",
     "ExecuteCellRequest",
-    "FileDownloadResponse",
-    "FileReadResponse",
-    "FilesystemResponse",
+    "FileResponse",
     "GetCursorPositionAction",
     "GetInstanceResponse",
     "GetInstanceResponseInstanceType",
