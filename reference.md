@@ -809,6 +809,85 @@ client.instance.file(
 </dl>
 </details>
 
+<details><summary><code>client.instance.<a href="src/scrapybara/instance/client.py">download_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Download a file from the instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from scrapybara import Scrapybara
+
+client = Scrapybara(
+    api_key="YOUR_API_KEY",
+)
+client.instance.download_file(
+    instance_id="instance_id",
+    path="path",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instance_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**path:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.instance.<a href="src/scrapybara/instance/client.py">stop</a>(...)</code></summary>
 <dl>
 <dd>

@@ -520,6 +520,63 @@ class InstanceClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
+    def download_file(
+        self, instance_id: str, *, path: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        Download a file from the instance.
+
+        Parameters
+        ----------
+        instance_id : str
+
+        path : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.instance.download_file(
+            instance_id="instance_id",
+            path="path",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/download",
+            method="GET",
+            params={
+                "path": path,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
     def stop(
         self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> StopInstanceResponse:
@@ -1225,6 +1282,71 @@ class AsyncInstanceClient:
                         object_=_response.json(),
                     ),
                 )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def download_file(
+        self, instance_id: str, *, path: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        Download a file from the instance.
+
+        Parameters
+        ----------
+        instance_id : str
+
+        path : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.instance.download_file(
+                instance_id="instance_id",
+                path="path",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/download",
+            method="GET",
+            params={
+                "path": path,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return
             if _response.status_code == 422:
                 raise UnprocessableEntityError(
                     typing.cast(
