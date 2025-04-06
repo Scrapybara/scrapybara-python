@@ -26,6 +26,7 @@ from scrapybara.core.http_client import AsyncHttpClient, HttpClient
 from scrapybara.environment import ScrapybaraEnvironment
 from .core.request_options import RequestOptions
 from .core.api_error import ApiError
+from .core import File
 from .types import (
     Action,
     AuthStateResponse,
@@ -49,6 +50,7 @@ from .types import (
     StopBrowserResponse,
     StopInstanceResponse,
     ModifyBrowserAuthResponse,
+    UploadResponse,
 )
 
 from .types.act import (
@@ -963,6 +965,32 @@ class UbuntuInstance(BaseInstance):
             line_numbers=line_numbers,
             request_options=request_options
         )
+    
+    def upload(
+        self,
+        *,
+        file: File,
+        path: str,
+        request_options: Optional[RequestOptions] = None,
+    ) -> UploadResponse:
+        return self._client.instance.upload(
+            self.id,
+            file=file,
+            path=path,
+            request_options=request_options,
+        )
+    
+    def download(
+        self,
+        *,
+        path: str,
+        request_options: Optional[RequestOptions] = None,
+    ) -> None:
+        return self._client.instance.download(
+            self.id,
+            path=path,
+            request_options=request_options,
+        )
 
 class BrowserInstance(BaseInstance):
     def __init__(
@@ -1470,6 +1498,32 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
             case_sensitive=case_sensitive,
             line_numbers=line_numbers,
             request_options=request_options
+        )
+        
+    async def upload(
+        self,
+        *,
+        file: File,
+        path: str,
+        request_options: Optional[RequestOptions] = None,
+    ) -> UploadResponse:
+        return await self._client.instance.upload(
+            self.id,
+            file=file,
+            path=path,
+            request_options=request_options,
+        )
+    
+    async def download(
+        self,
+        *,
+        path: str,
+        request_options: Optional[RequestOptions] = None,
+    ) -> None:
+        return await self._client.instance.download(
+            self.id,
+            path=path,
+            request_options=request_options,
         )
 
 class AsyncBrowserInstance(AsyncBaseInstance):

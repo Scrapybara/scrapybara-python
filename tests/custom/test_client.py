@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from scrapybara import Scrapybara
 import os
 import pytest
+import tempfile
+import uuid
 
 from scrapybara.anthropic import (
     Anthropic,
@@ -241,11 +243,51 @@ def test_browser_thinking() -> None:
     browser_instance.stop()
 
 
+def test_upload_download() -> None:
+    _check_api_key()
+    client = Scrapybara()
+
+    # Start Ubuntu instance
+    ubuntu_instance = client.start_ubuntu()
+    assert ubuntu_instance.id is not None
+    
+    try:
+        # Create a temporary file with test content
+        test_content = f"Test content {uuid.uuid4()}"
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False) as temp_file:
+            temp_file.write(test_content)
+            temp_path = temp_file.name
+        
+        # Upload the file to the instance
+        remote_path = f"test_file_{uuid.uuid4()}"
+        with open(temp_path, 'rb') as f:
+            upload_response = ubuntu_instance.upload(file=f, path=remote_path)
+        assert upload_response is not None
+        
+        # Verify file exists on remote and content matches
+        file_check = ubuntu_instance.bash(command=f"cat {remote_path}")
+        assert file_check is not None
+        assert test_content in str(file_check)
+        
+        # Call the download method to at least test the API call
+        # Note: In a real application you would need to handle the response
+        # and save the content to a local file
+        ubuntu_instance.download(path=remote_path)
+        
+        # Clean up local files
+        os.unlink(temp_path)
+            
+    finally:
+        # Always stop the instance
+        ubuntu_instance.stop()
+
+
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
     test_ubuntu_openai()
     test_browser_openai()
+    test_upload_download()
     # test_ubuntu_thinking()
     # test_browser_thinking()
     # test_windows()
