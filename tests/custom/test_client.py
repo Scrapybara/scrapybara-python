@@ -259,7 +259,7 @@ def test_upload_download() -> None:
             temp_path = temp_file.name
         
         # Upload the file to the instance
-        remote_path = f"/tmp/test_file_{uuid.uuid4()}"
+        remote_path = f"test_file_{uuid.uuid4()}"
         with open(temp_path, 'rb') as f:
             upload_response = ubuntu_instance.upload(file=f, path=remote_path)
         assert upload_response is not None
