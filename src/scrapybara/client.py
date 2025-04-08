@@ -981,20 +981,6 @@ class UbuntuInstance(BaseInstance):
             request_options=request_options,
         )
     
-    def download(
-        self,
-        *,
-        path: str,
-        local_path: str,
-        request_options: Optional[RequestOptions] = None,
-    ) -> FileResponse:
-        return self._client.instance.download(
-            self.id,
-            path=path,
-            local_path=local_path,
-            request_options=request_options,
-        )
-
 class BrowserInstance(BaseInstance):
     def __init__(
         self,
@@ -1517,20 +1503,6 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
             request_options=request_options,
         )
     
-    async def download(
-        self,
-        *,
-        path: str,
-        local_path: str,
-        request_options: Optional[RequestOptions] = None,
-    ) -> FileResponse:
-        return await self._client.instance.download(
-            self.id,
-            path=path,
-            local_path=local_path,
-            request_options=request_options,
-        )
-
 class AsyncBrowserInstance(AsyncBaseInstance):
     def __init__(
         self,
