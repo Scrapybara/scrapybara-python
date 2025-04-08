@@ -51,6 +51,7 @@ from .types import (
     StopInstanceResponse,
     ModifyBrowserAuthResponse,
     UploadResponse,
+    FileResponse,
 )
 
 from .types.act import (
@@ -984,11 +985,13 @@ class UbuntuInstance(BaseInstance):
         self,
         *,
         path: str,
+        local_path: str,
         request_options: Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> FileResponse:
         return self._client.instance.download(
             self.id,
             path=path,
+            local_path=local_path,
             request_options=request_options,
         )
 
@@ -1518,11 +1521,13 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         self,
         *,
         path: str,
+        local_path: str,
         request_options: Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> FileResponse:
         return await self._client.instance.download(
             self.id,
             path=path,
+            local_path=local_path,
             request_options=request_options,
         )
 

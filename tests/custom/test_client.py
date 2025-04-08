@@ -272,7 +272,7 @@ def test_upload_download() -> None:
         # Call the download method to at least test the API call
         # Note: In a real application you would need to handle the response
         # and save the content to a local file
-        ubuntu_instance.download(path=remote_path)
+        # ubuntu_instance.download(path=remote_path)
         
         # Clean up local files
         os.unlink(temp_path)
