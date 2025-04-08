@@ -821,7 +821,11 @@ client.instance.file(
 <dl>
 <dd>
 
-Download a file from the instance.
+Download a file from the instance and save it to a local path.
+
+Args:
+    path: Path of the file on the instance
+    local_path: Path where to save the file locally
 </dd>
 </dl>
 </dd>
@@ -844,6 +848,7 @@ client = Scrapybara(
 client.instance.download(
     instance_id="instance_id",
     path="path",
+    local_path="local_path",
 )
 
 ```
@@ -869,6 +874,14 @@ client.instance.download(
 <dd>
 
 **path:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**local_path:** `str` 
     
 </dd>
 </dl>

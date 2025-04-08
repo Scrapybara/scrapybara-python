@@ -522,9 +522,15 @@ class InstanceClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def download(self, instance_id: str, *, path: str, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def download(
+        self, instance_id: str, *, path: str, local_path: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> FileResponse:
         """
-        Download a file from the instance.
+        Download a file from the instance and save it to a local path.
+
+        Args:
+            path: Path of the file on the instance
+            local_path: Path where to save the file locally
 
         Parameters
         ----------
@@ -532,12 +538,15 @@ class InstanceClient:
 
         path : str
 
+        local_path : str
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        None
+        FileResponse
+            Successful Response
 
         Examples
         --------
@@ -549,6 +558,7 @@ class InstanceClient:
         client.instance.download(
             instance_id="instance_id",
             path="path",
+            local_path="local_path",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -556,12 +566,19 @@ class InstanceClient:
             method="GET",
             params={
                 "path": path,
+                "local_path": local_path,
             },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return
+                return typing.cast(
+                    FileResponse,
+                    parse_obj_as(
+                        type_=FileResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
             if _response.status_code == 422:
                 raise UnprocessableEntityError(
                     typing.cast(
@@ -1369,10 +1386,14 @@ class AsyncInstanceClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def download(
-        self, instance_id: str, *, path: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+        self, instance_id: str, *, path: str, local_path: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> FileResponse:
         """
-        Download a file from the instance.
+        Download a file from the instance and save it to a local path.
+
+        Args:
+            path: Path of the file on the instance
+            local_path: Path where to save the file locally
 
         Parameters
         ----------
@@ -1380,12 +1401,15 @@ class AsyncInstanceClient:
 
         path : str
 
+        local_path : str
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        None
+        FileResponse
+            Successful Response
 
         Examples
         --------
@@ -1402,6 +1426,7 @@ class AsyncInstanceClient:
             await client.instance.download(
                 instance_id="instance_id",
                 path="path",
+                local_path="local_path",
             )
 
 
@@ -1412,12 +1437,19 @@ class AsyncInstanceClient:
             method="GET",
             params={
                 "path": path,
+                "local_path": local_path,
             },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return
+                return typing.cast(
+                    FileResponse,
+                    parse_obj_as(
+                        type_=FileResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
             if _response.status_code == 422:
                 raise UnprocessableEntityError(
                     typing.cast(
