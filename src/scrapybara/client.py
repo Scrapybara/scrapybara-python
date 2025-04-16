@@ -127,10 +127,14 @@ class Browser:
         self._client = client
 
     def start(
-        self, request_options: Optional[RequestOptions] = None
+        self,
+        separate_stream: Optional[bool] = None,
+        request_options: Optional[RequestOptions] = None
     ) -> StartBrowserResponse:
         return self._client.browser.start(
-            self.instance_id, request_options=request_options
+            self.instance_id,
+            separate_stream=separate_stream,
+            request_options=request_options
         )
 
     def get_cdp_url(
@@ -200,10 +204,14 @@ class AsyncBrowser:
         self._client = client
 
     async def start(
-        self, request_options: Optional[RequestOptions] = None
+        self,
+        separate_stream: Optional[bool] = None,
+        request_options: Optional[RequestOptions] = None
     ) -> StartBrowserResponse:
         return await self._client.browser.start(
-            self.instance_id, request_options=request_options
+            self.instance_id,
+            separate_stream=separate_stream,
+            request_options=request_options
         )
 
     async def get_cdp_url(
