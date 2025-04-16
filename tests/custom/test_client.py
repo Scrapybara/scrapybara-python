@@ -282,12 +282,43 @@ def test_upload_download() -> None:
         ubuntu_instance.stop()
 
 
+def test_beta_vm_management() -> None:
+    _check_api_key()
+    client = Scrapybara()
+
+    # Start an rodent instance
+    instance = client.start_ubuntu(backend="rodent")
+    assert instance.id is not None
+    
+    try:
+        # Take a snapshot
+        snapshot_response = client.beta_vm_management.take_snapshot(instance_id=instance.id)
+        assert snapshot_response is not None
+        assert snapshot_response.snapshot_id is not None
+        snapshot_id = snapshot_response.snapshot_id
+        print(f"Created snapshot with ID: {snapshot_id}")
+        
+        # Warmup the snapshot
+        warmup_response = client.beta_vm_management.warmup_snapshot(snapshot_id=snapshot_id)
+        assert warmup_response is not None
+        assert warmup_response.success is True
+        
+        # Delete the snapshot
+        delete_response = client.beta_vm_management.delete_snapshot(snapshot_id=snapshot_id)
+        assert delete_response is not None
+        assert delete_response.success is True
+        
+    finally:
+        instance.stop()
+
+
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
     test_ubuntu_openai()
     test_browser_openai()
     test_upload_download()
+    test_beta_vm_management()
     # test_ubuntu_thinking()
     # test_browser_thinking()
     # test_windows()
