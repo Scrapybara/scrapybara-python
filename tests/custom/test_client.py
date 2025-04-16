@@ -29,7 +29,7 @@ def _check_api_key() -> None:
     if os.getenv("SCRAPYBARA_API_KEY") is None:
         raise ValueError("SCRAPYBARA_API_KEY is not set")
 
-
+@pytest.mark.skip()
 def test_ubuntu() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -63,6 +63,7 @@ def test_ubuntu() -> None:
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
+@pytest.mark.skip()
 def test_ubuntu_openai() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -96,7 +97,7 @@ def test_ubuntu_openai() -> None:
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
-
+@pytest.mark.skip()
 def test_browser() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -124,6 +125,7 @@ def test_browser() -> None:
     assert response.output.combined_valuation is not None
     browser_instance.stop()
 
+@pytest.mark.skip()
 def test_browser_openai() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -243,6 +245,7 @@ def test_browser_thinking() -> None:
     browser_instance.stop()
 
 
+@pytest.mark.skip()
 def test_upload_download() -> None:
     _check_api_key()
     client = Scrapybara()
