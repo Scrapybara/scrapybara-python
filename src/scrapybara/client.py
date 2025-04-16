@@ -1604,6 +1604,22 @@ class Scrapybara:
             follow_redirects=follow_redirects,
             httpx_client=httpx_client,
         )
+        self._beta = Beta(self._base_client)
+
+    @property
+    def beta(self) -> "Beta":
+        """
+        Access beta functionality.
+        
+        This property provides access to beta features that may change
+        or be removed in future versions.
+        
+        Returns
+        -------
+        Beta
+            Beta features wrapper
+        """
+        return self._beta
 
     @property
     def httpx_client(self) -> HttpClient:
@@ -2072,6 +2088,22 @@ class AsyncScrapybara:
             follow_redirects=follow_redirects,
             httpx_client=httpx_client,
         )
+        self._beta = AsyncBeta(self._base_client)
+
+    @property
+    def beta(self) -> "AsyncBeta":
+        """
+        Access beta functionality.
+        
+        This property provides access to beta features that may change
+        or be removed in future versions.
+        
+        Returns
+        -------
+        AsyncBeta
+            Beta features wrapper
+        """
+        return self._beta
 
     @property
     def httpx_client(self) -> AsyncHttpClient:
@@ -2620,3 +2652,151 @@ def _filter_images(messages: List[Message], images_to_keep: int):
                         images_kept += 1
                     else:
                         del tool_result.result["base_64_image"]
+
+
+class Beta:
+    """
+    Class that provides access to beta functionality in Scrapybara.
+    
+    Includes:
+    - VM management: snapshot operations on VM instances
+    """
+    def __init__(self, base_client: BaseClient):
+        self._base_client = base_client
+    
+    def take_snapshot(self, instance_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Take a snapshot of an instance
+        
+        Parameters
+        ----------
+        instance_id : str
+            ID of the instance to snapshot
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SnapshotResponse
+            Contains the snapshot_id
+        """
+        return self._base_client.beta_vm_management.take_snapshot(
+            instance_id=instance_id, 
+            request_options=request_options
+        )
+    
+    def warmup_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Warmup a snapshot so it's ready for faster instance creation
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to warm up
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return self._base_client.beta_vm_management.warmup_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )
+    
+    def delete_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Delete a snapshot
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to delete
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return self._base_client.beta_vm_management.delete_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )
+
+
+class AsyncBeta:
+    """
+    Class that provides access to beta functionality in AsyncScrapybara.
+    
+    Includes:
+    - VM management: snapshot operations on VM instances
+    """
+    def __init__(self, base_client: AsyncBaseClient):
+        self._base_client = base_client
+    
+    async def take_snapshot(self, instance_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Take a snapshot of an instance
+        
+        Parameters
+        ----------
+        instance_id : str
+            ID of the instance to snapshot
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SnapshotResponse
+            Contains the snapshot_id
+        """
+        return await self._base_client.beta_vm_management.take_snapshot(
+            instance_id=instance_id, 
+            request_options=request_options
+        )
+    
+    async def warmup_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Warmup a snapshot so it's ready for faster instance creation
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to warm up
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return await self._base_client.beta_vm_management.warmup_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )
+    
+    async def delete_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Delete a snapshot
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to delete
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return await self._base_client.beta_vm_management.delete_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )

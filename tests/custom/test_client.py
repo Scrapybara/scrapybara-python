@@ -286,25 +286,25 @@ def test_beta_vm_management() -> None:
     _check_api_key()
     client = Scrapybara()
 
-    # Start an rodent instance
+    # Start a rodent instance
     instance = client.start_ubuntu(backend="rodent")
     assert instance.id is not None
     
     try:
         # Take a snapshot
-        snapshot_response = client.beta_vm_management.take_snapshot(instance_id=instance.id)
+        snapshot_response = client.beta.take_snapshot(instance_id=instance.id)
         assert snapshot_response is not None
         assert snapshot_response.snapshot_id is not None
         snapshot_id = snapshot_response.snapshot_id
         print(f"Created snapshot with ID: {snapshot_id}")
         
         # Warmup the snapshot
-        warmup_response = client.beta_vm_management.warmup_snapshot(snapshot_id=snapshot_id)
+        warmup_response = client.beta.warmup_snapshot(snapshot_id=snapshot_id)
         assert warmup_response is not None
         assert warmup_response.success is True
         
         # Delete the snapshot
-        delete_response = client.beta_vm_management.delete_snapshot(snapshot_id=snapshot_id)
+        delete_response = client.beta.delete_snapshot(snapshot_id=snapshot_id)
         assert delete_response is not None
         assert delete_response.success is True
         
