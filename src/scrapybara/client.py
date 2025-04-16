@@ -33,6 +33,7 @@ from .types import (
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
     BrowserGetCurrentUrlResponse,
+    BrowserGetStreamUrlResponse,
     Button,
     ClickMouseActionClickType,
     ComputerResponse,
@@ -186,6 +187,12 @@ class Browser:
             self.instance_id, request_options=request_options
         )
 
+    def get_stream_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetStreamUrlResponse:
+        return self._client.browser.get_stream_url(
+            instance_id=self.instance_id, request_options=request_options
+        )
 
 class AsyncBrowser:
     def __init__(self, instance_id: str, client: AsyncBaseClient):
@@ -253,6 +260,12 @@ class AsyncBrowser:
             self.instance_id, request_options=request_options
         )
 
+    async def get_stream_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetStreamUrlResponse:
+        return await self._client.browser.get_stream_url(
+            instance_id=self.instance_id, request_options=request_options
+        )
 
 class Code:
     def __init__(self, instance_id: str, client: BaseClient):
@@ -1602,6 +1615,8 @@ class Scrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> UbuntuInstance:
         response = self._base_client.start(
@@ -1609,6 +1624,8 @@ class Scrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return UbuntuInstance(
@@ -1624,6 +1641,8 @@ class Scrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> BrowserInstance:
         response = self._base_client.start(
@@ -1631,6 +1650,8 @@ class Scrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return BrowserInstance(
@@ -2062,6 +2083,8 @@ class AsyncScrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncUbuntuInstance:
         response = await self._base_client.start(
@@ -2069,6 +2092,8 @@ class AsyncScrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return AsyncUbuntuInstance(
@@ -2084,6 +2109,8 @@ class AsyncScrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncBrowserInstance:
         response = await self._base_client.start(
@@ -2091,6 +2118,8 @@ class AsyncScrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return AsyncBrowserInstance(
