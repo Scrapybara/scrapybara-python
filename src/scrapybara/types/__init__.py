@@ -4,17 +4,20 @@ from .bash_response import BashResponse
 from .browser_authenticate_response import BrowserAuthenticateResponse
 from .browser_get_cdp_url_response import BrowserGetCdpUrlResponse
 from .browser_get_current_url_response import BrowserGetCurrentUrlResponse
+from .browser_get_stream_url_response import BrowserGetStreamUrlResponse
 from .button import Button
 from .cell_type import CellType
 from .click_mouse_action import ClickMouseAction
 from .click_mouse_action_click_type import ClickMouseActionClickType
 from .computer_response import ComputerResponse
+from .delete_browser_auth_response import DeleteBrowserAuthResponse
 from .deployment_config_instance_type import DeploymentConfigInstanceType
 from .drag_mouse_action import DragMouseAction
 from .edit_response import EditResponse
 from .env_get_response import EnvGetResponse
 from .env_response import EnvResponse
 from .execute_cell_request import ExecuteCellRequest
+from .expose_port_response import ExposePortResponse
 from .file_response import FileResponse
 from .upload_response import UploadResponse
 from .get_cursor_position_action import GetCursorPositionAction
@@ -28,13 +31,16 @@ from .modify_browser_auth_response import ModifyBrowserAuthResponse
 from .move_mouse_action import MoveMouseAction
 from .notebook import Notebook
 from .notebook_cell import NotebookCell
+from .netlify_deploy_response import NetlifyDeployResponse
 from .press_key_action import PressKeyAction
 from .save_browser_auth_response import SaveBrowserAuthResponse
 from .scroll_action import ScrollAction
 from .start_browser_response import StartBrowserResponse
 from .status import Status
+from .success_response import SuccessResponse
 from .stop_browser_response import StopBrowserResponse
 from .stop_instance_response import StopInstanceResponse
+from .snapshot_response import SnapshotResponse
 from .take_screenshot_action import TakeScreenshotAction
 from .type_text_action import TypeTextAction
 from .validation_error import ValidationError
@@ -80,18 +86,22 @@ __all__ = [
     "BrowserAuthenticateResponse",
     "BrowserGetCdpUrlResponse",
     "BrowserGetCurrentUrlResponse",
+    "BrowserGetStreamUrlResponse",
     "Button",
     "CellType",
     "ClickMouseAction",
     "ClickMouseActionClickType",
     "ComputerResponse",
     "DeploymentConfigInstanceType",
+    "DeleteBrowserAuthResponse",
     "DragMouseAction",
     "EditResponse",
     "EnvGetResponse",
     "EnvResponse",
     "ExecuteCellRequest",
+    "ExposePortResponse",
     "FileResponse",
+    "UploadResponse",
     "GetCursorPositionAction",
     "GetInstanceResponse",
     "GetInstanceResponseInstanceType",
@@ -106,6 +116,7 @@ __all__ = [
     "MoveMouseAction",
     "Notebook",
     "NotebookCell",
+    "NetlifyDeployResponse",
     "PressKeyAction",
     "SaveBrowserAuthResponse",
     "ScrollAction",
@@ -113,9 +124,11 @@ __all__ = [
     "SingleActResponse",
     "StartBrowserResponse",
     "Status",
+    "SuccessResponse",
     "Step",
     "StopBrowserResponse",
     "StopInstanceResponse",
+    "SnapshotResponse",
     "TakeScreenshotAction",
     "TextPart",
     "Tool",
