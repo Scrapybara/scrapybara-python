@@ -215,9 +215,10 @@ class InstanceClient:
         instance_id: str,
         *,
         command: typing.Optional[str] = OMIT,
+        session: typing.Optional[int] = OMIT,
         restart: typing.Optional[bool] = OMIT,
-        get_background_processes: typing.Optional[bool] = OMIT,
-        kill_pid: typing.Optional[int] = OMIT,
+        list_sessions: typing.Optional[bool] = OMIT,
+        check_session: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -227,11 +228,13 @@ class InstanceClient:
 
         command : typing.Optional[str]
 
+        session : typing.Optional[int]
+
         restart : typing.Optional[bool]
 
-        get_background_processes : typing.Optional[bool]
+        list_sessions : typing.Optional[bool]
 
-        kill_pid : typing.Optional[int]
+        check_session : typing.Optional[int]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -257,9 +260,10 @@ class InstanceClient:
             method="POST",
             json={
                 "command": command,
+                "session": session,
                 "restart": restart,
-                "get_background_processes": get_background_processes,
-                "kill_pid": kill_pid,
+                "list_sessions": list_sessions,
+                "check_session": check_session,
             },
             headers={
                 "content-type": "application/json",
@@ -1123,9 +1127,10 @@ class AsyncInstanceClient:
         instance_id: str,
         *,
         command: typing.Optional[str] = OMIT,
+        session: typing.Optional[int] = OMIT,
         restart: typing.Optional[bool] = OMIT,
-        get_background_processes: typing.Optional[bool] = OMIT,
-        kill_pid: typing.Optional[int] = OMIT,
+        list_sessions: typing.Optional[bool] = OMIT,
+        check_session: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -1135,11 +1140,13 @@ class AsyncInstanceClient:
 
         command : typing.Optional[str]
 
+        session : typing.Optional[int]
+
         restart : typing.Optional[bool]
 
-        get_background_processes : typing.Optional[bool]
+        list_sessions : typing.Optional[bool]
 
-        kill_pid : typing.Optional[int]
+        check_session : typing.Optional[int]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1173,9 +1180,10 @@ class AsyncInstanceClient:
             method="POST",
             json={
                 "command": command,
+                "session": session,
                 "restart": restart,
-                "get_background_processes": get_background_processes,
-                "kill_pid": kill_pid,
+                "list_sessions": list_sessions,
+                "check_session": check_session,
             },
             headers={
                 "content-type": "application/json",
