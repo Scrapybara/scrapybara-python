@@ -165,9 +165,10 @@ class BashToolParameters(BaseModel):
     """Parameters for bash command execution."""
 
     command: Optional[str] = Field(description="The bash command to execute")
+    session: Optional[int] = Field(None, description="Session ID to run the command in")
     restart: Optional[bool] = Field(False, description="Whether to restart the shell")
-    get_background_processes: Optional[bool] = Field(None, description="Retrieve information (pid, status, command) about background processes")
-    kill_pid: Optional[int] = Field(None, description="Process ID to kill")
+    list_sessions: Optional[bool] = Field(None, description="Whether to list all bash sessions")
+    check_session: Optional[int] = Field(None, description="Session ID to check status")
 
 
 class BashTool(Tool):
@@ -189,8 +190,9 @@ class BashTool(Tool):
         params = BashToolParameters.model_validate(kwargs)
         return self._instance.bash(
             command=params.command, 
+            session=params.session,
             restart=params.restart,
-            get_background_processes=params.get_background_processes,
-            kill_pid=params.kill_pid
+            list_sessions=params.list_sessions,
+            check_session=params.check_session
         )
 
