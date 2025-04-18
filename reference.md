@@ -458,6 +458,14 @@ client.instance.bash(
 <dl>
 <dd>
 
+**session:** `typing.Optional[int]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **restart:** `typing.Optional[bool]` 
     
 </dd>
@@ -466,7 +474,7 @@ client.instance.bash(
 <dl>
 <dd>
 
-**get_background_processes:** `typing.Optional[bool]` 
+**list_sessions:** `typing.Optional[bool]` 
     
 </dd>
 </dl>
@@ -474,7 +482,7 @@ client.instance.bash(
 <dl>
 <dd>
 
-**kill_pid:** `typing.Optional[int]` 
+**check_session:** `typing.Optional[int]` 
     
 </dd>
 </dl>
