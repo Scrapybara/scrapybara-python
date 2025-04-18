@@ -20,9 +20,9 @@ from scrapybara.openai import (
 from scrapybara.tools import BashTool, ComputerTool, EditTool
 
 
-class YCStats(BaseModel):
-    number_of_startups: int
-    combined_valuation: int
+class ExampleSite(BaseModel):
+    title: str
+    has_links: bool
 
 
 def _check_api_key() -> None:
@@ -47,19 +47,19 @@ def test_ubuntu() -> None:
     response = client.act(
         model=Anthropic(),
         system=UBUNTU_SYSTEM_PROMPT_ANTHROPIC,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(ubuntu_instance),
             BashTool(ubuntu_instance),
             EditTool(ubuntu_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
@@ -80,19 +80,19 @@ def test_ubuntu_openai() -> None:
     response = client.act(
         model=OpenAI(),
         system=UBUNTU_SYSTEM_PROMPT_OPENAI,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(ubuntu_instance),
             BashTool(ubuntu_instance),
             EditTool(ubuntu_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
@@ -111,17 +111,17 @@ def test_browser() -> None:
     response = client.act(
         model=Anthropic(),
         system=BROWSER_SYSTEM_PROMPT_ANTHROPIC,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(browser_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     browser_instance.stop()
 
 def test_browser_openai() -> None:
@@ -138,17 +138,17 @@ def test_browser_openai() -> None:
     response = client.act(
         model=OpenAI(),
         system=BROWSER_SYSTEM_PROMPT_OPENAI,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(browser_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     browser_instance.stop()
 
 
@@ -165,17 +165,17 @@ def test_windows() -> None:
     response = client.act(
         model=Anthropic(),
         system=WINDOWS_SYSTEM_PROMPT_ANTHROPIC,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(windows_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     windows_instance.stop()
 
 
@@ -197,19 +197,19 @@ def test_ubuntu_thinking() -> None:
     response = client.act(
         model=Anthropic(name="claude-3-7-sonnet-20250219-thinking"),
         system=UBUNTU_SYSTEM_PROMPT_ANTHROPIC,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(ubuntu_instance),
             BashTool(ubuntu_instance),
             EditTool(ubuntu_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls, step.reasoning_parts),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
@@ -229,17 +229,17 @@ def test_browser_thinking() -> None:
     response = client.act(
         model=Anthropic(name="claude-3-7-sonnet-20250219-thinking"),
         system=BROWSER_SYSTEM_PROMPT_ANTHROPIC,
-        prompt="Go to the YC website and get the number of funded startups and combined valuation",
+        prompt="Go to example.com and get the page title and whether it has any links",
         tools=[
             ComputerTool(browser_instance),
         ],
-        schema=YCStats,
+        schema=ExampleSite,
         on_step=lambda step: print(step.text, step.tool_calls, step.reasoning_parts),
     )
     print(response.output)
     assert response.output is not None
-    assert response.output.number_of_startups is not None
-    assert response.output.combined_valuation is not None
+    assert response.output.title is not None
+    assert isinstance(response.output.has_links, bool)
     browser_instance.stop()
 
 

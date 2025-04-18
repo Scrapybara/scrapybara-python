@@ -883,17 +883,19 @@ class UbuntuInstance(BaseInstance):
         self,
         *,
         command: Optional[str] = OMIT,
+        session: Optional[int] = OMIT,
         restart: Optional[bool] = OMIT,
-        get_background_processes: Optional[bool] = OMIT,
-        kill_pid: Optional[int] = OMIT,
+        list_sessions: Optional[bool] = OMIT,
+        check_session: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.bash(
             self.id, 
             command=command, 
+            session=session, 
             restart=restart, 
-            get_background_processes=get_background_processes, 
-            kill_pid=kill_pid, 
+            list_sessions=list_sessions, 
+            check_session=check_session, 
             request_options=request_options
         )
 
@@ -1405,17 +1407,19 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         self,
         *,
         command: Optional[str] = OMIT,
+        session: Optional[int] = OMIT,
         restart: Optional[bool] = OMIT,
-        get_background_processes: Optional[bool] = OMIT,
-        kill_pid: Optional[int] = OMIT,
+        list_sessions: Optional[bool] = OMIT,
+        check_session: Optional[int] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.bash(
             self.id, 
             command=command, 
+            session=session, 
             restart=restart, 
-            get_background_processes=get_background_processes, 
-            kill_pid=kill_pid, 
+            list_sessions=list_sessions, 
+            check_session=check_session, 
             request_options=request_options
         )
 
