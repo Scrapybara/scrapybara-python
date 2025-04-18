@@ -53,6 +53,8 @@ from .types import (
     ModifyBrowserAuthResponse,
     UploadResponse,
     FileResponse,
+    ExposePortResponse,
+    NetlifyDeployResponse,
 )
 
 from .types.act import (
@@ -880,9 +882,21 @@ class BaseInstance:
         request_options: Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         return self._client.instance.resume(
-            self.id,
-            timeout_hours=timeout_hours,
-            request_options=request_options,
+            self.id, timeout_hours=timeout_hours, request_options=request_options
+        )
+
+    def expose_port(
+        self, *, port: int, request_options: Optional[RequestOptions] = None
+    ) -> ExposePortResponse:
+        return self._client.instance.expose_port(
+            self.id, port=port, request_options=request_options
+        )
+
+    def deploy_to_netlify(
+        self, *, directory_path: str, request_options: Optional[RequestOptions] = None
+    ) -> NetlifyDeployResponse:
+        return self._client.instance.deploy_to_netlify(
+            self.id, directory_path=directory_path, request_options=request_options
         )
 
 
@@ -1404,9 +1418,21 @@ class AsyncBaseInstance:
         request_options: Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         return await self._client.instance.resume(
-            self.id,
-            timeout_hours=timeout_hours,
-            request_options=request_options,
+            self.id, timeout_hours=timeout_hours, request_options=request_options
+        )
+
+    async def expose_port(
+        self, *, port: int, request_options: Optional[RequestOptions] = None
+    ) -> ExposePortResponse:
+        return await self._client.instance.expose_port(
+            self.id, port=port, request_options=request_options
+        )
+
+    async def deploy_to_netlify(
+        self, *, directory_path: str, request_options: Optional[RequestOptions] = None
+    ) -> NetlifyDeployResponse:
+        return await self._client.instance.deploy_to_netlify(
+            self.id, directory_path=directory_path, request_options=request_options
         )
 
 
