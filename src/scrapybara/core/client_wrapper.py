@@ -16,7 +16,7 @@ class BaseClientWrapper:
         headers: typing.Dict[str, str] = {
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "scrapybara",
-            "X-Fern-SDK-Version": "2.5.1",
+            "X-Fern-SDK-Version": "2.5.2",
         }
         headers["x-api-key"] = self.api_key
         return headers
