@@ -887,6 +887,7 @@ class UbuntuInstance(BaseInstance):
         restart: Optional[bool] = OMIT,
         list_sessions: Optional[bool] = OMIT,
         check_session: Optional[int] = OMIT,
+        timeout: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.bash(
@@ -896,6 +897,7 @@ class UbuntuInstance(BaseInstance):
             restart=restart, 
             list_sessions=list_sessions, 
             check_session=check_session, 
+            timeout=timeout,
             request_options=request_options
         )
 
@@ -1411,6 +1413,7 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         restart: Optional[bool] = OMIT,
         list_sessions: Optional[bool] = OMIT,
         check_session: Optional[int] = OMIT,
+        timeout: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.bash(
@@ -1420,6 +1423,7 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
             restart=restart, 
             list_sessions=list_sessions, 
             check_session=check_session, 
+            timeout=timeout,
             request_options=request_options
         )
 
