@@ -169,6 +169,7 @@ class BashToolParameters(BaseModel):
     restart: Optional[bool] = Field(False, description="Whether to restart the shell")
     list_sessions: Optional[bool] = Field(None, description="Whether to list all bash sessions")
     check_session: Optional[int] = Field(None, description="Session ID to check status")
+    timeout: Optional[float] = Field(None, description="Timeout for the command")
 
 
 class BashTool(Tool):
@@ -193,6 +194,7 @@ class BashTool(Tool):
             session=params.session,
             restart=params.restart,
             list_sessions=params.list_sessions,
-            check_session=params.check_session
+            check_session=params.check_session,
+            timeout=params.timeout,
         )
 
