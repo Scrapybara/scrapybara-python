@@ -22,6 +22,8 @@ from .. import core
 from ..types.upload_response import UploadResponse
 from ..types.stop_instance_response import StopInstanceResponse
 from ..types.get_instance_response import GetInstanceResponse
+from ..types.expose_port_response import ExposePortResponse
+from ..types.netlify_deploy_response import NetlifyDeployResponse
 from ..core.client_wrapper import AsyncClientWrapper
 
 # this is used as the default value for optional parameters
@@ -217,6 +219,7 @@ class InstanceClient:
         restart: typing.Optional[bool] = OMIT,
         list_sessions: typing.Optional[bool] = OMIT,
         check_session: typing.Optional[int] = OMIT,
+        timeout: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -233,6 +236,8 @@ class InstanceClient:
         list_sessions : typing.Optional[bool]
 
         check_session : typing.Optional[int]
+
+        timeout : typing.Optional[float]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -262,6 +267,7 @@ class InstanceClient:
                 "restart": restart,
                 "list_sessions": list_sessions,
                 "check_session": check_session,
+                "timeout": timeout,
             },
             headers={
                 "content-type": "application/json",
@@ -774,6 +780,147 @@ class InstanceClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
+    def expose_port(
+        self, instance_id: str, *, port: int, request_options: typing.Optional[RequestOptions] = None
+    ) -> ExposePortResponse:
+        """
+        Expose a port on the instance with a public-facing URL.
+
+        This endpoint creates a temporary public URL that routes traffic to the specified port on the instance.
+
+        Parameters
+        ----------
+        instance_id : str
+
+        port : int
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ExposePortResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.instance.expose_port(
+            instance_id="instance_id",
+            port=1,
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/expose_port",
+            method="POST",
+            json={
+                "port": port,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    ExposePortResponse,
+                    parse_obj_as(
+                        type_=ExposePortResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def deploy_to_netlify(
+        self, instance_id: str, *, directory_path: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> NetlifyDeployResponse:
+        """
+        Deploy a directory from the instance to Netlify.
+
+        Args:
+            directory_path: Path to the directory on the instance to deploy
+
+        Parameters
+        ----------
+        instance_id : str
+
+        directory_path : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        NetlifyDeployResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.instance.deploy_to_netlify(
+            instance_id="instance_id",
+            directory_path="directory_path",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/deploy_to_netlify",
+            method="POST",
+            json={
+                "directory_path": directory_path,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    NetlifyDeployResponse,
+                    parse_obj_as(
+                        type_=NetlifyDeployResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
 
 class AsyncInstanceClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -988,6 +1135,7 @@ class AsyncInstanceClient:
         restart: typing.Optional[bool] = OMIT,
         list_sessions: typing.Optional[bool] = OMIT,
         check_session: typing.Optional[int] = OMIT,
+        timeout: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -1004,6 +1152,8 @@ class AsyncInstanceClient:
         list_sessions : typing.Optional[bool]
 
         check_session : typing.Optional[int]
+
+        timeout : typing.Optional[float]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1041,6 +1191,7 @@ class AsyncInstanceClient:
                 "restart": restart,
                 "list_sessions": list_sessions,
                 "check_session": check_session,
+                "timeout": timeout,
             },
             headers={
                 "content-type": "application/json",
@@ -1583,6 +1734,163 @@ class AsyncInstanceClient:
                     GetInstanceResponse,
                     parse_obj_as(
                         type_=GetInstanceResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def expose_port(
+        self, instance_id: str, *, port: int, request_options: typing.Optional[RequestOptions] = None
+    ) -> ExposePortResponse:
+        """
+        Expose a port on the instance with a public-facing URL.
+
+        This endpoint creates a temporary public URL that routes traffic to the specified port on the instance.
+
+        Parameters
+        ----------
+        instance_id : str
+
+        port : int
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ExposePortResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.instance.expose_port(
+                instance_id="instance_id",
+                port=1,
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/expose_port",
+            method="POST",
+            json={
+                "port": port,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    ExposePortResponse,
+                    parse_obj_as(
+                        type_=ExposePortResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def deploy_to_netlify(
+        self, instance_id: str, *, directory_path: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> NetlifyDeployResponse:
+        """
+        Deploy a directory from the instance to Netlify.
+
+        Args:
+            directory_path: Path to the directory on the instance to deploy
+
+        Parameters
+        ----------
+        instance_id : str
+
+        directory_path : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        NetlifyDeployResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.instance.deploy_to_netlify(
+                instance_id="instance_id",
+                directory_path="directory_path",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/deploy_to_netlify",
+            method="POST",
+            json={
+                "directory_path": directory_path,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    NetlifyDeployResponse,
+                    parse_obj_as(
+                        type_=NetlifyDeployResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

@@ -33,6 +33,7 @@ from .types import (
     BrowserAuthenticateResponse,
     BrowserGetCdpUrlResponse,
     BrowserGetCurrentUrlResponse,
+    BrowserGetStreamUrlResponse,
     Button,
     ClickMouseActionClickType,
     ComputerResponse,
@@ -52,6 +53,8 @@ from .types import (
     ModifyBrowserAuthResponse,
     UploadResponse,
     FileResponse,
+    ExposePortResponse,
+    NetlifyDeployResponse,
 )
 
 from .types.act import (
@@ -126,10 +129,14 @@ class Browser:
         self._client = client
 
     def start(
-        self, request_options: Optional[RequestOptions] = None
+        self,
+        separate_stream: Optional[bool] = None,
+        request_options: Optional[RequestOptions] = None
     ) -> StartBrowserResponse:
         return self._client.browser.start(
-            self.instance_id, request_options=request_options
+            self.instance_id,
+            separate_stream=separate_stream,
+            request_options=request_options
         )
 
     def get_cdp_url(
@@ -186,6 +193,12 @@ class Browser:
             self.instance_id, request_options=request_options
         )
 
+    def get_stream_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetStreamUrlResponse:
+        return self._client.browser.get_stream_url(
+            instance_id=self.instance_id, request_options=request_options
+        )
 
 class AsyncBrowser:
     def __init__(self, instance_id: str, client: AsyncBaseClient):
@@ -193,10 +206,14 @@ class AsyncBrowser:
         self._client = client
 
     async def start(
-        self, request_options: Optional[RequestOptions] = None
+        self,
+        separate_stream: Optional[bool] = None,
+        request_options: Optional[RequestOptions] = None
     ) -> StartBrowserResponse:
         return await self._client.browser.start(
-            self.instance_id, request_options=request_options
+            self.instance_id,
+            separate_stream=separate_stream,
+            request_options=request_options
         )
 
     async def get_cdp_url(
@@ -253,6 +270,12 @@ class AsyncBrowser:
             self.instance_id, request_options=request_options
         )
 
+    async def get_stream_url(
+        self, request_options: Optional[RequestOptions] = None
+    ) -> BrowserGetStreamUrlResponse:
+        return await self._client.browser.get_stream_url(
+            instance_id=self.instance_id, request_options=request_options
+        )
 
 class Code:
     def __init__(self, instance_id: str, client: BaseClient):
@@ -859,9 +882,21 @@ class BaseInstance:
         request_options: Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         return self._client.instance.resume(
-            self.id,
-            timeout_hours=timeout_hours,
-            request_options=request_options,
+            self.id, timeout_hours=timeout_hours, request_options=request_options
+        )
+
+    def expose_port(
+        self, *, port: int, request_options: Optional[RequestOptions] = None
+    ) -> ExposePortResponse:
+        return self._client.instance.expose_port(
+            self.id, port=port, request_options=request_options
+        )
+
+    def deploy_to_netlify(
+        self, *, directory_path: str, request_options: Optional[RequestOptions] = None
+    ) -> NetlifyDeployResponse:
+        return self._client.instance.deploy_to_netlify(
+            self.id, directory_path=directory_path, request_options=request_options
         )
 
 
@@ -887,6 +922,7 @@ class UbuntuInstance(BaseInstance):
         restart: Optional[bool] = OMIT,
         list_sessions: Optional[bool] = OMIT,
         check_session: Optional[int] = OMIT,
+        timeout: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return self._client.instance.bash(
@@ -896,6 +932,7 @@ class UbuntuInstance(BaseInstance):
             restart=restart, 
             list_sessions=list_sessions, 
             check_session=check_session, 
+            timeout=timeout,
             request_options=request_options
         )
 
@@ -1383,9 +1420,21 @@ class AsyncBaseInstance:
         request_options: Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         return await self._client.instance.resume(
-            self.id,
-            timeout_hours=timeout_hours,
-            request_options=request_options,
+            self.id, timeout_hours=timeout_hours, request_options=request_options
+        )
+
+    async def expose_port(
+        self, *, port: int, request_options: Optional[RequestOptions] = None
+    ) -> ExposePortResponse:
+        return await self._client.instance.expose_port(
+            self.id, port=port, request_options=request_options
+        )
+
+    async def deploy_to_netlify(
+        self, *, directory_path: str, request_options: Optional[RequestOptions] = None
+    ) -> NetlifyDeployResponse:
+        return await self._client.instance.deploy_to_netlify(
+            self.id, directory_path=directory_path, request_options=request_options
         )
 
 
@@ -1411,6 +1460,7 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
         restart: Optional[bool] = OMIT,
         list_sessions: Optional[bool] = OMIT,
         check_session: Optional[int] = OMIT,
+        timeout: Optional[float] = None,
         request_options: Optional[RequestOptions] = None,
     ) -> Optional[Any]:
         return await self._client.instance.bash(
@@ -1420,6 +1470,7 @@ class AsyncUbuntuInstance(AsyncBaseInstance):
             restart=restart, 
             list_sessions=list_sessions, 
             check_session=check_session, 
+            timeout=timeout,
             request_options=request_options
         )
 
@@ -1595,6 +1646,22 @@ class Scrapybara:
             follow_redirects=follow_redirects,
             httpx_client=httpx_client,
         )
+        self._beta = Beta(self._base_client)
+
+    @property
+    def beta(self) -> "Beta":
+        """
+        Access beta functionality.
+        
+        This property provides access to beta features that may change
+        or be removed in future versions.
+        
+        Returns
+        -------
+        Beta
+            Beta features wrapper
+        """
+        return self._beta
 
     @property
     def httpx_client(self) -> HttpClient:
@@ -1606,6 +1673,8 @@ class Scrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> UbuntuInstance:
         response = self._base_client.start(
@@ -1613,6 +1682,8 @@ class Scrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return UbuntuInstance(
@@ -1628,6 +1699,8 @@ class Scrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> BrowserInstance:
         response = self._base_client.start(
@@ -1635,6 +1708,8 @@ class Scrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return BrowserInstance(
@@ -2055,6 +2130,22 @@ class AsyncScrapybara:
             follow_redirects=follow_redirects,
             httpx_client=httpx_client,
         )
+        self._beta = AsyncBeta(self._base_client)
+
+    @property
+    def beta(self) -> "AsyncBeta":
+        """
+        Access beta functionality.
+        
+        This property provides access to beta features that may change
+        or be removed in future versions.
+        
+        Returns
+        -------
+        AsyncBeta
+            Beta features wrapper
+        """
+        return self._beta
 
     @property
     def httpx_client(self) -> AsyncHttpClient:
@@ -2066,6 +2157,8 @@ class AsyncScrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncUbuntuInstance:
         response = await self._base_client.start(
@@ -2073,6 +2166,8 @@ class AsyncScrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return AsyncUbuntuInstance(
@@ -2088,6 +2183,8 @@ class AsyncScrapybara:
         timeout_hours: Optional[float] = OMIT,
         blocked_domains: Optional[Sequence[str]] = OMIT,
         resolution: Optional[Sequence[int]] = OMIT,
+        backend: Optional[str] = OMIT,
+        snapshot_id: Optional[str] = OMIT,
         request_options: Optional[RequestOptions] = None,
     ) -> AsyncBrowserInstance:
         response = await self._base_client.start(
@@ -2095,6 +2192,8 @@ class AsyncScrapybara:
             timeout_hours=timeout_hours,
             blocked_domains=blocked_domains,
             resolution=resolution,
+            backend=backend,
+            snapshot_id=snapshot_id,
             request_options=request_options,
         )
         return AsyncBrowserInstance(
@@ -2595,3 +2694,151 @@ def _filter_images(messages: List[Message], images_to_keep: int):
                         images_kept += 1
                     else:
                         del tool_result.result["base_64_image"]
+
+
+class Beta:
+    """
+    Class that provides access to beta functionality in Scrapybara.
+    
+    Includes:
+    - VM management: snapshot operations on VM instances
+    """
+    def __init__(self, base_client: BaseClient):
+        self._base_client = base_client
+    
+    def take_snapshot(self, instance_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Take a snapshot of an instance
+        
+        Parameters
+        ----------
+        instance_id : str
+            ID of the instance to snapshot
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SnapshotResponse
+            Contains the snapshot_id
+        """
+        return self._base_client.beta_vm_management.take_snapshot(
+            instance_id=instance_id, 
+            request_options=request_options
+        )
+    
+    def warmup_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Warmup a snapshot so it's ready for faster instance creation
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to warm up
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return self._base_client.beta_vm_management.warmup_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )
+    
+    def delete_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Delete a snapshot
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to delete
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return self._base_client.beta_vm_management.delete_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )
+
+
+class AsyncBeta:
+    """
+    Class that provides access to beta functionality in AsyncScrapybara.
+    
+    Includes:
+    - VM management: snapshot operations on VM instances
+    """
+    def __init__(self, base_client: AsyncBaseClient):
+        self._base_client = base_client
+    
+    async def take_snapshot(self, instance_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Take a snapshot of an instance
+        
+        Parameters
+        ----------
+        instance_id : str
+            ID of the instance to snapshot
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SnapshotResponse
+            Contains the snapshot_id
+        """
+        return await self._base_client.beta_vm_management.take_snapshot(
+            instance_id=instance_id, 
+            request_options=request_options
+        )
+    
+    async def warmup_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Warmup a snapshot so it's ready for faster instance creation
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to warm up
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return await self._base_client.beta_vm_management.warmup_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )
+    
+    async def delete_snapshot(self, snapshot_id: str, *, request_options: Optional[RequestOptions] = None):
+        """
+        Delete a snapshot
+        
+        Parameters
+        ----------
+        snapshot_id : str
+            ID of the snapshot to delete
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+            
+        Returns
+        -------
+        SuccessResponse
+            Indicates if the operation was successful
+        """
+        return await self._base_client.beta_vm_management.delete_snapshot(
+            snapshot_id=snapshot_id,
+            request_options=request_options
+        )

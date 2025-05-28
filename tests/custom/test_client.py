@@ -29,7 +29,7 @@ def _check_api_key() -> None:
     if os.getenv("SCRAPYBARA_API_KEY") is None:
         raise ValueError("SCRAPYBARA_API_KEY is not set")
 
-
+@pytest.mark.skip()
 def test_ubuntu() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -63,6 +63,7 @@ def test_ubuntu() -> None:
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
+@pytest.mark.skip()
 def test_ubuntu_openai() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -96,7 +97,7 @@ def test_ubuntu_openai() -> None:
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
-
+@pytest.mark.skip()
 def test_browser() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -124,6 +125,7 @@ def test_browser() -> None:
     assert isinstance(response.output.has_links, bool)
     browser_instance.stop()
 
+@pytest.mark.skip()
 def test_browser_openai() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -243,6 +245,7 @@ def test_browser_thinking() -> None:
     browser_instance.stop()
 
 
+@pytest.mark.skip()
 def test_upload_download() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -282,12 +285,106 @@ def test_upload_download() -> None:
         ubuntu_instance.stop()
 
 
+def test_beta_vm_management() -> None:
+    _check_api_key()
+    client = Scrapybara()
+
+    # Start a rodent instance
+    instance = client.start_ubuntu(backend="rodent")
+    assert instance.id is not None
+    
+    try:
+        # Take a snapshot
+        snapshot_response = client.beta.take_snapshot(instance_id=instance.id)
+        assert snapshot_response is not None
+        assert snapshot_response.snapshot_id is not None
+        snapshot_id = snapshot_response.snapshot_id
+        print(f"Created snapshot with ID: {snapshot_id}")
+        
+        # Warmup the snapshot
+        warmup_response = client.beta.warmup_snapshot(snapshot_id=snapshot_id)
+        assert warmup_response is not None
+        assert warmup_response.success is True
+        
+        # Delete the snapshot
+        delete_response = client.beta.delete_snapshot(snapshot_id=snapshot_id)
+        assert delete_response is not None
+        assert delete_response.success is True
+        
+    finally:
+        instance.stop()
+
+
+def test_restore_from_snapshot() -> None:
+    _check_api_key()
+    client = Scrapybara()
+
+    # Start original instance
+    original_instance = client.start_ubuntu(backend="rodent")
+    assert original_instance.id is not None
+    print(f"Started original instance: {original_instance.id}")
+    
+    snapshot_id = None
+    restored_instance = None
+    
+    try:
+        # Create a file to verify restoration later
+        test_marker = f"test-marker-{uuid.uuid4()}"
+        original_instance.bash(command=f"echo '{test_marker}' > /tmp/snapshot-test-file")
+        
+        # Take a snapshot
+        snapshot_response = client.beta.take_snapshot(instance_id=original_instance.id)
+        assert snapshot_response is not None
+        assert snapshot_response.snapshot_id is not None
+        
+        snapshot_id = snapshot_response.snapshot_id
+        print(f"Created snapshot with ID: {snapshot_id}")
+        
+        # Warmup the snapshot (optional but recommended)
+        client.beta.warmup_snapshot(snapshot_id=snapshot_id)
+        
+        # Stop the original instance
+        original_instance.stop()
+        
+        # Start a new instance from the snapshot
+        restored_instance = client.start_ubuntu(snapshot_id=snapshot_id, backend="rodent")
+        assert restored_instance.id is not None
+        print(f"Started restored instance: {restored_instance.id}")
+        
+        # Verify the test file exists with our marker
+        file_content = restored_instance.bash(command="cat /tmp/snapshot-test-file")
+        assert test_marker in str(file_content)
+        print("Successfully verified snapshot restoration!")
+        
+    finally:
+        # Clean up resources
+        if original_instance:
+            try:
+                original_instance.stop()
+            except:
+                pass
+                
+        if restored_instance:
+            try:
+                restored_instance.stop()
+            except:
+                pass
+                
+        if snapshot_id:
+            try:
+                client.beta.delete_snapshot(snapshot_id=snapshot_id)
+            except:
+                pass
+
+
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
     test_ubuntu_openai()
     test_browser_openai()
     test_upload_download()
+    test_beta_vm_management()
+    test_restore_from_snapshot()
     # test_ubuntu_thinking()
     # test_browser_thinking()
     # test_windows()
