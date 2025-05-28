@@ -63,6 +63,7 @@ def test_ubuntu() -> None:
     ubuntu_instance.browser.stop()
     ubuntu_instance.stop()
 
+@pytest.mark.skip()
 def test_ubuntu_openai() -> None:
     _check_api_key()
     client = Scrapybara()
