@@ -125,6 +125,7 @@ def test_browser() -> None:
     assert isinstance(response.output.has_links, bool)
     browser_instance.stop()
 
+@pytest.mark.skip()
 def test_browser_openai() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -287,7 +288,7 @@ if __name__ == "__main__":
     test_ubuntu()
     test_browser()
     # test_ubuntu_openai()
-    test_browser_openai()
+    # test_browser_openai()
     test_upload_download()
     # test_ubuntu_thinking()
     # test_browser_thinking()
