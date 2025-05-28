@@ -219,6 +219,7 @@ class InstanceClient:
         restart: typing.Optional[bool] = OMIT,
         list_sessions: typing.Optional[bool] = OMIT,
         check_session: typing.Optional[int] = OMIT,
+        timeout: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -235,6 +236,8 @@ class InstanceClient:
         list_sessions : typing.Optional[bool]
 
         check_session : typing.Optional[int]
+
+        timeout : typing.Optional[float]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -264,6 +267,7 @@ class InstanceClient:
                 "restart": restart,
                 "list_sessions": list_sessions,
                 "check_session": check_session,
+                "timeout": timeout,
             },
             headers={
                 "content-type": "application/json",
@@ -1131,6 +1135,7 @@ class AsyncInstanceClient:
         restart: typing.Optional[bool] = OMIT,
         list_sessions: typing.Optional[bool] = OMIT,
         check_session: typing.Optional[int] = OMIT,
+        timeout: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BashResponse:
         """
@@ -1147,6 +1152,8 @@ class AsyncInstanceClient:
         list_sessions : typing.Optional[bool]
 
         check_session : typing.Optional[int]
+
+        timeout : typing.Optional[float]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1184,6 +1191,7 @@ class AsyncInstanceClient:
                 "restart": restart,
                 "list_sessions": list_sessions,
                 "check_session": check_session,
+                "timeout": timeout,
             },
             headers={
                 "content-type": "application/json",

@@ -562,6 +562,14 @@ client.instance.bash(
 <dl>
 <dd>
 
+**timeout:** `typing.Optional[float]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
