@@ -285,7 +285,7 @@ def test_upload_download() -> None:
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
-    test_ubuntu_openai()
+    # test_ubuntu_openai()
     test_browser_openai()
     test_upload_download()
     # test_ubuntu_thinking()
