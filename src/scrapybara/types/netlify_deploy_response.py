@@ -6,9 +6,14 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2
 import pydantic
 
 
-class StartBrowserResponse(UniversalBaseModel):
-    cdp_url: str
-    stream_url: typing.Optional[str] = None
+class NetlifyDeployResponse(UniversalBaseModel):
+    """
+    Response model for netlify deployment.
+    """
+
+    output: typing.Optional[str] = None
+    error: typing.Optional[str] = None
+    site_url: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

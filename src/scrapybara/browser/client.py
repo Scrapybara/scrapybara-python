@@ -11,6 +11,7 @@ from ..types.http_validation_error import HttpValidationError
 from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
 from ..types.browser_get_cdp_url_response import BrowserGetCdpUrlResponse
+from ..types.browser_get_stream_url_response import BrowserGetStreamUrlResponse
 from ..types.browser_get_current_url_response import BrowserGetCurrentUrlResponse
 from ..types.save_browser_auth_response import SaveBrowserAuthResponse
 from ..types.modify_browser_auth_response import ModifyBrowserAuthResponse
@@ -24,12 +25,18 @@ class BrowserClient:
         self._client_wrapper = client_wrapper
 
     def start(
-        self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        instance_id: str,
+        *,
+        separate_stream: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> StartBrowserResponse:
         """
         Parameters
         ----------
         instance_id : str
+
+        separate_stream : typing.Optional[bool]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -53,6 +60,9 @@ class BrowserClient:
         _response = self._client_wrapper.httpx_client.request(
             f"v1/instance/{jsonable_encoder(instance_id)}/browser/start",
             method="POST",
+            params={
+                "separate_stream": separate_stream,
+            },
             request_options=request_options,
         )
         try:
@@ -117,6 +127,62 @@ class BrowserClient:
                     BrowserGetCdpUrlResponse,
                     parse_obj_as(
                         type_=BrowserGetCdpUrlResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_stream_url(
+        self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> BrowserGetStreamUrlResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        BrowserGetStreamUrlResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.browser.get_stream_url(
+            instance_id="instance_id",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/browser/stream_url",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    BrowserGetStreamUrlResponse,
+                    parse_obj_as(
+                        type_=BrowserGetStreamUrlResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -448,12 +514,18 @@ class AsyncBrowserClient:
         self._client_wrapper = client_wrapper
 
     async def start(
-        self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        instance_id: str,
+        *,
+        separate_stream: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> StartBrowserResponse:
         """
         Parameters
         ----------
         instance_id : str
+
+        separate_stream : typing.Optional[bool]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -485,6 +557,9 @@ class AsyncBrowserClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"v1/instance/{jsonable_encoder(instance_id)}/browser/start",
             method="POST",
+            params={
+                "separate_stream": separate_stream,
+            },
             request_options=request_options,
         )
         try:
@@ -557,6 +632,70 @@ class AsyncBrowserClient:
                     BrowserGetCdpUrlResponse,
                     parse_obj_as(
                         type_=BrowserGetCdpUrlResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_stream_url(
+        self, instance_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> BrowserGetStreamUrlResponse:
+        """
+        Parameters
+        ----------
+        instance_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        BrowserGetStreamUrlResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.browser.get_stream_url(
+                instance_id="instance_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/instance/{jsonable_encoder(instance_id)}/browser/stream_url",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    BrowserGetStreamUrlResponse,
+                    parse_obj_as(
+                        type_=BrowserGetStreamUrlResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

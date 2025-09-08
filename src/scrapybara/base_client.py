@@ -11,6 +11,7 @@ from .browser.client import BrowserClient
 from .code.client import CodeClient
 from .notebook.client import NotebookClient
 from .env.client import EnvClient
+from .beta_vm_management.client import BetaVmManagementClient
 from .types.deployment_config_instance_type import DeploymentConfigInstanceType
 from .core.request_options import RequestOptions
 from .types.get_instance_response import GetInstanceResponse
@@ -20,12 +21,14 @@ from .types.http_validation_error import HttpValidationError
 from json.decoder import JSONDecodeError
 from .core.jsonable_encoder import jsonable_encoder
 from .types.auth_state_response import AuthStateResponse
+from .types.delete_browser_auth_response import DeleteBrowserAuthResponse
 from .core.client_wrapper import AsyncClientWrapper
 from .instance.client import AsyncInstanceClient
 from .browser.client import AsyncBrowserClient
 from .code.client import AsyncCodeClient
 from .notebook.client import AsyncNotebookClient
 from .env.client import AsyncEnvClient
+from .beta_vm_management.client import AsyncBetaVmManagementClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -98,6 +101,7 @@ class BaseClient:
         self.code = CodeClient(client_wrapper=self._client_wrapper)
         self.notebook = NotebookClient(client_wrapper=self._client_wrapper)
         self.env = EnvClient(client_wrapper=self._client_wrapper)
+        self.beta_vm_management = BetaVmManagementClient(client_wrapper=self._client_wrapper)
 
     def start(
         self,
@@ -106,6 +110,8 @@ class BaseClient:
         timeout_hours: typing.Optional[float] = OMIT,
         blocked_domains: typing.Optional[typing.Sequence[str]] = OMIT,
         resolution: typing.Optional[typing.Sequence[int]] = OMIT,
+        backend: typing.Optional[str] = OMIT,
+        snapshot_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         """
@@ -118,6 +124,10 @@ class BaseClient:
         blocked_domains : typing.Optional[typing.Sequence[str]]
 
         resolution : typing.Optional[typing.Sequence[int]]
+
+        backend : typing.Optional[str]
+
+        snapshot_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -144,6 +154,8 @@ class BaseClient:
                 "timeout_hours": timeout_hours,
                 "blocked_domains": blocked_domains,
                 "resolution": resolution,
+                "backend": backend,
+                "snapshot_id": snapshot_id,
             },
             headers={
                 "content-type": "application/json",
@@ -313,6 +325,65 @@ class BaseClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
+    def delete_auth_state(
+        self, *, auth_state_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> DeleteBrowserAuthResponse:
+        """
+        Parameters
+        ----------
+        auth_state_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DeleteBrowserAuthResponse
+            Successful Response
+
+        Examples
+        --------
+        from scrapybara import Scrapybara
+
+        client = Scrapybara(
+            api_key="YOUR_API_KEY",
+        )
+        client.delete_auth_state(
+            auth_state_id="auth_state_id",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/delete_auth_state",
+            method="POST",
+            params={
+                "auth_state_id": auth_state_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    DeleteBrowserAuthResponse,
+                    parse_obj_as(
+                        type_=DeleteBrowserAuthResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
 
 class AsyncBaseClient:
     """
@@ -381,6 +452,7 @@ class AsyncBaseClient:
         self.code = AsyncCodeClient(client_wrapper=self._client_wrapper)
         self.notebook = AsyncNotebookClient(client_wrapper=self._client_wrapper)
         self.env = AsyncEnvClient(client_wrapper=self._client_wrapper)
+        self.beta_vm_management = AsyncBetaVmManagementClient(client_wrapper=self._client_wrapper)
 
     async def start(
         self,
@@ -389,6 +461,8 @@ class AsyncBaseClient:
         timeout_hours: typing.Optional[float] = OMIT,
         blocked_domains: typing.Optional[typing.Sequence[str]] = OMIT,
         resolution: typing.Optional[typing.Sequence[int]] = OMIT,
+        backend: typing.Optional[str] = OMIT,
+        snapshot_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetInstanceResponse:
         """
@@ -401,6 +475,10 @@ class AsyncBaseClient:
         blocked_domains : typing.Optional[typing.Sequence[str]]
 
         resolution : typing.Optional[typing.Sequence[int]]
+
+        backend : typing.Optional[str]
+
+        snapshot_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -435,6 +513,8 @@ class AsyncBaseClient:
                 "timeout_hours": timeout_hours,
                 "blocked_domains": blocked_domains,
                 "resolution": resolution,
+                "backend": backend,
+                "snapshot_id": snapshot_id,
             },
             headers={
                 "content-type": "application/json",
@@ -624,6 +704,73 @@ class AsyncBaseClient:
                         type_=typing.List[AuthStateResponse],  # type: ignore
                         object_=_response.json(),
                     ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete_auth_state(
+        self, *, auth_state_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> DeleteBrowserAuthResponse:
+        """
+        Parameters
+        ----------
+        auth_state_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DeleteBrowserAuthResponse
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from scrapybara import AsyncScrapybara
+
+        client = AsyncScrapybara(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.delete_auth_state(
+                auth_state_id="auth_state_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/delete_auth_state",
+            method="POST",
+            params={
+                "auth_state_id": auth_state_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    DeleteBrowserAuthResponse,
+                    parse_obj_as(
+                        type_=DeleteBrowserAuthResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(
+                        HttpValidationError,
+                        parse_obj_as(
+                            type_=HttpValidationError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    )
                 )
             _response_json = _response.json()
         except JSONDecodeError:
