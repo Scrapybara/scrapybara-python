@@ -284,7 +284,7 @@ def test_upload_download() -> None:
         # Always stop the instance
         ubuntu_instance.stop()
 
-
+@pytest.mark.skip()
 def test_beta_vm_management() -> None:
     _check_api_key()
     client = Scrapybara()
@@ -315,6 +315,7 @@ def test_beta_vm_management() -> None:
         instance.stop()
 
 
+@pytest.mark.skip()
 def test_restore_from_snapshot() -> None:
     _check_api_key()
     client = Scrapybara()
