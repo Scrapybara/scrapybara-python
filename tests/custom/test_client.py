@@ -380,8 +380,8 @@ def test_restore_from_snapshot() -> None:
 if __name__ == "__main__":
     test_ubuntu()
     test_browser()
-    test_ubuntu_openai()
-    test_browser_openai()
+    # test_ubuntu_openai()
+    # test_browser_openai()
     test_upload_download()
     test_beta_vm_management()
     test_restore_from_snapshot()
